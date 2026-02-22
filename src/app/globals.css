@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #1a1a1a;
+  color: #f5f5f5;
+  font-family: 'Trebuchet MS', 'Arial', sans-serif;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Trebuchet MS', 'Arial', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}
+
+nav a, [role="navigation"] a {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #b8a89a;
+  font-family: 'Trebuchet MS', 'Arial', sans-serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #e8d8d0;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.6s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-primary text-text-light rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-200 uppercase tracking-wider;
+  }
+
+  .btn-accent {
+    @apply px-11 py-2.5 bg-accent text-white rounded font-light hover:bg-transparent hover:text-accent transition-all duration-300 uppercase tracking-widest text-xs border-2 border-accent;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-secondary text-primary rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-200 uppercase tracking-wider;
+  }
+
+  .card {
+    @apply bg-white border border-secondary rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}

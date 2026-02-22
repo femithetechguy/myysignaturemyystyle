@@ -1,0 +1,1366 @@
+/* Global Admin Styles - Used across all admin pages */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&display=swap');
+
+/* ========== CSS VARIABLES (from pages.json admin.theme) ========== */
+:root {
+  --admin-text-primary: #1B1B1B;
+  --admin-text-secondary: #666666;
+  --admin-text-muted: #999999;
+  --admin-label-color: #1B1B1B;
+  --admin-input-text: #1B1B1B;
+  --admin-input-border: #cccccc;
+  --admin-input-bg: #ffffff;
+  --admin-input-placeholder: #999999;
+  --admin-table-border: #eeeeee;
+  --admin-table-header-bg: #f5f5f5;
+  --admin-table-header-text: #1B1B1B;
+  --admin-modal-bg: #ffffff;
+  --admin-modal-overlay: rgba(0, 0, 0, 0.5);
+  --admin-accent: #D4AF37;
+  --admin-sidebar-bg: #1B1B1B;
+  --admin-sidebar-text: #f5f5f5;
+}
+
+/* GLOBAL FORM ELEMENT FIX - Force dark text on all inputs */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  color: #1B1B1B !important;
+  -webkit-text-fill-color: #1B1B1B !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #999999 !important;
+  -webkit-text-fill-color: #999999 !important;
+  opacity: 1 !important;
+}
+
+label {
+  color: #1B1B1B !important;
+}
+
+/* ========== COLOR VARIABLES ========== */
+/* Primary: #1B1B1B (Dark)
+   Secondary: #D4AF37 (Gold)
+   Accent: #8B4513 (Brown)
+   Light: #F5F5F5 (Off-white)
+   Fonts: Nunito, Playfair Display, Lato */
+
+/* ========== GLOBAL FONTS ========== */
+
+/* ========== LAYOUT & CONTAINER ========== */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.adminContainer {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+/* Force configured font on ALL elements in admin */
+.adminContainer {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+.adminContainer * {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+/* Specific element overrides */
+.adminContainer button,
+.adminContainer input,
+.adminContainer select,
+.adminContainer textarea,
+.adminContainer label,
+.adminContainer span,
+.adminContainer p,
+.adminContainer a,
+.adminContainer div,
+.adminContainer li,
+.adminContainer ul,
+.adminContainer ol,
+.adminContainer table,
+.adminContainer tr,
+.adminContainer td,
+.adminContainer th {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+/* Headings use Nunito in admin (not Playfair) */
+.adminContainer h1,
+.adminContainer h2,
+.adminContainer h3,
+.adminContainer h4,
+.adminContainer h5,
+.adminContainer h6 {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+/* Extra specificity rules for headers */
+.header h1 {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+.logo {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+/* Ensure all body text in admin stats/cards stays Nunito */
+.adminContainer .statCard p,
+.adminContainer .info p,
+.adminContainer .productInfo p {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+/* Additional cascade to catch any nested elements */
+body .adminContainer,
+html .adminContainer {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+/* ========== GLOBAL FORM STYLES ========== */
+/* Form labels */
+.adminContainer label {
+  color: var(--admin-label-color) !important;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Form inputs, textareas, selects */
+.adminContainer input[type="text"],
+.adminContainer input[type="email"],
+.adminContainer input[type="password"],
+.adminContainer input[type="number"],
+.adminContainer input[type="tel"],
+.adminContainer input[type="url"],
+.adminContainer input[type="search"],
+.adminContainer input[type="date"],
+.adminContainer textarea,
+.adminContainer select {
+  color: var(--admin-input-text) !important;
+  background: var(--admin-input-bg) !important;
+  border: 1px solid var(--admin-input-border) !important;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.adminContainer input::placeholder,
+.adminContainer textarea::placeholder {
+  color: var(--admin-input-placeholder) !important;
+}
+
+.adminContainer input:focus,
+.adminContainer textarea:focus,
+.adminContainer select:focus {
+  outline: none;
+  border-color: var(--admin-accent) !important;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+/* Table styles */
+.adminContainer table {
+  color: var(--admin-text-primary);
+}
+
+.adminContainer table th {
+  color: var(--admin-table-header-text) !important;
+  background: var(--admin-table-header-bg);
+  font-weight: bold;
+}
+
+.adminContainer table td {
+  color: var(--admin-text-secondary);
+}
+
+.adminContainer table tr {
+  border-bottom: 1px solid var(--admin-table-border);
+}
+
+/* Modal styles */
+.adminContainer [style*="position: fixed"][style*="background: rgba"] {
+  /* Modal overlay - this is a fallback */
+}
+
+/* IMPORTANT: Modal form elements (fixed position may break inheritance) */
+.adminContainer [style*="position: fixed"] label,
+body [style*="position: fixed"] label {
+  color: #1B1B1B !important;
+  font-weight: 600 !important;
+}
+
+.adminContainer [style*="position: fixed"] input,
+.adminContainer [style*="position: fixed"] textarea,
+.adminContainer [style*="position: fixed"] select,
+body [style*="position: fixed"] input,
+body [style*="position: fixed"] textarea,
+body [style*="position: fixed"] select {
+  color: #1B1B1B !important;
+  background: #ffffff !important;
+  border: 1px solid #cccccc !important;
+  -webkit-text-fill-color: #1B1B1B !important;
+  opacity: 1 !important;
+}
+
+.adminContainer [style*="position: fixed"] input::placeholder,
+.adminContainer [style*="position: fixed"] textarea::placeholder,
+body [style*="position: fixed"] input::placeholder,
+body [style*="position: fixed"] textarea::placeholder {
+  color: #999999 !important;
+  -webkit-text-fill-color: #999999 !important;
+  opacity: 1 !important;
+}
+
+/* Force modal content visibility */
+.adminContainer [style*="position: fixed"] h3,
+.adminContainer [style*="position: fixed"] h4,
+body [style*="position: fixed"] h3,
+body [style*="position: fixed"] h4 {
+  color: #1B1B1B !important;
+}
+
+/* Form field groups */
+.adminContainer div[style*="flex-direction: column"] > label {
+  color: var(--admin-label-color) !important;
+  font-weight: 600;
+}
+
+/* Modal content text colors */
+.adminContainer h3,
+.adminContainer h4 {
+  color: var(--admin-text-primary);
+}
+
+.adminContainer p {
+  color: var(--admin-text-secondary);
+}
+
+.mainContent {
+  margin-left: 280px;
+  flex: 1;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+/* ========== SIDEBAR NAVIGATION ========== */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(135deg, #1B1B1B 0%, #2d2d2d 100%);
+  color: #f5f5f5;
+  padding: 20px 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  transition: width 0.3s ease, transform 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.sidebar.closed {
+  width: 80px;
+}
+
+.sidebar.closed ~ .mainContent {
+  margin-left: 80px;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  color: #D4AF37;
+}
+
+.sidebar.closed .logo {
+  display: none;
+}
+
+.toggleBtn {
+  background: rgba(212, 175, 55, 0.2);
+  border: none;
+  color: #D4AF37;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+  transition: background 0.3s ease;
+}
+
+.toggleBtn:hover {
+  background: rgba(212, 175, 55, 0.3);
+}
+
+/* Hamburger button - hidden on desktop, shown on mobile */
+.hamburgerBtn {
+  display: none;
+  font-size: 1.5rem;
+  padding: 10px 14px;
+  background: rgba(212, 175, 55, 0.3);
+  color: #D4AF37;
+  border: 2px solid rgba(212, 175, 55, 0.5);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.hamburgerBtn:hover {
+  background: rgba(212, 175, 55, 0.5);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 10px;
+  flex: 1;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  color: rgba(245, 245, 245, 0.8);
+  text-decoration: none;
+  border-radius: 8px;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.navItem:hover {
+  background: rgba(212, 175, 55, 0.1);
+  color: #f5f5f5;
+  transform: translateX(5px);
+}
+
+.navItem.active {
+  background: rgba(212, 175, 55, 0.2);
+  color: #D4AF37;
+  font-weight: bold;
+  border-left: 4px solid #D4AF37;
+  padding-left: 11px;
+}
+
+.icon {
+  font-size: 1.3rem;
+  min-width: 30px;
+  display: flex;
+  justify-content: center;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+.label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}
+
+.sidebar.closed .label {
+  display: none;
+}
+
+.logoutBtn {
+  margin: 20px 10px 0;
+  width: calc(100% - 20px);
+  padding: 12px 15px;
+  background: rgba(139, 69, 19, 0.7);
+  color: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  transition: background 0.3s ease;
+}
+
+.logoutBtn:hover {
+  background: rgba(139, 69, 19, 1);
+}
+
+/* ========== PAGE HEADER & CONTENT ========== */
+.header {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+/* Header uses font class from config + CSS fallback */
+.header h1 {
+  margin: 0;
+  color: #1B1B1B;
+  font-size: 2rem;
+}
+
+.header h2 {
+  margin: 0;
+  color: #1B1B1B;
+  font-size: 1.8rem;
+}
+
+.content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ========== DASHBOARD SPECIFIC ========== */
+.dashboard {
+  padding: 20px 0;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tabBtn {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #666;
+  font-size: 1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tabBtn:hover {
+  color: #1B1B1B;
+}
+
+.tabBtn.active {
+  color: #D4AF37;
+  border-bottom-color: #D4AF37;
+}
+
+.overview {
+  animation: fadeIn 0.3s ease;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: linear-gradient(135deg, #1B1B1B 0%, #2d2d2d 100%);
+  color: white;
+  border-radius: 12px;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.welcome h2 {
+  margin: 0;
+  font-size: 2rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  color: #D4AF37;
+}
+
+.welcome p {
+  margin: 10px 0 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.refreshBtn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: scale(1.05);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========== STATISTICS & CARDS ========== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.statCard {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 4px solid #D4AF37;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.statIcon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.statCard h3 {
+  margin: 15px 0 10px;
+  color: #1B1B1B;
+  font-size: 1.2rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.statNumber {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #D4AF37;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.statDesc {
+  margin: 5px 0 0;
+  color: #999;
+  font-size: 0.9rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.statItem {
+  display: flex;
+  gap: 15px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  align-items: flex-start;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #D4AF37;
+  transition: all 0.3s ease;
+}
+
+.statItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.statItem span {
+  font-size: 2.5rem;
+}
+
+.statLabel {
+  margin: 0;
+  color: #999;
+  font-size: 0.9rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  text-transform: capitalize;
+}
+
+.statValue {
+  margin: 8px 0 0;
+  color: #D4AF37;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+/* ========== ACTION BUTTONS ========== */
+.quickActions {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.quickActions h3 {
+  margin: 0 0 20px;
+  color: #1B1B1B;
+  font-size: 1.3rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.actionBtn {
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #D4AF37 0%, #C99A2D 100%);
+  color: #1B1B1B;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actionBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.actionBtn:active {
+  transform: translateY(-1px);
+}
+
+.sendBtn {
+  padding: 12px 25px;
+  background: linear-gradient(135deg, #D4AF37 0%, #C99A2D 100%);
+  color: #1B1B1B;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sendBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+}
+
+.sendBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ========== PRODUCTS SECTION ========== */
+.productsSection {
+  animation: fadeIn 0.3s ease;
+}
+
+.productsHeader {
+  margin-bottom: 30px;
+}
+
+.productsHeader h3 {
+  margin: 0;
+  color: #1B1B1B;
+  font-size: 1.5rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.productsHeader p {
+  margin: 5px 0 0;
+  color: #999;
+  font-size: 0.95rem;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.productCard {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: #D4AF37;
+}
+
+.productImage {
+  width: 100%;
+  height: 180px;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productInfo {
+  padding: 15px;
+}
+
+.productInfo h4 {
+  margin: 0 0 8px;
+  color: #1B1B1B;
+  font-size: 1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.category {
+  margin: 0 0 8px;
+  color: #999;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+.price {
+  margin: 0 0 12px;
+  color: #D4AF37;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.sizeTag {
+  background: #f0f0f0;
+  color: #1B1B1B;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* ========== EMPTY STATES & INFO ========== */
+.emptyState {
+  text-align: center;
+  padding: 80px 40px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.emptyIcon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.emptyState h3 {
+  margin: 20px 0 10px;
+  color: #1B1B1B;
+  font-size: 1.5rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #999;
+  font-size: 1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+.info {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #D4AF37;
+}
+
+.info p {
+  margin: 12px 0;
+  color: #1B1B1B;
+  font-size: 1.1rem;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  padding-left: 15px;
+}
+
+.info strong {
+  color: #D4AF37;
+}
+
+/* ========== FILTERS & FORM ELEMENTS ========== */
+.filters {
+  display: flex;
+  gap: 15px;
+}
+
+.filterSelect {
+  padding: 10px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #1B1B1B;
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterSelect:hover {
+  border-color: #D4AF37;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+/* ========== PAGE SPECIFIC CONTAINERS ========== */
+.dashboardContainer {
+  padding: 20px 0;
+}
+
+.ordersContainer {
+  padding: 20px 0;
+}
+
+.subscribersContainer {
+  padding: 20px 0;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 999;
+  }
+
+  .sidebar.closed {
+    width: 70px;
+  }
+
+  .sidebarHeader {
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 10px;
+  }
+
+  .toggleBtn {
+    width: 100%;
+    font-size: 1.2rem;
+  }
+
+  .mainContent {
+    margin-left: 70px;
+    padding: 15px;
+    width: calc(100% - 70px);
+  }
+
+  .sidebar.closed ~ .mainContent {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+
+  .label {
+    display: none;
+  }
+
+  .header {
+    padding: 15px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .header h2 {
+    font-size: 1.3rem;
+  }
+
+  .content {
+    padding: 15px;
+  }
+
+  .filters {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .filterSelect {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .sendBtn {
+    width: 100%;
+    padding: 12px;
+    min-height: 44px;
+  }
+
+  .actionBtn {
+    width: 100%;
+    padding: 12px;
+    min-height: 44px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .statCard {
+    padding: 20px 15px;
+  }
+
+  .statCard h3 {
+    font-size: 1rem;
+  }
+
+  .statNumber {
+    font-size: 2rem;
+  }
+
+  .productsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productCard {
+    border-radius: 8px;
+  }
+
+  .welcome {
+    padding: 20px;
+  }
+
+  .welcome h2 {
+    font-size: 1.3rem;
+  }
+
+  .quickActions {
+    padding: 15px;
+  }
+
+  .quickActions h3 {
+    font-size: 1.1rem;
+  }
+
+  .info {
+    padding: 15px;
+  }
+
+  .info p {
+    font-size: 0.95rem;
+  }
+
+  .productsHeader {
+    margin-bottom: 15px;
+  }
+
+  .productsHeader h3 {
+    font-size: 1.2rem;
+  }
+
+  /* Modal responsive for tablet */
+  div[style*="position: fixed"][style*="top: 0"] {
+    padding: 10px !important;
+  }
+
+  div[style*="maxWidth: 500px"] {
+    max-width: 90% !important;
+    margin: auto !important;
+  }
+}
+
+/* Mobile phones (max-width: 480px) */
+@media (max-width: 480px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-size: 16px;
+  }
+
+  .adminContainer {
+    flex-direction: column;
+  }
+
+  /* Hamburger menu button */
+  .hamburgerBtn {
+    display: block !important;
+  }
+
+  .toggleBtn {
+    display: none !important;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    overflow: visible;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar.closed {
+    width: 100%;
+  }
+
+  .sidebarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    flex-direction: row;
+    gap: 8px;
+    min-width: 100%;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .logo {
+    display: block !important;
+    font-size: 1rem;
+    flex: 1;
+    margin: 0;
+  }
+
+  .nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #1B1B1B 0%, #2d2d2d 100%);
+    flex-direction: column;
+    gap: 0;
+    padding: 10px 0;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+    z-index: 998;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .nav.mobile-open {
+    display: flex !important;
+  }
+
+  .navItem {
+    padding: 14px 15px;
+    gap: 12px;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 0;
+    border-left: 4px solid transparent;
+    justify-content: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .navItem .label {
+    display: inline !important;
+  }
+
+  .navItem:hover {
+    background: rgba(212, 175, 55, 0.15);
+    transform: none;
+  }
+
+  .navItem.active {
+    background: rgba(212, 175, 55, 0.2);
+    color: #D4AF37;
+    border-left-color: #D4AF37;
+    padding-left: 11px;
+  }
+
+  .icon {
+    min-width: 24px;
+    font-size: 1.1rem;
+  }
+
+  .logoutBtn {
+    width: auto;
+    margin: 0;
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    display: none;
+  }
+
+  .mainContent {
+    margin-left: 0;
+    padding: 10px;
+    width: 100%;
+  }
+
+  .sidebar.closed ~ .mainContent {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .header {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: 1.3rem;
+  }
+
+  .content {
+    padding: 10px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .statCard {
+    padding: 15px;
+  }
+
+  .statIcon {
+    font-size: 2.5rem;
+  }
+
+  .statNumber {
+    font-size: 1.8rem;
+  }
+
+  .welcome {
+    padding: 15px;
+  }
+
+  .welcome h2 {
+    font-size: 1.2rem;
+  }
+
+  .welcome p {
+    font-size: 0.9rem;
+  }
+
+  .quickActions {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .quickActions h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+
+  /* Better mobile table styling */
+  table {
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody {
+    display: block;
+  }
+
+  tr {
+    display: block;
+    border: 1px solid #D4AF37;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 6px;
+  }
+
+  th, td {
+    padding: 8px 0 !important;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+  }
+
+  td:before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #D4AF37;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+  }
+
+  /* Action buttons in tables */
+  button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    min-height: 40px;
+  }
+
+  /* Modal styling for mobile */
+  div[style*="position: fixed"][style*="top: 0"] {
+    padding: 10px !important;
+    z-index: 9999 !important;
+  }
+
+  div[style*="maxWidth: 500px"] {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    max-height: 90vh !important;
+    padding: 20px !important;
+  }
+
+  /* Form inputs and textareas on mobile */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    padding: 12px !important;
+    width: 100% !important;
+    min-height: 44px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+  }
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  input[type="checkbox"] {
+    min-height: auto;
+    width: auto;
+    cursor: pointer;
+  }
+
+  /* Modal form styling */
+  div[style*="display: flex"][style*="flex-direction: column"] input,
+  div[style*="display: flex"][style*="flex-direction: column"] select,
+  div[style*="display: flex"][style*="flex-direction: column"] textarea {
+    font-size: 16px !important;
+    min-height: 44px;
+    padding: 12px !important;
+  }
+
+  /* Button styling on mobile */
+  button[style*="padding: 10px"] {
+    font-size: 15px !important;
+    min-height: 44px !important;
+    padding: 12px 20px !important;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .actionBtn,
+  .sendBtn {
+    min-height: 44px;
+    padding: 12px;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .filterSelect {
+    padding: 12px;
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  /* Mobile button for refresh */
+  .refreshBtn {
+    width: 100%;
+    min-height: 44px;
+    margin-bottom: 15px;
+  }
+
+  /* Dashboard cards on mobile */
+  div[style*="gridTemplateColumns: 'repeat(auto-fit'"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Info section responsive */
+  .info {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .info p {
+    font-size: 0.85rem;
+    margin: 5px 0;
+  }
+}
+
+/* ===== ULTIMATE FONT OVERRIDE FOR 100% NUNITO ===== */
+/* This rule ensures EVERY element in the admin panel uses Nunito */
+.adminContainer *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+  font-weight: inherit;
+}
+
+.sidebar .label,
+.navItem .label,
+.navItem,
+.navbar,
+.tabs,
+.tabBtn,
+.info,
+.info p,
+.info strong,
+code {
+  font-family: var(--admin-font-primary, 'Nunito'), sans-serif !important;
+}

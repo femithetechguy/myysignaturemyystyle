@@ -1,0 +1,372 @@
+{
+  "app": {
+    "name": "Company Name",
+    "description": "Admin panel for managing application data",
+    "colors": {
+      "primary": "#1B1B1B",
+      "secondary": "#D4AF37",
+      "accent": "#C99A2D"
+    },
+    "fonts": {
+      "primary": "Source Sans Pro",
+      "heading": "Source Sans Pro",
+      "googleFonts": ["Nunito:wght@400;600;700;800", "Playfair+Display:wght@700", "Lato:wght@400;600;700", "Source+Sans+Pro:wght@400;600;700"]
+    }
+  },
+  "database": {
+    "tables": {
+      "customers": "customers",
+      "orders": "orders",
+      "admins": "admins",
+      "services": "services",
+      "staff": "staff",
+      "appointments": "appointments",
+      "career_applications": "career_applications",
+      "reviews": "reviews",
+      "gallery": "gallery",
+      "contact_submissions": "contact_submissions",
+      "payments": "payments",
+      "business_settings": "business_settings"
+    }
+  },
+  "adminLogin": {
+    "title": "Admin Panel",
+    "icon": "🛡️",
+    "subtitle": "Company Name",
+    "username_label": "Username",
+    "username_placeholder": "Enter username",
+    "password_label": "Password",
+    "password_placeholder": "Enter password",
+    "login_btn": "🔐 Login",
+    "footer": "Company Name © 2026"
+  },
+  "admin": {
+    "tabs": [
+      {
+        "id": "dashboard",
+        "label": "Dashboard",
+        "icon": "📊",
+        "component": "AdminDashboard",
+        "table": "dashboard",
+        "editable": false,
+        "showRefresh": false,
+        "description": "Overview and statistics"
+      },
+      {
+        "id": "customers",
+        "label": "Customers",
+        "icon": "🧑‍💼",
+        "component": "AdminCustomers",
+        "table": "customers",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage customer accounts"
+      },
+      {
+        "id": "orders",
+        "label": "Orders",
+        "icon": "📦",
+        "component": "AdminOrders",
+        "table": "orders",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage customer orders"
+      },
+      {
+        "id": "services",
+        "label": "Services",
+        "icon": "✂️",
+        "component": "AdminServices",
+        "table": "services",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage services and pricing"
+      },
+      {
+        "id": "appointments",
+        "label": "Appointments",
+        "icon": "📅",
+        "component": "AdminAppointments",
+        "table": "appointments",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage customer appointments"
+      },
+      {
+        "id": "staff",
+        "label": "Staff",
+        "icon": "👨‍💼",
+        "component": "AdminStaff",
+        "table": "staff",
+        "editable": false,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage staff members"
+      },
+      {
+        "id": "applications",
+        "label": "Applications",
+        "icon": "📝",
+        "component": "AdminApplications",
+        "table": "career_applications",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage career applications"
+      },
+      {
+        "id": "reviews",
+        "label": "Reviews",
+        "icon": "⭐",
+        "component": "AdminReviews",
+        "table": "reviews",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage customer reviews"
+      },
+      {
+        "id": "gallery",
+        "label": "Gallery",
+        "icon": "🖼️",
+        "component": "AdminGallery",
+        "table": "gallery",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage gallery images"
+      },
+      {
+        "id": "contacts",
+        "label": "Contacts",
+        "icon": "📧",
+        "component": "AdminContacts",
+        "table": "contact_submissions",
+        "editable": false,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "View contact form submissions"
+      },
+      {
+        "id": "users",
+        "label": "Admin",
+        "icon": "👥",
+        "component": "AdminUsers",
+        "table": "admins",
+        "editable": false,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage admin users"
+      }
+    ],
+    "dashboard": {
+      "welcome_title": "Welcome to Dashboard",
+      "welcome_text": "Manage your application from this admin panel",
+      "stats": [
+        { "icon": "✂️", "title": "Services", "description": "Manage services" },
+        { "icon": "📅", "title": "Appointments", "description": "Customer bookings" },
+        { "icon": "👨‍💼", "title": "Staff", "description": "Team members" },
+        { "icon": "📝", "title": "Applications", "description": "Career applications" },
+        { "icon": "⭐", "title": "Reviews", "description": "Customer reviews" },
+        { "icon": "🧑‍💼", "title": "Customers", "description": "Customer accounts" }
+      ],
+      "quick_tips_title": "💡 Quick Tips:",
+      "quick_tips": [
+        { "icon": "📝", "title": "Add Admin Tabs", "description": "Edit config/admin.json to add new tabs" },
+        { "icon": "🎨", "title": "Create Components", "description": "Add components in components/admin/tabs/" },
+        { "icon": "🗄️", "title": "Database Tables", "description": "Configure table names in database.tables" },
+        { "icon": "🔐", "title": "Authentication", "description": "JWT tokens secure all admin routes" }
+      ]
+    },
+    "products": {
+      "title": "Manage Products",
+      "description": "View and manage product catalog",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "add_btn": "Add Product"
+    },
+    "customers": {
+      "title": "Manage Customers",
+      "description": "View and manage customer accounts",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "messages": {
+        "loading": "Loading customers...",
+        "empty": "No customers found",
+        "empty_hint": "Customers will appear here once added.",
+        "error_hint": "The customers table may not exist yet."
+      }
+    },
+    "orders": {
+      "title": "Manage Orders",
+      "description": "View and manage customer orders",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "messages": {
+        "loading": "Loading orders...",
+        "empty": "No orders found",
+        "empty_hint": "Orders will appear here once created.",
+        "error_hint": "The orders table may not exist yet."
+      }
+    },
+    "services": {
+      "title": "Manage Services",
+      "description": "View and manage salon services and pricing",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "add_btn": "Add Service",
+      "messages": {
+        "loading": "Loading services...",
+        "empty": "No services found",
+        "empty_hint": "Services will appear here once added.",
+        "error_hint": "The services table may not exist yet."
+      }
+    },
+    "appointments": {
+      "title": "Manage Appointments",
+      "description": "View and manage customer appointments",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "add_btn": "Add Appointment",
+      "messages": {
+        "loading": "Loading appointments...",
+        "empty": "No appointments found",
+        "empty_hint": "Appointments will appear here once booked.",
+        "error_hint": "The appointments table may not exist yet."
+      }
+    },
+    "staff": {
+      "title": "Manage Staff",
+      "description": "View and manage staff members",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "add_btn": "Add Staff Member",
+      "messages": {
+        "loading": "Loading staff...",
+        "empty": "No staff members found",
+        "empty_hint": "Staff members will appear here once added.",
+        "error_hint": "The staff table may not exist yet."
+      }
+    },
+    "applications": {
+      "title": "Manage Career Applications",
+      "description": "View and manage job applications",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "messages": {
+        "loading": "Loading applications...",
+        "empty": "No applications found",
+        "empty_hint": "Applications will appear here once submitted.",
+        "error_hint": "The career_applications table may not exist yet."
+      }
+    },
+    "reviews": {
+      "title": "Manage Reviews",
+      "description": "View and manage customer reviews",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "add_btn": "Add Review",
+      "messages": {
+        "loading": "Loading reviews...",
+        "empty": "No reviews found",
+        "empty_hint": "Reviews will appear here once submitted.",
+        "error_hint": "The reviews table may not exist yet."
+      }
+    },
+    "gallery": {
+      "title": "Manage Gallery",
+      "description": "View and manage gallery images",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "add_btn": "Add Image",
+      "messages": {
+        "loading": "Loading gallery...",
+        "empty": "No images found",
+        "empty_hint": "Gallery images will appear here once added.",
+        "error_hint": "The gallery table may not exist yet."
+      }
+    },
+    "contacts": {
+      "title": "Contact Submissions",
+      "description": "View contact form submissions",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "messages": {
+        "loading": "Loading contacts...",
+        "empty": "No contact submissions found",
+        "empty_hint": "Contact submissions will appear here once received.",
+        "error_hint": "The contact_submissions table may not exist yet."
+      }
+    },
+    "users": {
+      "title": "Manage Admin Users",
+      "description": "View and manage admin user accounts",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" }
+    },
+    "header": {
+      "admin_suffix": "Admin"
+    },
+    "theme": {
+      "colors": {
+        "primary": "#1B1B1B",
+        "secondary": "#D4AF37",
+        "accent": "#C99A2D",
+        "success": "#6B9E7F",
+        "error": "#C1666B",
+        "warning": "#D4A373"
+      },
+      "text": {
+        "primary": "#1B1B1B",
+        "secondary": "#666666",
+        "muted": "#999999",
+        "light": "#f5f5f5",
+        "inverse": "#ffffff"
+      },
+      "sidebar": {
+        "background": "#1B1B1B",
+        "text": "#f5f5f5",
+        "activeText": "#D4AF37",
+        "hoverBg": "rgba(212, 175, 55, 0.1)"
+      },
+      "table": {
+        "headerBg": "#f5f5f5",
+        "headerText": "#1B1B1B",
+        "border": "#eeeeee",
+        "rowHover": "#fafafa"
+      },
+      "button": {
+        "primaryBg": "#D4AF37",
+        "primaryText": "#1B1B1B",
+        "primaryHover": "#C99A2D",
+        "secondaryBg": "#f5f5f5",
+        "secondaryText": "#1B1B1B",
+        "secondaryBorder": "#ddd"
+      },
+      "input": {
+        "background": "#ffffff",
+        "text": "#1B1B1B",
+        "border": "#cccccc",
+        "focusBorder": "#D4AF37",
+        "placeholder": "#999999"
+      },
+      "modal": {
+        "background": "#ffffff",
+        "overlay": "rgba(0, 0, 0, 0.5)"
+      }
+    }
+  }
+}

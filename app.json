@@ -1,0 +1,1405 @@
+{
+  "app": {
+    "name": "Myy Signature Myy Style Salon",
+    "slug": "myy-signature-myy-style",
+    "version": "1.0.0",
+    "scheme": "myysignaturemyystyle",
+    "platforms": ["ios", "android", "web"],
+    "owner": "Egwono Okpako",
+    "description": "Premium hair salon specializing in expert cuts, colors, braids, and styling for all hair types with modern booking and payment processing."
+  },
+  "expo": {
+    "name": "Myy Signature Myy Style",
+    "slug": "myy-signature-myy-style",
+    "version": "1.0.0",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.myysignaturemyystyle.salon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.myysignaturemyystyle.salon"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      "expo-calendar",
+      "expo-notifications",
+      ["expo-notifications", {
+        "sounds": ["./assets/notification-sound.wav"],
+        "modes": ["production"]
+      }]
+    ]
+  },
+  "business": {
+    "name": "Myy Signature Myy Style Salon",
+    "businessId": "EGWONO-001",
+    "address": "668 Peeksville Road, Locust Grove, GA 30248",
+    "county": "Henry County",
+    "state": "Georgia",
+    "country": "United States",
+    "timezone": "America/Chicago",
+    "contact": {
+      "phone": "209-362-8295",
+      "email": "info@myysignaturemyystyle.com",
+      "website": "https://www.myysignaturemyystyle.com"
+    },
+    "social": {
+      "instagram": "https://www.instagram.com/myysignaturemyystyle",
+      "facebook": ""
+    }
+  },
+  "branding": {
+    "theme": "Warm Elegance - Sophisticated & Refined",
+    "theme_description": "Warm brown and tan palette with elegant typography. Sophisticated, minimal aesthetic with classic refinement perfect for upscale hair salon.",
+    "colors": {
+      "primary": "#2a2420",
+      "primary_name": "Warm Brown",
+      "primary_usage": "60% - Main background, navigation base, premium feel",
+      "secondary": "#b8a89a",
+      "secondary_name": "Warm Tan",
+      "secondary_usage": "30% - Navigation links, text on dark, elegant accents",
+      "accent": "#a89880",
+      "accent_name": "Muted Gold",
+      "accent_usage": "10% - CTAs, highlights, premium buttons",
+      "accent_light": "#e8d8d0",
+      "accent_light_name": "Light Tan",
+      "accent_light_usage": "Hover states, subtle highlights",
+      "background": "#1a1a1a",
+      "text_dark": "#1a1a1a",
+      "text_light": "#f5f5f5",
+      "success": "#6B9E7F",
+      "error": "#C1666B",
+      "warning": "#D4A373",
+      "info": "#7B9FC9",
+      "vibe": "Luxurious, warm, elegant, timeless"
+    },
+    "color_palette": {
+      "light_mode": {
+        "background": "#1a1a1a",
+        "surface": "#2a2420",
+        "surface_variant": "#3a3a30",
+        "on_background": "#f5f5f5",
+        "on_surface": "#b8a89a",
+        "primary": "#2a2420",
+        "on_primary": "#f5f5f5",
+        "secondary": "#b8a89a",
+        "on_secondary": "#2a2420",
+        "tertiary": "#a89880",
+        "on_tertiary": "#ffffff"
+      }
+    },
+    "typography": {
+      "primary_font": "Trebuchet MS",
+      "secondary_font": "Arial",
+      "headings": "Trebuchet MS",
+      "body": "Trebuchet MS",
+      "font_weights": {
+        "light": 300,
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      },
+      "letter_spacing": "0.15em",
+      "text_transform": "uppercase for navigation"
+    },
+    "logo": {
+      "main": "./assets/logo-main.png",
+      "icon": "./assets/logo-icon.png",
+      "favicon": "./assets/favicon.ico"
+    },
+    "imagery": {
+      "salon_interior": "./assets/images/salon-interior.jpg",
+      "team_photos": "./assets/images/team/",
+      "portfolio_before_after": "./assets/images/portfolio/",
+      "hero_banner": "./assets/images/others/landing.png",
+      "landing_hero": "./assets/images/others/landing.png"
+    }
+  },
+  "design_guidelines": {
+    "title": "Pro-Tips for Salon Web Design",
+    "overview": "Essential best practices for creating a modern, accessible, and visually stunning salon website that converts visitors into customers.",
+    "rules": [
+      {
+        "rule_name": "The 60-30-10 Color Rule",
+        "description": "Balance your color palette using a proven design principle that ensures visual harmony and effective hierarchy.",
+        "breakdown": {
+          "primary_60": {
+            "color": "#3B3B58",
+            "color_name": "Future Dusk",
+            "percentage": "60%",
+            "usage": "Backgrounds, large blocks, main navigation, footer",
+            "examples": [
+              "Page backgrounds and hero sections",
+              "Navigation bars and headers",
+              "Large banner areas",
+              "Main container backgrounds",
+              "Footer sections"
+            ]
+          },
+          "secondary_30": {
+            "color": "#D1D1D1",
+            "color_name": "Moonlit Grey",
+            "percentage": "30%",
+            "usage": "Secondary headings, secondary buttons, cards, dividers, secondary text",
+            "examples": [
+              "Section dividers and spacing",
+              "Secondary button styles",
+              "Card backgrounds",
+              "Subheadings and secondary text",
+              "Border colors and accents",
+              "Service list backgrounds"
+            ]
+          },
+          "accent_10": {
+            "color": "#F2E527",
+            "color_name": "Zesty Yellow",
+            "percentage": "10%",
+            "usage": "Call-to-action (CTA) buttons, highlights, important elements that demand attention",
+            "examples": [
+              "'Book Now' buttons",
+              "'Schedule Appointment' CTAs",
+              "Key highlights and emphasis",
+              "Alert notifications",
+              "Hover states on interactive elements",
+              "Special offer badges"
+            ]
+          }
+        },
+        "implementation": "Use this rule to create a balanced, professional look that guides user attention naturally toward desired actions.",
+        "pro_tip": "The 10% accent color should ONLY be used for CTAs and critical user actions. Overuse dilutes its impact and confuses users about where to click."
+      },
+      {
+        "rule_name": "Accessibility & Contrast",
+        "description": "Ensure all text is readable by maintaining proper color contrast ratios. Poor contrast excludes users with visual impairments and harms SEO.",
+        "wcag_standards": {
+          "level_aa": "4.5:1 contrast ratio for normal text",
+          "level_aaa": "7:1 contrast ratio for enhanced readability",
+          "large_text": "3:1 minimum for text 18pt or larger"
+        },
+        "do_and_dont": [
+          {
+            "dont": "Light gold or light grey text on white backgrounds",
+            "why": "Creates eye strain and is unreadable for many users",
+            "alternative": "Use dark charcoal (#1B1B1B) or deep purple (#3B3B58) for primary text"
+          },
+          {
+            "dont": "Light text on light backgrounds",
+            "why": "Fails accessibility standards and looks unprofessional",
+            "alternative": "Pair light backgrounds with dark text, or dark backgrounds with light text"
+          },
+          {
+            "dont": "Using color alone to convey information",
+            "why": "Color-blind users cannot distinguish the meaning",
+            "alternative": "Use text labels, icons, or patterns in addition to color"
+          },
+          {
+            "do": "Use dark charcoal or deep brown for body text on white/light backgrounds",
+            "contrast": "Dark text on light = maximum readability"
+          },
+          {
+            "do": "Use light grey or off-white for secondary text on dark backgrounds",
+            "contrast": "Light text on dark = high contrast and modern look"
+          },
+          {
+            "do": "Test color combinations using WCAG contrast checker tools",
+            "reason": "Verify all text meets accessibility standards before launch"
+          }
+        ],
+        "contrast_examples": [
+          {
+            "text_color": "#1B1B1B",
+            "background_color": "#FFFFFF",
+            "ratio": "21:1",
+            "rating": "AAA - Excellent",
+            "use_case": "Primary body text on light backgrounds"
+          },
+          {
+            "text_color": "#3B3B58",
+            "background_color": "#FFFFFF",
+            "ratio": "12.5:1",
+            "rating": "AAA - Excellent",
+            "use_case": "Headings and primary text"
+          },
+          {
+            "text_color": "#F5F5F5",
+            "background_color": "#3B3B58",
+            "ratio": "9.1:1",
+            "rating": "AAA - Excellent",
+            "use_case": "Light text on dark backgrounds (header/footer)"
+          },
+          {
+            "text_color": "#D1D1D1",
+            "background_color": "#3B3B58",
+            "ratio": "3.2:1",
+            "rating": "AA - Acceptable",
+            "use_case": "Secondary text on dark backgrounds (minimize use)"
+          },
+          {
+            "text_color": "#1B1B1B",
+            "background_color": "#F2E527",
+            "ratio": "10.2:1",
+            "rating": "AAA - Excellent",
+            "use_case": "CTA button text"
+          }
+        ],
+        "testing_tools": [
+          "WebAIM Contrast Checker (webaim.org/resources/contrastchecker/)",
+          "Accessible Colors by Accessible Brands",
+          "Contrast Ratio (contrast-ratio.com)",
+          "Chrome DevTools accessibility audit"
+        ]
+      },
+      {
+        "rule_name": "Photography is Key",
+        "description": "High-quality professional imagery is the foundation of modern salon websites. Your color palette must complement your photos, not overshadow them.",
+        "importance": "Photography accounts for 80% of user perception. Poor photos tank conversions, regardless of design quality.",
+        "photo_essentials": [
+          {
+            "category": "Portfolio/Before-After",
+            "requirements": [
+              "High-resolution (1920px wide minimum for web)",
+              "Professional lighting (no shadows or harsh contrasts)",
+              "Clean, uncluttered backgrounds",
+              "Consistent styling across all photos",
+              "At least 8-12 strong portfolio pieces"
+            ],
+            "tip": "Invest in professional photography—DIY photos often hurt credibility more than no photos at all"
+          },
+          {
+            "category": "Team Photos",
+            "requirements": [
+              "Professional headshots (all stylists/staff)",
+              "Consistent background and lighting",
+              "Natural expressions, not overly posed",
+              "Branded styling that matches salon aesthetic",
+              "High resolution for close-up display"
+            ],
+            "tip": "Personal photos build trust. Show your real team to create connection with potential clients"
+          },
+          {
+            "category": "Salon Interior",
+            "requirements": [
+              "Well-lit, clean workspace shots",
+              "Show styling stations, waiting area, amenities",
+              "Capture the salon's vibe and atmosphere",
+              "Professional quality (no phone camera shots)",
+              "3-5 strong shots showing different areas"
+            ],
+            "tip": "People book based on feeling. Your salon interior photos set expectations and build confidence"
+          },
+          {
+            "category": "Hero/Banner Images",
+            "requirements": [
+              "Eye-catching and relevant to services",
+              "Professional quality and composition",
+              "At least 1920px wide for desktop",
+              "Optimized file size for fast loading",
+              "Includes text overlay (if applicable)"
+            ],
+            "tip": "Hero images are the first impression. Make them count"
+          }
+        ],
+        "color_palette_matching": [
+          {
+            "portfolio_style": "Warm Tones (Golden Blondes, Warm Reds, Caramels)",
+            "best_palettes": ["Organic", "Quiet Luxury", "Warm Earthy"],
+            "reasoning": "Warm colors in photos complement warm color palettes without clashing"
+          },
+          {
+            "portfolio_style": "Cool Tones (Ash Blonde, Platinum, Cool Brunettes)",
+            "best_palettes": ["2025 Trendsetter", "Modern Minimalist", "Luxury Cool"],
+            "reasoning": "Cool palette (Future Dusk + Moonlit Grey) enhances cool-toned hair colors"
+          },
+          {
+            "portfolio_style": "Vibrant/Bold Colors (Fashion Colors, Rainbow)",
+            "best_palettes": ["2025 Trendsetter", "Bold & Creative", "Pop & Energy"],
+            "reasoning": "The Zesty Yellow accent pops against vibrant hair colors without competing"
+          },
+          {
+            "portfolio_style": "Natural/Neutral (Brunettes, Naturals, Minimalist Cuts)",
+            "best_palettes": ["Quiet Luxury", "Modern Minimalist", "2025 Trendsetter"],
+            "reasoning": "Neutral photos work with almost any palette; prioritize clean design instead"
+          }
+        ],
+        "photo_optimization": {
+          "format": "WebP (with JPG fallback)",
+          "max_file_size": "200-300KB per image",
+          "lazy_loading": "Enable for below-the-fold images",
+          "responsive_images": "Serve different sizes for mobile/desktop",
+          "alt_text": "Always include descriptive alt text for accessibility and SEO",
+          "tools": [
+            "TinyPNG/TinyJPG for compression",
+            "ImageOptim for batch processing",
+            "Squoosh by Google for format conversion"
+          ]
+        },
+        "pro_tips": [
+          "Hire a professional photographer for your portfolio. This investment pays for itself in bookings.",
+          "Update your portfolio quarterly. Outdated photos signal an inactive business.",
+          "Ensure your color palette complements (not fights) your photos. Test by placing color swatches over hero images.",
+          "Use consistent filters/editing across all portfolio photos for a cohesive brand look.",
+          "Show before-and-after transitions—they're powerful conversion drivers."
+        ]
+      }
+    ]
+  },
+  "design_resources": {
+    "contrast_checkers": [
+      {
+        "name": "WebAIM Contrast Checker",
+        "url": "https://webaim.org/resources/contrastchecker/",
+        "description": "WCAG-compliant contrast ratio checker"
+      },
+      {
+        "name": "Contrast Ratio",
+        "url": "https://contrast-ratio.com/",
+        "description": "Real-time contrast checker with visual preview"
+      },
+      {
+        "name": "Accessible Colors",
+        "url": "https://accessible-colors.com/",
+        "description": "Find accessible color combinations"
+      }
+    ],
+    "photo_tools": [
+      {
+        "name": "TinyPNG",
+        "url": "https://tinypng.com/",
+        "description": "Smart WebP/PNG compression"
+      },
+      {
+        "name": "Squoosh",
+        "url": "https://squoosh.app/",
+        "description": "Google's image optimization tool"
+      },
+      {
+        "name": "Canva",
+        "url": "https://www.canva.com/",
+        "description": "Design graphics and optimize photos"
+      }
+    ]
+  },
+  "features": {
+    "booking_system": {
+      "enabled": true,
+      "type": "custom",
+      "multi_staff": true,
+      "buffer_time": 15,
+      "cancellation_policy": "24_hours_notice",
+      "rescheduling": true,
+      "waitlist": true
+    },
+    "payment_processing": {
+      "enabled": true,
+      "processors": ["stripe", "square", "paypal"],
+      "deposit_required": true,
+      "deposit_percentage": 50,
+      "full_payment_option": true,
+      "accepted_cards": ["visa", "mastercard", "amex", "discover"],
+      "currencies": ["USD"]
+    },
+    "contact_forms": {
+      "enabled": true,
+      "contact_form": true,
+      "quote_request": true,
+      "feedback_form": true
+    },
+    "newsletter": {
+      "enabled": true,
+      "email_platform": "mailchimp",
+      "frequency_options": ["weekly", "monthly", "special_offers"]
+    },
+    "social_media": {
+      "enabled": true,
+      "instagram_feed": true,
+      "facebook_integration": true,
+      "tiktok_sharing": true,
+      "reviews_display": true
+    },
+    "notifications": {
+      "appointment_reminders": true,
+      "sms_enabled": true,
+      "email_notifications": true,
+      "push_notifications": true
+    },
+    "customer_engagement": {
+      "loyalty_program": true,
+      "referral_rewards": true,
+      "email_marketing": true,
+      "customer_reviews": true
+    }
+  },
+  "services": {
+    "default_services": [
+      {
+        "id": "service_001",
+        "name": "Women's Haircut",
+        "description": "Professional women's cut with expert styling",
+        "duration": 60,
+        "price": 50,
+        "category": "Cuts"
+      },
+      {
+        "id": "service_002",
+        "name": "Men's Haircut",
+        "description": "Classic men's cut with fade and finish",
+        "duration": 30,
+        "price": 35,
+        "category": "Cuts"
+      },
+      {
+        "id": "service_003",
+        "name": "Kids Haircut",
+        "description": "Professional haircut for children",
+        "duration": 30,
+        "price": 28,
+        "category": "Cuts"
+      },
+      {
+        "id": "service_004",
+        "name": "Full Head Color",
+        "description": "Complete hair coloring service",
+        "duration": 120,
+        "price": 95,
+        "category": "Color"
+      },
+      {
+        "id": "service_005",
+        "name": "Highlights/Balayage",
+        "description": "Partial highlights or balayage coloring",
+        "duration": 120,
+        "price": 85,
+        "category": "Color"
+      },
+      {
+        "id": "service_006",
+        "name": "Color Touch-Up",
+        "description": "Root touch-up and color refresh",
+        "duration": 90,
+        "price": 65,
+        "category": "Color"
+      },
+      {
+        "id": "service_007",
+        "name": "Ombre/Sombre",
+        "description": "Gradient color technique for modern look",
+        "duration": 150,
+        "price": 110,
+        "category": "Color"
+      },
+      {
+        "id": "service_008",
+        "name": "Blow Dry Style",
+        "description": "Professional blow dry and styling",
+        "duration": 45,
+        "price": 45,
+        "category": "Styling"
+      },
+      {
+        "id": "service_009",
+        "name": "Blowout",
+        "description": "Voluminous blowout styling",
+        "duration": 45,
+        "price": 50,
+        "category": "Styling"
+      },
+      {
+        "id": "service_010",
+        "name": "Braids",
+        "description": "Various braiding styles and extensions",
+        "duration": 180,
+        "price": 120,
+        "category": "Braids"
+      },
+      {
+        "id": "service_011",
+        "name": "Box Braids",
+        "description": "Box braids with extensions",
+        "duration": 240,
+        "price": 150,
+        "category": "Braids"
+      },
+      {
+        "id": "service_012",
+        "name": "Cornrows",
+        "description": "Cornrows with or without extensions",
+        "duration": 180,
+        "price": 100,
+        "category": "Braids"
+      },
+      {
+        "id": "service_013",
+        "name": "Twists",
+        "description": "Senegalese twists or two-strand twists",
+        "duration": 180,
+        "price": 110,
+        "category": "Braids"
+      },
+      {
+        "id": "service_014",
+        "name": "Goddess Braids",
+        "description": "Elegant goddess braid styles",
+        "duration": 150,
+        "price": 130,
+        "category": "Braids"
+      },
+      {
+        "id": "service_015",
+        "name": "Locs Installation",
+        "description": "Install or retwist locs",
+        "duration": 180,
+        "price": 120,
+        "category": "Locs"
+      },
+      {
+        "id": "service_016",
+        "name": "Loc Retwist",
+        "description": "Retwist and maintain locs",
+        "duration": 120,
+        "price": 80,
+        "category": "Locs"
+      },
+      {
+        "id": "service_017",
+        "name": "Hair Treatment",
+        "description": "Deep conditioning or keratin treatment",
+        "duration": 60,
+        "price": 60,
+        "category": "Treatments"
+      },
+      {
+        "id": "service_018",
+        "name": "Silk Press",
+        "description": "Relaxer-free straightening treatment",
+        "duration": 90,
+        "price": 75,
+        "category": "Treatments"
+      },
+      {
+        "id": "service_019",
+        "name": "Scalp Treatment",
+        "description": "Therapeutic scalp massage and treatment",
+        "duration": 45,
+        "price": 50,
+        "category": "Treatments"
+      },
+      {
+        "id": "service_020",
+        "name": "Hair Extension Installation",
+        "description": "Install hair extensions (tape-in, sew-in, clip-in)",
+        "duration": 120,
+        "price": 150,
+        "category": "Extensions"
+      },
+      {
+        "id": "service_021",
+        "name": "Weave Removal & Install",
+        "description": "Remove existing weave and install new weave",
+        "duration": 180,
+        "price": 140,
+        "category": "Extensions"
+      },
+      {
+        "id": "service_022",
+        "name": "Wig Styling",
+        "description": "Cut, style, and color wig to preference",
+        "duration": 60,
+        "price": 65,
+        "category": "Styling"
+      }
+    ],
+    "note": "Premium hair salon specializing in cuts, color, braids, and professional styling services"
+  },
+  "staff": {
+    "multi_stylist": true,
+    "staff_members": [
+      {
+        "id": "staff_001",
+        "name": "Egwono Okpako",
+        "title": "Owner & Lead Stylist",
+        "email": "egwono@myysignaturemyystyle.com",
+        "phone": "209-362-8295",
+        "availability": {
+          "monday": "09:00-18:00",
+          "tuesday": "09:00-18:00",
+          "wednesday": "09:00-18:00",
+          "thursday": "09:00-18:00",
+          "friday": "09:00-18:00",
+          "saturday": "10:00-16:00",
+          "sunday": "closed"
+        },
+        "specialties": [],
+        "bio": "",
+        "photo": "./assets/images/team/egwono.jpg"
+      }
+    ],
+    "note": "Add additional staff members after client onboarding"
+  },
+  "careers": {
+    "enabled": true,
+    "tagline": "Join Our Award-Winning Team",
+    "introduction": "We're always looking for passionate, talented stylists who share our commitment to excellence. Join a team that values creativity, continuous learning, and exceptional client care.",
+    "benefits": [
+      {
+        "id": "benefit_001",
+        "icon": "💰",
+        "title": "Competitive Compensation",
+        "description": "Competitive base salary plus commission structure and tips"
+      },
+      {
+        "id": "benefit_002",
+        "icon": "📚",
+        "title": "Continuing Education",
+        "description": "Regular training workshops and education reimbursement for advanced certifications"
+      },
+      {
+        "id": "benefit_003",
+        "icon": "⏰",
+        "title": "Flexible Scheduling",
+        "description": "Work-life balance with flexible hours and scheduling options"
+      },
+      {
+        "id": "benefit_004",
+        "icon": "🎨",
+        "title": "Creative Freedom",
+        "description": "Freedom to express your artistic vision and develop your unique style"
+      },
+      {
+        "id": "benefit_005",
+        "icon": "🤝",
+        "title": "Supportive Environment",
+        "description": "Collaborative team culture with mentorship and growth opportunities"
+      },
+      {
+        "id": "benefit_006",
+        "icon": "✨",
+        "title": "Premium Products",
+        "description": "Work with top-tier professional products and the latest tools"
+      }
+    ],
+    "open_positions": [
+      {
+        "id": "position_001",
+        "title": "Hairstylist",
+        "type": "Full-time / Part-time",
+        "location": "Locust Grove, GA",
+        "description": "Join our team as a licensed hairstylist to provide exceptional hair care services to our clients",
+        "responsibilities": [
+          "Provide hair services including cuts, color, styling, and treatments",
+          "Build and maintain strong client relationships",
+          "Stay current with industry trends and techniques",
+          "Maintain cleanliness and organization of workstation"
+        ],
+        "requirements": [
+          "Valid Georgia Cosmetology License",
+          "Professional salon experience preferred",
+          "Strong technical skills and customer service",
+          "Portfolio of work",
+          "Reliable and passionate about the craft"
+        ],
+        "status": "open"
+      }
+    ],
+    "application_process": {
+      "steps": [
+        {
+          "step": 1,
+          "title": "Submit Application",
+          "description": "Fill out our online application with your contact info, experience, and portfolio"
+        },
+        {
+          "step": 2,
+          "title": "Portfolio Review",
+          "description": "Our team reviews your portfolio and application materials"
+        },
+        {
+          "step": 3,
+          "title": "Initial Interview",
+          "description": "Phone or video interview to discuss your experience and goals"
+        },
+        {
+          "step": 4,
+          "title": "Skills Assessment",
+          "description": "In-person demonstration of your technical skills (for stylist positions)"
+        },
+        {
+          "step": 5,
+          "title": "Final Interview",
+          "description": "Meet the team and discuss compensation, schedule, and next steps"
+        }
+      ],
+      "required_documents": [
+        "Valid Cosmetology License (Georgia)",
+        "Resume/CV",
+        "Portfolio (minimum 10 photos of your work)",
+        "References (2-3 professional references)"
+      ],
+      "application_fields": [
+        {
+          "name": "full_name",
+          "label": "Full Name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "email",
+          "label": "Email Address",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "phone",
+          "label": "Phone Number",
+          "type": "tel",
+          "required": true
+        },
+        {
+          "name": "position",
+          "label": "Position Applying For",
+          "type": "select",
+          "options": ["Hairstylist", "Other"],
+          "required": true
+        },
+        {
+          "name": "employment_type",
+          "label": "Preferred Employment Type",
+          "type": "select",
+          "options": ["Full-time", "Part-time", "Flexible"],
+          "required": true
+        },
+        {
+          "name": "license_number",
+          "label": "Georgia Cosmetology License Number",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "years_experience",
+          "label": "Years of Professional Experience",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "specialties",
+          "label": "Specialties / Areas of Expertise",
+          "type": "textarea",
+          "placeholder": "e.g., Balayage, Box Braids, Natural Hair, Color Corrections...",
+          "required": true
+        },
+        {
+          "name": "portfolio_url",
+          "label": "Portfolio URL (Instagram, Website, etc.)",
+          "type": "url",
+          "required": false
+        },
+        {
+          "name": "portfolio_files",
+          "label": "Upload Portfolio Images",
+          "type": "file",
+          "accept": "image/*",
+          "multiple": true,
+          "max_files": 15,
+          "required": false
+        },
+        {
+          "name": "resume",
+          "label": "Upload Resume/CV",
+          "type": "file",
+          "accept": ".pdf,.doc,.docx",
+          "required": true
+        },
+        {
+          "name": "certifications",
+          "label": "Certifications & Education",
+          "type": "textarea",
+          "placeholder": "List your cosmetology school, any advanced certifications, workshops, etc.",
+          "required": true
+        },
+        {
+          "name": "availability",
+          "label": "Availability",
+          "type": "textarea",
+          "placeholder": "When can you start? What days/hours are you available?",
+          "required": true
+        },
+        {
+          "name": "why_join",
+          "label": "Why do you want to join our team?",
+          "type": "textarea",
+          "placeholder": "Tell us what excites you about this opportunity...",
+          "required": true
+        },
+        {
+          "name": "references",
+          "label": "Professional References",
+          "type": "textarea",
+          "placeholder": "Name, Title, Phone/Email (2-3 references)",
+          "required": true
+        }
+      ]
+    },
+    "team_culture": {
+      "title": "Our Culture & Values",
+      "description": "We believe in fostering a positive, inclusive environment where every team member can thrive.",
+      "values": [
+        {
+          "title": "Excellence",
+          "description": "We're committed to delivering exceptional service and constantly improving our craft"
+        },
+        {
+          "title": "Inclusivity",
+          "description": "All hair types, textures, and styles are celebrated. We serve everyone with respect and expertise"
+        },
+        {
+          "title": "Growth",
+          "description": "Continuous learning and development are at the heart of what we do"
+        },
+        {
+          "title": "Collaboration",
+          "description": "We support each other, share knowledge, and grow together as a team"
+        },
+        {
+          "title": "Authenticity",
+          "description": "Bring your true self to work. We value individuality and creative expression"
+        }
+      ]
+    },
+    "faqs": [
+      {
+        "question": "Do I need to have my own clientele?",
+        "answer": "While an existing clientele is a plus, it's not required. We have a steady stream of clients and will help you build your book through referrals and marketing."
+      },
+      {
+        "question": "What products do you use?",
+        "answer": "We work with premium professional brands including Redken, Wella, Paul Mitchell, and specialized natural hair care lines."
+      },
+      {
+        "question": "Is booth rental available?",
+        "answer": "Currently, we offer commission-based positions. Booth rental may be available for experienced stylists with an established clientele—contact us to discuss."
+      },
+      {
+        "question": "Do you provide continuing education?",
+        "answer": "Yes! We invest in our team's growth through regular training, workshops, and education reimbursement for advanced certifications."
+      },
+      {
+        "question": "What's the work schedule like?",
+        "answer": "We offer flexible scheduling options. Most stylists work 3-5 days per week. We're open Monday-Friday 9am-6pm, Saturday 10am-4pm, closed Sundays."
+      }
+    ],
+    "contact": {
+      "title": "Questions About Careers?",
+      "description": "We'd love to hear from you! Reach out if you have questions about open positions or want to learn more about joining our team.",
+      "email": "careers@myysignaturemyystyle.com",
+      "phone": "209-362-8295"
+    }
+  },
+  "domain": {
+    "primary_domain": "myysignaturemyystyle.com",
+    "domain_registered": false,
+    "email_setup": {
+      "enabled": true,
+      "mailboxes": [
+        {
+          "email": "info@myysignaturemyystyle.com",
+          "user": "Info",
+          "password_reset_required": true
+        }
+      ],
+      "additional_accounts": []
+    }
+  },
+  "hosting": {
+    "platform": "vercel",
+    "environment": "production",
+    "ssl": true,
+    "cdn": true,
+    "backups": "daily"
+  },
+  "database": {
+    "type": "postgresql",
+    "provider": "supabase",
+    "tables": [
+      "users",
+      "appointments",
+      "services",
+      "staff",
+      "payments",
+      "customers",
+      "reviews",
+      "newsletter_subscribers",
+      "contact_submissions",
+      "career_applications"
+    ]
+  },
+  "api": {
+    "base_url": "https://api.myysignaturemyystyle.com",
+    "version": "v1",
+    "endpoints": {
+      "appointments": "/api/v1/appointments",
+      "services": "/api/v1/services",
+      "staff": "/api/v1/staff",
+      "payments": "/api/v1/payments",
+      "customers": "/api/v1/customers",
+      "reviews": "/api/v1/reviews",
+      "contact": "/api/v1/contact",
+      "newsletter": "/api/v1/newsletter",
+      "careers": "/api/v1/careers"
+    }
+  },
+  "authentication": {
+    "enabled": true,
+    "methods": ["email", "phone", "google", "facebook"],
+    "jwt_secret": "YOUR_JWT_SECRET_KEY",
+    "session_timeout": 1800,
+    "two_factor_auth": false
+  },
+  "analytics": {
+    "enabled": true,
+    "google_analytics": true,
+    "tracking_id": "G-XXXXXXXXXX",
+    "mixpanel": false,
+    "hotjar": true
+  },
+  "seo": {
+    "enabled": true,
+    "sitemap": true,
+    "robots_txt": true,
+    "meta_tags": {
+      "title": "Myy Signature Myy Style Salon - Book Your Appointment Online",
+      "description": "Premium salon services in Locust Grove, GA. Book hair styling, coloring, nails, and more. Fast, easy online booking with secure payment.",
+      "keywords": "salon, hair styling, coloring, nails, booking, Locust Grove, Henry County"
+    }
+  },
+  "framework": {
+    "frontend": "Next.js 14",
+    "styling": "Tailwind CSS",
+    "state_management": "Redux Toolkit",
+    "form_handling": "React Hook Form",
+    "validation": "Zod",
+    "testing": "Jest + React Testing Library",
+    "backend": "Node.js + Express",
+    "api_documentation": "Swagger/OpenAPI"
+  },
+  "integrations": {
+    "payment_gateway": {
+      "stripe": {
+        "enabled": true,
+        "public_key": "pk_live_XXXXXXXXXX",
+        "secret_key": "sk_live_XXXXXXXXXX"
+      },
+      "square": {
+        "enabled": false,
+        "application_id": "YOUR_SQUARE_APP_ID"
+      }
+    },
+    "email_service": {
+      "sendgrid": {
+        "enabled": true,
+        "api_key": "SG.XXXXXXXXXX"
+      }
+    },
+    "sms_service": {
+      "twilio": {
+        "enabled": true,
+        "account_sid": "AC_XXXXXXXXXX",
+        "auth_token": "YOUR_AUTH_TOKEN"
+      }
+    },
+    "newsletter": {
+      "mailchimp": {
+        "enabled": true,
+        "api_key": "YOUR_MAILCHIMP_API_KEY",
+        "audience_id": "YOUR_AUDIENCE_ID"
+      }
+    },
+    "calendar": {
+      "google_calendar": {
+        "enabled": true,
+        "client_id": "YOUR_GOOGLE_CLIENT_ID"
+      },
+      "ical": {
+        "enabled": true
+      }
+    }
+  },
+  "timeline": {
+    "start_date": "2025-01-06",
+    "phase_1_discovery": {
+      "duration_weeks": 1,
+      "end_date": "2025-01-13"
+    },
+    "phase_2_design": {
+      "duration_weeks": 2,
+      "end_date": "2025-01-27"
+    },
+    "phase_3_development": {
+      "duration_weeks": 4,
+      "end_date": "2025-02-24"
+    },
+    "phase_4_testing": {
+      "duration_weeks": 1,
+      "end_date": "2025-03-03"
+    },
+    "phase_5_launch": {
+      "duration_weeks": 1,
+      "end_date": "2025-03-10"
+    },
+    "total_duration_weeks": 8,
+    "target_launch": "2025-03-10"
+  },
+  "budget": {
+    "currency": "USD",
+    "total_budget": 800,
+    "breakdown": {
+      "discovery_consultation": 100,
+      "design_mockups": 150,
+      "development": 400,
+      "integration_setup": 100,
+      "testing_launch": 50
+    },
+    "notes": "Within client's $500-$1000 range. Assumes standard services configuration."
+  },
+  "maintenance": {
+    "enabled": true,
+    "provider": "FTTG Solutions",
+    "monthly_fee": 49,
+    "includes": [
+      "Hosting & SSL",
+      "Monthly backups",
+      "Security updates",
+      "Plugin/package updates",
+      "Performance monitoring",
+      "Basic technical support"
+    ]
+  },
+  "deployment": {
+    "web": {
+      "platform": "vercel",
+      "branch": "main",
+      "auto_deploy": true
+    },
+    "mobile": {
+      "ios": {
+        "platform": "expo",
+        "app_store_id": "TBD"
+      },
+      "android": {
+        "platform": "expo",
+        "play_store_id": "TBD"
+      }
+    }
+  },
+  "status": {
+    "project_status": "intake_complete",
+    "last_updated": "2025-12-24",
+    "next_milestone": "send_followup_questions",
+    "pending_items": [
+      "Client confirmation of booking system preference",
+      "Brand color palette finalization",
+      "High-resolution portfolio images",
+      "Complete service list with pricing",
+      "Domain registration",
+      "Payment processor selection"
+    ]
+  },
+
+  "content": {
+    "navigation": {
+      "brand": "Myy Signature Myy Style",
+      "links": [
+        { "label": "Services", "href": "#services" },
+        { "label": "Gallery", "href": "#gallery" },
+        { "label": "Careers", "href": "#careers" },
+        { "label": "About", "href": "#about" },
+        { "label": "Contact", "href": "#contact" }
+      ],
+      "cta_button": "Schedule Appointment"
+    },
+    "hero": {
+      "title": "Myy Signature Myy Style",
+      "subtitle": "- Hair Salon -",
+      "cta_button": "Schedule Appointment"
+    },
+    "services_section": {
+      "title": "Hair Services",
+      "description": "Cuts, colors, braids, treatments, and styling for all hair types"
+    },
+    "about_section": {
+      "title": "Your Hair Deserves Excellence",
+      "description": "Specializing in innovative hair techniques, premium color services, and personalized styling for every client.",
+      "location_text": "Located in {ADDRESS}, we provide premium salon services with a modern, welcoming atmosphere.",
+      "stat_1_value": "5000+",
+      "stat_1_label": "Happy Clients",
+      "stat_2_value": "15+",
+      "stat_2_label": "Years Experience"
+    },
+    "cta_section": {
+      "title": "Ready to Elevate Your Hair?",
+      "subtitle": "Book your appointment today and discover the Myy Signature Myy Style difference",
+      "cta_button": "Schedule Your Hair Appointment"
+    },
+    "reviews_section": {
+      "title": "What Our Clients Say",
+      "subtitle": "Join thousands of satisfied customers",
+      "cta_title": "Ready to Experience Excellence?",
+      "cta_subtitle": "Schedule your appointment with us today",
+      "cta_button": "Schedule Appointment",
+      "reviews": [
+        {
+          "name": "Sarah Johnson",
+          "rating": 5,
+          "text": "Amazing experience! The team is so talented and made me feel so comfortable. My hair looks and feels incredible."
+        },
+        {
+          "name": "Maria Garcia",
+          "rating": 5,
+          "text": "Best salon in Henry County! The attention to detail and care is unmatched. I've been coming for 3 years."
+        },
+        {
+          "name": "Jennifer Williams",
+          "rating": 5,
+          "text": "Absolutely love the vibe here. Professional, friendly, and my hair always turns out perfect. Highly recommend!"
+        }
+      ]
+    },
+    "footer": {
+      "copyright": "© 2025 {APP_NAME}. All rights reserved.",
+      "developed_by": "Developed by FTTG Solutions",
+      "developed_by_link": "https://fttgsolutions.com",
+      "sections": {
+        "navigation": {
+          "title": "Quick Links",
+          "links": [
+            { "label": "Services", "href": "#services" },
+            { "label": "Gallery", "href": "#gallery" },
+            { "label": "Book", "href": "#book" },
+            { "label": "About", "href": "#about" },
+            { "label": "Contact", "href": "#contact" }
+          ]
+        },
+        "contact": {
+          "title": "Contact Us"
+        },
+        "hours": {
+          "title": "Hours",
+          "mon_fri": "Mon-Fri: 9:00 AM - 6:00 PM",
+          "saturday": "Saturday: 10:00 AM - 4:00 PM",
+          "sunday": "Sunday: Closed"
+        },
+        "follow": {
+          "title": "Follow Us",
+          "placeholder": "Coming Soon on Social Media"
+        }
+      }
+    },
+    "message_modal": {
+      "title": "Send us a Message",
+      "fields": {
+        "name": "Name",
+        "contact": "Email or Phone",
+        "message_type": "Message Type",
+        "service": "Service",
+        "message": "Message",
+        "message_placeholder": "Tell us more..."
+      },
+      "submit_button": "Send Message",
+      "success_title": "Message Sent!",
+      "success_message": "Thank you for your message. We'll get back to you soon!"
+    },
+    "message_types": [
+      { "id": "inquiry", "label": "General Inquiry", "placeholder": "Ask us anything..." },
+      { "id": "booking", "label": "Booking Request", "placeholder": "Tell us about your desired appointment..." },
+      { "id": "review", "label": "Leave a Review", "placeholder": "Share your experience with us..." },
+      { "id": "recommendation", "label": "Recommendation", "placeholder": "Tell us how we can improve..." },
+      { "id": "feedback", "label": "Feedback", "placeholder": "Any feedback or suggestions?" }
+    ],
+    "gallery": {
+      "title": "Our Gallery",
+      "description": "Explore our portfolio of stunning transformations and creative hair designs",
+      "items": [
+        {
+          "id": "cut-1",
+          "title": "Classic Fade",
+          "category": "Cuts",
+          "image": "/assets/images/portfolio/cut-1.jpg",
+          "description": "Clean and precise fade cut with detailed line work"
+        },
+        {
+          "id": "cut-2",
+          "title": "Modern Undercut",
+          "category": "Cuts",
+          "image": "/assets/images/portfolio/cut-2.jpg",
+          "description": "Contemporary undercut style with textured top"
+        },
+        {
+          "id": "color-1",
+          "title": "Vibrant Ombre",
+          "category": "Colors",
+          "image": "/assets/images/portfolio/color-1.jpg",
+          "description": "Gorgeous ombre blend from dark to light tones"
+        },
+        {
+          "id": "color-2",
+          "title": "Rich Brunette",
+          "category": "Colors",
+          "image": "/assets/images/portfolio/color-2.jpg",
+          "description": "Deep brunette color with dimensional highlights"
+        },
+        {
+          "id": "braids-1",
+          "title": "Box Braids",
+          "category": "Braids",
+          "image": "/assets/images/portfolio/braids-1.jpg",
+          "description": "Neat and uniform box braids with decorative beads"
+        },
+        {
+          "id": "braids-2",
+          "title": "Crown Braids",
+          "category": "Braids",
+          "image": "/assets/images/portfolio/braids-2.jpg",
+          "description": "Elegant crown braid design for special occasions"
+        },
+        {
+          "id": "style-1",
+          "title": "Glam Waves",
+          "category": "Styling",
+          "image": "/assets/images/portfolio/style-1.jpg",
+          "description": "Beautiful salon waves with lasting volume"
+        },
+        {
+          "id": "style-2",
+          "title": "Sleek Blowout",
+          "category": "Styling",
+          "image": "/assets/images/portfolio/style-2.jpg",
+          "description": "Smooth and shiny blowout with professional finish"
+        },
+        {
+          "id": "treatment-1",
+          "title": "Hair Treatment",
+          "category": "Treatments",
+          "image": "/assets/images/portfolio/treatment-1.jpg",
+          "description": "Deep conditioning treatment for healthy, shiny hair"
+        }
+      ],
+      "instagram_posts": [
+        {
+          "id": "ig-post-1",
+          "image": "/assets/images/portfolio/ig-post-1.jpg",
+          "postUrl": "https://www.instagram.com/reel/DKFgcTLxnuI/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
+        },
+        {
+          "id": "ig-post-2",
+          "image": "/assets/images/portfolio/ig-post-2.jpg",
+          "postUrl": ""
+        },
+        {
+          "id": "ig-post-3",
+          "image": "/assets/images/portfolio/ig-post-3.jpg",
+          "postUrl": ""
+        },
+        {
+          "id": "ig-post-4",
+          "image": "/assets/images/portfolio/ig-post-4.jpg",
+          "postUrl": ""
+        },
+        {
+          "id": "ig-post-5",
+          "image": "/assets/images/portfolio/ig-post-5.jpg",
+          "postUrl": ""
+        },
+        {
+          "id": "ig-post-6",
+          "image": "/assets/images/portfolio/ig-post-6.jpg",
+          "postUrl": ""
+        }
+      ]
+    },
+    "wave_accounting_integration": {
+      "title": "Professional Estimates & Invoices",
+      "description": "Professional billing system to streamline payments and build customer trust",
+      "general_features": [
+        "Customized domain name (myysignaturemyystyle.com) to be renewed annually"
+      ],
+      "estimate": {
+        "title": "Service Estimates",
+        "description": "What You're Getting:",
+        "features": [
+          "Customized domain name (myysignaturemyystyle.com) to be renewed annually",
+          "Professional quote templates branded with your salon logo",
+          "Itemized breakdown of all services and pricing",
+          "Clear upfront total cost with no surprises",
+          "Personalized service recommendations based on consultation",
+          "Easy quote sharing via email to clients",
+          "Professional document that builds customer confidence",
+          "Instagram gallery showcase to display your work",
+          "Proper service categorization to make booking easier for customers",
+          "About page to share your salon's story and build customer trust",
+          "Mobile responsive design that works perfectly on all devices",
+          "Individual stylist profiles with photos, bios, and specialties",
+          "Book with preferred stylist feature for customer convenience",
+          "Before & after portfolio to showcase transformation results",
+          "Customer testimonials and reviews section",
+          "Real-time availability calendar with live booking slots",
+          "Service packages and bundles to increase average transaction value",
+          "FAQ section answering common customer questions",
+          "Seasonal promotions and special offers banner",
+          "Customer account dashboard to view booking history",
+          "Automated appointment confirmation and reminder emails",
+          "Post-appointment follow-up email sequences",
+          "Newsletter signup with customer segmentation",
+          "Google Maps integration showing salon location and hours",
+          "First-time customer discount code or special offer",
+          "Service add-ons during checkout for upselling",
+          "Multiple payment method options for customer flexibility",
+          "Professional branding consistency across all pages"
+        ]
+      },
+      "invoice": {
+        "title": "Payment Invoices",
+        "description": "What You're Getting:",
+        "features": [
+          "Customized domain name (myysignaturemyystyle.com) to be renewed annually",
+          "Automatic invoice generation after every service",
+          "Detailed itemized receipt showing all services provided",
+          "Professional branding with your salon logo and contact info",
+          "Digital receipts sent instantly via email to clients",
+          "Service history records for customer reference",
+          "Professional documentation that builds trust and credibility",
+          "Instagram gallery showcase to display your work",
+          "Proper service categorization to make booking easier for customers",
+          "About page to share your salon's story and build customer trust",
+          "Mobile responsive design that works perfectly on all devices",
+          "Individual stylist profiles with photos, bios, and specialties",
+          "Book with preferred stylist feature for customer convenience",
+          "Before & after portfolio to showcase transformation results",
+          "Customer testimonials and reviews section",
+          "Real-time availability calendar with live booking slots",
+          "Service packages and bundles to increase average transaction value",
+          "FAQ section answering common customer questions",
+          "Seasonal promotions and special offers banner",
+          "Customer account dashboard to view booking history",
+          "Automated appointment confirmation and reminder emails",
+          "Post-appointment follow-up email sequences",
+          "Newsletter signup with customer segmentation",
+          "Google Maps integration showing salon location and hours",
+          "First-time customer discount code or special offer",
+          "Service add-ons during checkout for upselling",
+          "Multiple payment method options for customer flexibility",
+          "Professional branding consistency across all pages"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #1a1a1a;
+  color: #f5f5f5;
+  font-family: 'Trebuchet MS', 'Arial', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Override light text color for white backgrounds */
+.adminContainer,
+.adminContainer * {
+  color: #1B1B1B;
+}
+
+/* Keep sidebar and dark areas with light text */
+.adminContainer .sidebar,
+.adminContainer .sidebar * {
+  color: #f5f5f5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Trebuchet MS', 'Arial', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}
+
+nav a, [role="navigation"] a {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-family: 'Trebuchet MS', 'Arial', sans-serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  transition: color 0.3s ease;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input,
+textarea {
+  font-family: inherit;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s ease-out;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-primary text-text-light rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-200 uppercase tracking-wider;
+  }
+
+  .btn-accent {
+    @apply px-11 py-2.5 bg-accent text-white rounded font-light hover:bg-transparent hover:text-accent transition-all duration-300 uppercase tracking-widest text-xs border-2 border-accent;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-secondary text-primary rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-200 uppercase tracking-wider;
+  }
+
+  .card {
+    @apply bg-white border border-secondary rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-title {
+    @apply text-3xl sm:text-4xl font-bold text-center mb-4 text-primary;
+  }
+
+  .section-subtitle {
+    @apply text-base sm:text-lg text-center text-primary/70 mb-12;
+  }
+}
+
+/* Smooth transitions */
+button,
+a {
+  transition: all 0.3s ease;
+}
+
+/* Code blocks */
+code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+}
+
+pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+  a {
+    text-decoration: underline;
+  }
+}
