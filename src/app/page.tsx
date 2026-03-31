@@ -331,7 +331,7 @@ export default function Home() {
         {/* Mobile Menu Button - Right Side */}
         <button
           onClick={() => setShowMobileMenu(!showMobileMenu)}
-          className={`absolute right-4 sm:right-8 md:hidden transition-colors duration-300 ${
+          className={`absolute right-2 sm:right-6 md:hidden p-2 transition-colors duration-300 ${
             navBackground === 'dark'
               ? 'text-white hover:text-white/80'
               : navBackground === 'secondary'
@@ -389,7 +389,7 @@ export default function Home() {
         
         {/* Content */}
         <div className="relative z-20 text-center max-w-4xl px-4 sm:px-6">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light mb-2 sm:mb-3 tracking-widest text-white uppercase animate-fade-in-down drop-shadow-lg">{content.hero.title}</h1>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light mb-2 sm:mb-3 tracking-widest text-white uppercase animate-fade-in-down drop-shadow-lg">{content.hero.title}</h1>
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-wider mb-8 sm:mb-10 md:mb-12 text-secondary uppercase animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
             <button 
@@ -595,7 +595,7 @@ export default function Home() {
           </div>
 
           {/* Benefits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-16">
             {careers.benefits.map((benefit, index) => (
               <div
                 key={benefit.id}
@@ -801,7 +801,7 @@ export default function Home() {
       {/* Chat Icon Button */}
       <button
         onClick={handleMessageClick}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-accent hover:bg-accent-light text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 z-50 animate-fade-in drop-shadow-lg"
+        className="fixed bottom-12 right-6 w-14 h-14 bg-accent hover:bg-accent-light text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 z-50 animate-fade-in drop-shadow-lg"
         aria-label="Open message"
       >
         <svg
@@ -817,7 +817,7 @@ export default function Home() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-24 right-8 w-12 h-12 bg-accent hover:bg-accent text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 z-40 animate-fade-in"
+          className="fixed bottom-28 right-6 w-12 h-12 bg-accent hover:bg-accent text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 z-40 animate-fade-in"
           aria-label="Scroll to top"
         >
           <svg
@@ -1033,7 +1033,7 @@ export default function Home() {
               {/* Calendar Grid */}
               <div className="space-y-4">
                 {/* Day headers */}
-                <div className="grid grid-cols-7 gap-2 mb-4">
+                <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
                   {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                     <div key={day} className="text-center text-sm font-bold text-primary/60">
                       {day}
@@ -1042,7 +1042,7 @@ export default function Home() {
                 </div>
 
                 {/* Calendar days */}
-                <div className="grid grid-cols-7 gap-2">
+                <div className="grid grid-cols-7 gap-1 sm:gap-2">
                   {generateCalendarDays().map((dayObj, idx) => {
                     const isCurrentMonth = dayObj.isCurrentMonth
                     const isTodayDate = isToday(dayObj.date)

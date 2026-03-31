@@ -91,7 +91,7 @@ export default function Gallery({ items, instagramUrl, posts = [] }: GalleryProp
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 mb-12">
           {galleryItems.map(item => (
             <div
               key={item.id}
