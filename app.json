@@ -1002,6 +1002,14 @@
       "square": {
         "enabled": false,
         "application_id": "YOUR_SQUARE_APP_ID"
+      },
+      "zelle": {
+        "enabled": true,
+        "zelle_id": "zelleid@gmail.com"
+      },
+      "cashapp": {
+        "enabled": true,
+        "cashapp_id": "$cashappid"
       }
     },
     "email_service": {
@@ -1203,6 +1211,12 @@
           "placeholder": "Coming Soon on Social Media"
         }
       }
+    },
+    "booking_disclaimer": {
+      "deposit_note": "A 25% non-refundable deposit is required to secure your appointment. Payment options are listed below.",
+      "cancellation_note": "Cancellations must be made at least 24 hours in advance to avoid forfeiture of your deposit.",
+      "late_policy": "Clients arriving more than 15 minutes late may need to reschedule and will forfeit their deposit.",
+      "confirmation_note": "By completing this booking you agree to our deposit and cancellation policy."
     },
     "message_modal": {
       "title": "Send us a Message",

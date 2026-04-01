@@ -4,6 +4,7 @@ import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { FiInstagram } from 'react-icons/fi'
+import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
 export default function Home() {
@@ -55,6 +56,7 @@ export default function Home() {
     references: ''
   })
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
+  const [policyAccepted, setPolicyAccepted] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -278,13 +280,14 @@ export default function Home() {
               setSelectedBookingService(null)
               setSelectedDate(null)
               setFormErrors({})
+              setPolicyAccepted(false)
             }
             // Always scroll to home
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
-          className="absolute left-4 sm:left-8 md:hidden hover:opacity-80 transition-opacity"
+          className="absolute transition-opacity left-4 sm:left-8 md:hidden hover:opacity-80"
         >
-          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="h-20 w-auto" />
+          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-20" />
         </button>
 
         {/* Brand Logo - Desktop */}
@@ -299,17 +302,18 @@ export default function Home() {
               setSelectedBookingService(null)
               setSelectedDate(null)
               setFormErrors({})
+              setPolicyAccepted(false)
             }
             // Always scroll to home
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
-          className="hidden md:block absolute left-8 hover:opacity-80 transition-opacity"
+          className="absolute hidden transition-opacity md:block left-8 hover:opacity-80"
         >
-          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={112} height={112} className="h-28 w-auto" />
+          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={112} height={112} className="w-auto h-28" />
         </button>
 
         {/* Desktop Navigation - Centered */}
-        <nav className="hidden md:flex gap-8 lg:gap-20 justify-center">
+        <nav className="justify-center hidden gap-8 md:flex lg:gap-20">
           {content.navigation.links.map((link) => (
             <a 
               key={link.href} 
@@ -353,14 +357,14 @@ export default function Home() {
 
       {/* Mobile Navigation Dropdown */}
       {showMobileMenu && (
-        <div className="fixed top-0 left-0 right-0 bg-black/60 z-40 md:hidden animate-fade-in-down pt-20">
+        <div className="fixed top-0 left-0 right-0 z-40 pt-20 bg-black/60 md:hidden animate-fade-in-down">
           <nav className="flex flex-col gap-0 py-0">
             {content.navigation.links.map((link) => (
               <a 
                 key={link.href} 
                 href={link.href} 
                 onClick={() => setShowMobileMenu(false)}
-                className="px-6 py-4 text-white hover:bg-white/15 transition-all duration-300 uppercase text-base font-bold tracking-wider border-b border-white/20 last:border-b-0 text-right"
+                className="px-6 py-4 text-base font-bold tracking-wider text-right text-white uppercase transition-all duration-300 border-b hover:bg-white/15 border-white/20 last:border-b-0"
                 style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}
               >
                 {link.label}
@@ -371,7 +375,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-primary">
+      <section className="relative flex items-center justify-center w-full h-screen overflow-hidden bg-primary">
         {/* Background Image */}
         <Image
           src="/assets/images/others/landing.png"
@@ -384,23 +388,23 @@ export default function Home() {
         />
         
         {/* Dark overlay for text readability - Enhanced for better contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/50 z-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-primary/40 z-10"></div>
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/50 via-black/40 to-black/50"></div>
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-primary/40"></div>
         
         {/* Content */}
-        <div className="relative z-20 text-center max-w-4xl px-4 sm:px-6">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-light mb-2 sm:mb-3 tracking-widest text-white uppercase animate-fade-in-down drop-shadow-lg">{content.hero.title}</h1>
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-wider mb-8 sm:mb-10 md:mb-12 text-secondary uppercase animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+        <div className="relative z-20 max-w-4xl px-4 text-center sm:px-6">
+          <h1 className="mb-2 text-4xl font-light tracking-widest text-white uppercase sm:text-5xl md:text-7xl lg:text-8xl sm:mb-3 animate-fade-in-down drop-shadow-lg">{content.hero.title}</h1>
+          <h2 className="mb-8 text-xl font-light tracking-wider uppercase sm:text-2xl md:text-3xl lg:text-4xl sm:mb-10 md:mb-12 text-secondary animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <button 
               onClick={() => setShowBookingModal(true)}
-              className="inline-block bg-accent hover:bg-transparent text-white hover:text-accent px-10 sm:px-14 md:px-16 py-3 sm:py-4 md:py-5 rounded font-light uppercase tracking-widest text-sm sm:text-base md:text-lg transition-all duration-300 border-2 border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95 shadow-lg"
+              className="inline-block px-10 py-3 text-sm font-light tracking-widest text-white uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button}
             </button>
             <a 
               href="#careers"
-              className="inline-block bg-transparent hover:bg-secondary text-white hover:text-primary px-10 sm:px-14 md:px-16 py-3 sm:py-4 md:py-5 rounded font-light uppercase tracking-widest text-sm sm:text-base md:text-lg transition-all duration-300 border-2 border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95 shadow-lg"
+              className="inline-block px-10 py-3 text-sm font-light tracking-widest text-white uppercase transition-all duration-300 bg-transparent border-2 rounded shadow-lg hover:bg-secondary hover:text-primary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               JOIN OUR STYLISTS
             </a>
@@ -409,17 +413,17 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="container-custom py-4">
+      <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Services Section */}
-      <section id="services" className="py-16 sm:py-20 bg-white">
+      <section id="services" className="py-16 bg-white sm:py-20">
         <div className="container-custom">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12 text-primary animate-fade-in-up">{content.services_section.title}</h2>
+          <h2 className="mb-12 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">{content.services_section.title}</h2>
           
           {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-12 sm:gap-3">
             {getCategories().map((category) => (
               <button
                 key={category}
@@ -436,17 +440,17 @@ export default function Home() {
           </div>
 
           {/* Services Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 sm:gap-6">
             {getServicesByCategory(selectedCategory).map((service, index) => (
-              <div key={service.id} className="card hover:shadow-lg hover:scale-105 transition-all duration-300 animate-fade-in-up" style={{animationDelay: `${index * 0.05}s`}}>
+              <div key={service.id} className="transition-all duration-300 card hover:shadow-lg hover:scale-105 animate-fade-in-up" style={{animationDelay: `${index * 0.05}s`}}>
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary flex-1">{service.name}</h3>
-                  <span className="ml-2 px-2 py-1 bg-accent/20 text-accent text-xs font-bold rounded">{service.category}</span>
+                  <h3 className="flex-1 text-lg font-bold sm:text-xl text-primary">{service.name}</h3>
+                  <span className="px-2 py-1 ml-2 text-xs font-bold rounded bg-accent/20 text-accent">{service.category}</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-600 mb-4">{service.description}</p>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xl sm:text-2xl font-bold text-accent">${service.price}</span>
-                  <span className="text-xs sm:text-sm text-gray-500">{service.duration} min</span>
+                <p className="mb-4 text-sm text-gray-600 sm:text-base">{service.description}</p>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xl font-bold sm:text-2xl text-accent">${service.price}</span>
+                  <span className="text-xs text-gray-500 sm:text-sm">{service.duration} min</span>
                 </div>
                 <button
                   onClick={() => {
@@ -455,7 +459,7 @@ export default function Home() {
                     setShowBookingModal(true)
                     setSelectedDate(new Date())
                   }}
-                  className="w-full bg-accent hover:bg-accent-light text-white font-bold py-2 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 text-sm sm:text-base"
+                  className="w-full py-2 text-sm font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95 sm:text-base"
                 >
                   Schedule Appointment
                 </button>
@@ -466,7 +470,7 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="container-custom py-4">
+      <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
@@ -476,31 +480,31 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="container-custom py-4">
+      <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Booking Section */}
-      <section id="book" className="py-16 sm:py-20 bg-white">
+      <section id="book" className="py-16 bg-white sm:py-20">
         <div className="container-custom">
           {/* Booking CTA */}
-          <div className="mb-12 sm:mb-16 text-center bg-secondary/10 border border-accent/30 rounded-lg p-8 sm:p-10">
-            <h3 className="text-2xl sm:text-3xl font-bold text-primary mb-4">{content.reviews_section.cta_title}</h3>
-            <p className="text-primary/80 mb-6 text-base sm:text-lg">{content.reviews_section.cta_subtitle}</p>
-            <button onClick={handleScheduleClick} className="btn-accent text-sm sm:text-base hover:scale-105 active:scale-95">{content.reviews_section.cta_button}</button>
+          <div className="p-8 mb-12 text-center border rounded-lg sm:mb-16 bg-secondary/10 border-accent/30 sm:p-10">
+            <h3 className="mb-4 text-2xl font-bold sm:text-3xl text-primary">{content.reviews_section.cta_title}</h3>
+            <p className="mb-6 text-base text-primary/80 sm:text-lg">{content.reviews_section.cta_subtitle}</p>
+            <button onClick={handleScheduleClick} className="text-sm btn-accent sm:text-base hover:scale-105 active:scale-95">{content.reviews_section.cta_button}</button>
           </div>
 
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary animate-fade-in-down">{content.reviews_section.title}</h2>
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold sm:text-4xl text-primary animate-fade-in-down">{content.reviews_section.title}</h2>
             <p className="text-base sm:text-lg text-primary/80 animate-fade-in-up">{content.reviews_section.subtitle}</p>
           </div>
 
           {/* Reviews Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {content.reviews_section.reviews.map((review, index) => (
               <div 
                 key={index}
-                className="bg-secondary/10 border border-accent/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300 animate-fade-in-up hover:border-accent"
+                className="p-6 transition-all duration-300 border rounded-lg bg-secondary/10 border-accent/20 hover:shadow-lg animate-fade-in-up hover:border-accent"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Stars */}
@@ -513,10 +517,10 @@ export default function Home() {
                 </div>
 
                 {/* Review Text */}
-                <p className="text-primary/80 mb-4 italic text-sm sm:text-base">&quot;{review.text}&quot;</p>
+                <p className="mb-4 text-sm italic text-primary/80 sm:text-base">&quot;{review.text}&quot;</p>
 
                 {/* Author */}
-                <p className="text-primary font-semibold">- {review.name}</p>
+                <p className="font-semibold text-primary">- {review.name}</p>
               </div>
             ))}
           </div>
@@ -524,33 +528,33 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="container-custom py-4">
+      <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Careers Section */}
-      <section id="careers" className="py-16 sm:py-20 bg-white">
+      <section id="careers" className="py-16 bg-white sm:py-20">
         <div className="container-custom">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-primary">{careers.tagline}</h2>
-            <p className="text-lg text-primary/80 max-w-2xl mx-auto">{careers.introduction}</p>
+          <div className="mb-12 text-center animate-fade-in-up">
+            <h2 className="mb-4 text-3xl font-bold sm:text-4xl text-primary">{careers.tagline}</h2>
+            <p className="max-w-2xl mx-auto text-lg text-primary/80">{careers.introduction}</p>
           </div>
 
           {/* Open Positions */}
           <div className="mb-16">
-            <h3 className="text-2xl sm:text-3xl font-bold text-primary text-center mb-8">Open Positions</h3>
-            <div className="space-y-6 max-w-4xl mx-auto">
+            <h3 className="mb-8 text-2xl font-bold text-center sm:text-3xl text-primary">Open Positions</h3>
+            <div className="max-w-4xl mx-auto space-y-6">
               {careers.open_positions.map((position) => (
                 <div
                   key={position.id}
-                  className="bg-white border border-accent/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300 hover:border-accent"
+                  className="p-6 transition-all duration-300 bg-white border rounded-lg border-accent/20 hover:shadow-lg hover:border-accent"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4">
+                  <div className="flex flex-col mb-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="mb-4 sm:mb-0">
-                      <h4 className="text-xl font-bold text-primary mb-2">{position.title}</h4>
+                      <h4 className="mb-2 text-xl font-bold text-primary">{position.title}</h4>
                       <div className="flex flex-wrap gap-2 text-xs">
-                        <span className="px-3 py-1 bg-accent/10 text-accent rounded-full font-medium">{position.type}</span>
-                        <span className="px-3 py-1 bg-secondary/20 text-primary rounded-full">📍 {position.location}</span>
+                        <span className="px-3 py-1 font-medium rounded-full bg-accent/10 text-accent">{position.type}</span>
+                        <span className="px-3 py-1 rounded-full bg-secondary/20 text-primary">📍 {position.location}</span>
                       </div>
                     </div>
                     <button
@@ -559,30 +563,30 @@ export default function Home() {
                         setApplicationData({ ...applicationData, position: position.title })
                         setShowApplicationModal(true)
                       }}
-                      className="btn-accent text-sm whitespace-nowrap"
+                      className="text-sm btn-accent whitespace-nowrap"
                     >
                       JOIN OUR STYLISTS
                     </button>
                   </div>
-                  <p className="text-primary/80 text-sm mb-4">{position.description}</p>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <p className="mb-4 text-sm text-primary/80">{position.description}</p>
+                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                     <div>
-                      <h5 className="font-bold text-primary text-sm mb-2">Key Requirements:</h5>
+                      <h5 className="mb-2 text-sm font-bold text-primary">Key Requirements:</h5>
                       <ul className="space-y-1 text-xs text-primary/80">
                         {position.requirements.slice(0, 3).map((req, idx) => (
                           <li key={idx} className="flex items-start">
-                            <span className="text-accent mr-2">•</span>
+                            <span className="mr-2 text-accent">•</span>
                             <span>{req}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <h5 className="font-bold text-primary text-sm mb-2">Responsibilities:</h5>
+                      <h5 className="mb-2 text-sm font-bold text-primary">Responsibilities:</h5>
                       <ul className="space-y-1 text-xs text-primary/80">
                         {position.responsibilities.slice(0, 3).map((resp, idx) => (
                           <li key={idx} className="flex items-start">
-                            <span className="text-accent mr-2">•</span>
+                            <span className="mr-2 text-accent">•</span>
                             <span>{resp}</span>
                           </li>
                         ))}
@@ -595,29 +599,29 @@ export default function Home() {
           </div>
 
           {/* Benefits Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-16">
+          <div className="grid grid-cols-1 gap-6 mb-16 sm:grid-cols-2 md:grid-cols-3">
             {careers.benefits.map((benefit, index) => (
               <div
                 key={benefit.id}
-                className="bg-white border border-accent/20 rounded-lg p-6 hover:shadow-lg transition-all duration-300 hover:border-accent animate-fade-in-up"
+                className="p-6 transition-all duration-300 bg-white border rounded-lg border-accent/20 hover:shadow-lg hover:border-accent animate-fade-in-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="text-4xl mb-4">{benefit.icon}</div>
-                <h3 className="text-xl font-bold text-primary mb-3">{benefit.title}</h3>
-                <p className="text-primary/80 text-sm">{benefit.description}</p>
+                <div className="mb-4 text-4xl">{benefit.icon}</div>
+                <h3 className="mb-3 text-xl font-bold text-primary">{benefit.title}</h3>
+                <p className="text-sm text-primary/80">{benefit.description}</p>
               </div>
             ))}
           </div>
 
           {/* Team Culture */}
           <div className="max-w-3xl mx-auto text-center">
-            <h3 className="text-2xl font-bold text-primary mb-6">{careers.team_culture.title}</h3>
-            <p className="text-primary/80 mb-8">{careers.team_culture.description}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <h3 className="mb-6 text-2xl font-bold text-primary">{careers.team_culture.title}</h3>
+            <p className="mb-8 text-primary/80">{careers.team_culture.description}</p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {careers.team_culture.values.slice(0, 4).map((value, index) => (
-                <div key={index} className="bg-white border border-accent/20 rounded-lg p-4 text-center hover:shadow-lg transition-all duration-300">
-                  <h4 className="font-bold text-primary mb-2 text-sm">{value.title}</h4>
-                  <p className="text-primary/70 text-xs">{value.description}</p>
+                <div key={index} className="p-4 text-center transition-all duration-300 bg-white border rounded-lg border-accent/20 hover:shadow-lg">
+                  <h4 className="mb-2 text-sm font-bold text-primary">{value.title}</h4>
+                  <p className="text-xs text-primary/70">{value.description}</p>
                 </div>
               ))}
             </div>
@@ -626,20 +630,20 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="container-custom py-4">
+      <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* About Section */}
-      <section id="about" className="py-16 sm:py-20 bg-white">
+      <section id="about" className="py-16 bg-white sm:py-20">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="grid items-center grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <div className="animate-slide-in-left">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-primary">{content.about_section.title}</h2>
-              <p className="text-base sm:text-lg text-primary mb-4">
+              <h2 className="mb-6 text-3xl font-bold sm:text-4xl text-primary">{content.about_section.title}</h2>
+              <p className="mb-4 text-base sm:text-lg text-primary">
                 {appConfig.app.description}
               </p>
-              <p className="text-sm sm:text-base text-primary/80 mb-6">
+              <p className="mb-6 text-sm sm:text-base text-primary/80">
                 {content.about_section.location_text.replace('{ADDRESS}', business.address)}
               </p>
               <div className="space-y-2 text-sm sm:text-base">
@@ -648,66 +652,66 @@ export default function Home() {
                 <p className="text-primary"><strong>Location:</strong> {business.county}, {business.state}</p>
               </div>
             </div>
-            <div className="bg-secondary rounded-lg p-6 sm:p-8 text-center border border-accent/30 animate-slide-in-right hover:shadow-lg transition-all duration-300">
-              <p className="text-3xl sm:text-5xl font-bold text-accent mb-2">{content.about_section.stat_1_value}</p>
-              <p className="text-sm sm:text-base text-primary font-medium">{content.about_section.stat_1_label}</p>
+            <div className="p-6 text-center transition-all duration-300 border rounded-lg bg-secondary sm:p-8 border-accent/30 animate-slide-in-right hover:shadow-lg">
+              <p className="mb-2 text-3xl font-bold sm:text-5xl text-accent">{content.about_section.stat_1_value}</p>
+              <p className="text-sm font-medium sm:text-base text-primary">{content.about_section.stat_1_label}</p>
               <hr className="my-4 sm:my-6 border-accent/50" />
-              <p className="text-3xl sm:text-5xl font-bold text-accent mb-2">{content.about_section.stat_2_value}</p>
-              <p className="text-sm sm:text-base text-primary font-medium">{content.about_section.stat_2_label}</p>
+              <p className="mb-2 text-3xl font-bold sm:text-5xl text-accent">{content.about_section.stat_2_value}</p>
+              <p className="text-sm font-medium sm:text-base text-primary">{content.about_section.stat_2_label}</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="container-custom py-4">
+      <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 sm:py-20 bg-white">
+      <section id="contact" className="py-16 bg-white sm:py-20">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-primary text-center mb-4 animate-fade-in-up">{content.footer.sections.contact.title}</h2>
+            <h2 className="mb-4 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">{content.footer.sections.contact.title}</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16 mt-12">
+            <div className="grid grid-cols-1 gap-12 mt-12 md:grid-cols-2 sm:gap-16">
               {/* Contact Information */}
               <div className="flex flex-col justify-center animate-fade-in-up">
                 <div className="mb-8">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">Visit Us</h3>
+                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Visit Us</h3>
                   <p className="text-sm sm:text-base text-primary/80">{business.address}</p>
                 </div>
                 
                 <div className="mb-8">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">Call Us</h3>
-                  <a href={`tel:${business.contact.phone}`} className="text-sm sm:text-base text-accent hover:text-accent/80 transition-colors duration-300">
+                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Call Us</h3>
+                  <a href={`tel:${business.contact.phone}`} className="text-sm transition-colors duration-300 sm:text-base text-accent hover:text-accent/80">
                     {business.contact.phone}
                   </a>
                 </div>
 
                 <div className="mb-8">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">Email Us</h3>
-                  <a href={`mailto:${business.contact.email}`} className="text-sm sm:text-base text-accent hover:text-accent/80 transition-colors duration-300">
+                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Email Us</h3>
+                  <a href={`mailto:${business.contact.email}`} className="text-sm transition-colors duration-300 sm:text-base text-accent hover:text-accent/80">
                     {business.contact.email}
                   </a>
                 </div>
 
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">{content.footer.sections.hours.title}</h3>
-                  <p className="text-xs sm:text-sm text-primary/80 mb-1">{content.footer.sections.hours.mon_fri}</p>
-                  <p className="text-xs sm:text-sm text-primary/80 mb-1">{content.footer.sections.hours.saturday}</p>
+                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">{content.footer.sections.hours.title}</h3>
+                  <p className="mb-1 text-xs sm:text-sm text-primary/80">{content.footer.sections.hours.mon_fri}</p>
+                  <p className="mb-1 text-xs sm:text-sm text-primary/80">{content.footer.sections.hours.saturday}</p>
                   <p className="text-xs sm:text-sm text-primary/80">{content.footer.sections.hours.sunday}</p>
                 </div>
 
                 <div className="mt-8">
-                  <h3 className="text-lg sm:text-xl font-bold text-primary mb-3">{content.footer.sections.follow.title}</h3>
+                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">{content.footer.sections.follow.title}</h3>
                   <div className="flex gap-4">
                     {business.social.instagram && (
                       <a 
                         href={business.social.instagram}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary/70 hover:text-accent transition-colors duration-300"
+                        className="transition-colors duration-300 text-primary/70 hover:text-accent"
                         aria-label="Instagram"
                       >
                         <FiInstagram className="w-6 h-6" />
@@ -719,11 +723,11 @@ export default function Home() {
 
               {/* Contact Form */}
               <div className="flex flex-col justify-center animate-fade-in-up">
-                <h3 className="text-lg sm:text-xl font-bold text-primary mb-6">Send us a Message</h3>
+                <h3 className="mb-6 text-lg font-bold sm:text-xl text-primary">Send us a Message</h3>
                 <button 
                   type="button"
                   onClick={handleMessageClick}
-                  className="btn-accent text-sm sm:text-base hover:scale-105 active:scale-95 shadow-lg font-semibold w-full"
+                  className="w-full text-sm font-semibold shadow-lg btn-accent sm:text-base hover:scale-105 active:scale-95"
                 >
                   Leave A Message
                 </button>
@@ -734,17 +738,17 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-primary text-secondary py-12 sm:py-16">
+      <footer className="py-12 bg-primary text-secondary sm:py-16">
         <div className="container-custom">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
-            <div className="animate-fade-in-up text-center sm:text-left">
-              <h3 className="text-base sm:text-lg font-bold mb-4">{content.footer.sections.navigation.title}</h3>
+          <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 md:grid-cols-4 sm:gap-8">
+            <div className="text-center animate-fade-in-up sm:text-left">
+              <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.navigation.title}</h3>
               <ul className="space-y-2">
                 {content.footer.sections.navigation.links.map((link) => (
                   <li key={link.href}>
                     <a 
                       href={link.href}
-                      className="text-xs sm:text-sm text-secondary/80 hover:text-accent transition-colors duration-300"
+                      className="text-xs transition-colors duration-300 sm:text-sm text-secondary/80 hover:text-accent"
                     >
                       {link.label}
                     </a>
@@ -752,27 +756,27 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div className="animate-fade-in-up text-center sm:text-left">
-              <h3 className="text-base sm:text-lg font-bold mb-4">{content.footer.sections.contact.title}</h3>
+            <div className="text-center animate-fade-in-up sm:text-left">
+              <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.contact.title}</h3>
               <p className="text-xs sm:text-sm text-secondary/90">{business.address}</p>
-              <p className="text-xs sm:text-sm text-secondary/90 mt-2">{business.contact.phone}</p>
+              <p className="mt-2 text-xs sm:text-sm text-secondary/90">{business.contact.phone}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{business.contact.email}</p>
             </div>
-            <div className="animate-fade-in-up text-center sm:text-left">
-              <h3 className="text-base sm:text-lg font-bold mb-4">{content.footer.sections.hours.title}</h3>
+            <div className="text-center animate-fade-in-up sm:text-left">
+              <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.hours.title}</h3>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.mon_fri}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.saturday}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.sunday}</p>
             </div>
-            <div className="animate-fade-in-up text-center sm:text-left">
-              <h3 className="text-base sm:text-lg font-bold mb-4">{content.footer.sections.follow.title}</h3>
-              <div className="flex gap-4 justify-center sm:justify-start">
+            <div className="text-center animate-fade-in-up sm:text-left">
+              <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.follow.title}</h3>
+              <div className="flex justify-center gap-4 sm:justify-start">
                 {business.social.instagram && (
                   <a 
                     href={business.social.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-secondary/70 hover:text-accent transition-colors duration-300"
+                    className="transition-colors duration-300 text-secondary/70 hover:text-accent"
                     aria-label="Instagram"
                   >
                     <FiInstagram className="w-6 h-6" />
@@ -781,15 +785,15 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <hr className="border-secondary/30 mb-6" />
-          <div className="text-center text-secondary/70 text-xs sm:text-sm">
+          <hr className="mb-6 border-secondary/30" />
+          <div className="text-xs text-center text-secondary/70 sm:text-sm">
             <p>{content.footer.copyright.replace('{APP_NAME}', appConfig.app.name)}</p>
-            <p className="text-xs mt-2">
+            <p className="mt-2 text-xs">
               <a 
                 href={content.footer.developed_by_link || '#'} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="hover:text-accent transition-colors duration-300"
+                className="transition-colors duration-300 hover:text-accent"
               >
                 {content.footer.developed_by}
               </a>
@@ -801,7 +805,7 @@ export default function Home() {
       {/* Chat Icon Button */}
       <button
         onClick={handleMessageClick}
-        className="fixed bottom-12 right-6 w-14 h-14 bg-accent hover:bg-accent-light text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 z-50 animate-fade-in drop-shadow-lg"
+        className="fixed z-50 flex items-center justify-center text-white transition-all duration-300 rounded-full shadow-lg bottom-12 right-6 w-14 h-14 bg-accent hover:bg-accent-light hover:scale-110 active:scale-95 animate-fade-in drop-shadow-lg"
         aria-label="Open message"
       >
         <svg
@@ -817,7 +821,7 @@ export default function Home() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-28 right-6 w-12 h-12 bg-accent hover:bg-accent text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 z-40 animate-fade-in"
+          className="fixed z-40 flex items-center justify-center w-12 h-12 text-white transition-all duration-300 rounded-full shadow-lg bottom-28 right-6 bg-accent hover:bg-accent hover:scale-110 active:scale-95 animate-fade-in"
           aria-label="Scroll to top"
         >
           <svg
@@ -838,14 +842,14 @@ export default function Home() {
 
       {/* Message Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="bg-primary text-white p-6 flex justify-between items-center sticky top-0">
+            <div className="sticky top-0 flex items-center justify-between p-6 text-white bg-primary">
               <h2 className="text-xl font-bold">{content.message_modal?.title || 'Send us a Message'}</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-white hover:opacity-70 transition-opacity"
+                className="text-white transition-opacity hover:opacity-70"
                 aria-label="Close modal"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -859,7 +863,7 @@ export default function Home() {
               <form onSubmit={handleSubmitMessage} className="p-6 space-y-4">
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">
+                  <label className="block mb-2 text-sm font-semibold text-primary">
                     {content.message_modal?.fields?.name || 'Name'}
                   </label>
                   <input
@@ -873,12 +877,12 @@ export default function Home() {
                     }`}
                     placeholder="Your name"
                   />
-                  {formErrors.name && <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>}
+                  {formErrors.name && <p className="mt-1 text-xs text-red-500">{formErrors.name}</p>}
                 </div>
 
                 {/* Contact Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">
+                  <label className="block mb-2 text-sm font-semibold text-primary">
                     {content.message_modal?.fields?.contact || 'Email or Phone'}
                   </label>
                   <input
@@ -892,21 +896,21 @@ export default function Home() {
                     }`}
                     placeholder="your@email.com or (123) 456-7890"
                   />
-                  {formErrors.contact && <p className="text-red-500 text-xs mt-1">{formErrors.contact}</p>}
+                  {formErrors.contact && <p className="mt-1 text-xs text-red-500">{formErrors.contact}</p>}
                 </div>
 
                 {/* Message Type Dropdown */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">
+                  <label className="block mb-2 text-sm font-semibold text-primary">
                     {content.message_modal?.fields?.message_type || 'Message Type'}
                   </label>
                   <select
                     value={messageType}
                     onChange={(e) => setMessageType(e.target.value)}
-                    className="w-full px-4 py-2 border border-secondary/30 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 bg-white text-primary font-medium"
+                    className="w-full px-4 py-2 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
                   >
                     {content.message_types?.map((type) => (
-                      <option key={type.id} value={type.id} className="text-primary font-medium">
+                      <option key={type.id} value={type.id} className="font-medium text-primary">
                         {type.label}
                       </option>
                     ))}
@@ -916,7 +920,7 @@ export default function Home() {
                 {/* Conditional Service Dropdown */}
                 {messageType === 'booking' && (
                   <div>
-                    <label className="block text-sm font-semibold text-primary mb-2">
+                    <label className="block mb-2 text-sm font-semibold text-primary">
                       {content.message_modal?.fields?.service || 'Service'}
                     </label>
                     <select
@@ -930,18 +934,18 @@ export default function Home() {
                     >
                       <option value="" className="text-secondary">Select a service</option>
                       {services?.map((service) => (
-                        <option key={service.id} value={service.name} className="text-primary font-medium">
+                        <option key={service.id} value={service.name} className="font-medium text-primary">
                           {service.name}
                         </option>
                       ))}
                     </select>
-                    {formErrors.service && <p className="text-red-500 text-xs mt-1">{formErrors.service}</p>}
+                    {formErrors.service && <p className="mt-1 text-xs text-red-500">{formErrors.service}</p>}
                   </div>
                 )}
 
                 {/* Message Textarea */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">
+                  <label className="block mb-2 text-sm font-semibold text-primary">
                     {content.message_modal?.fields?.message || 'Message'}
                   </label>
                   <textarea
@@ -955,13 +959,13 @@ export default function Home() {
                     }`}
                     placeholder={content.message_modal?.fields?.message_placeholder || 'Tell us more...'}
                   />
-                  {formErrors.message && <p className="text-red-500 text-xs mt-1">{formErrors.message}</p>}
+                  {formErrors.message && <p className="mt-1 text-xs text-red-500">{formErrors.message}</p>}
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full bg-accent hover:bg-accent-light text-white font-bold py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+                  className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
                 >
                   {content.message_modal?.submit_button || 'Send Message'}
                 </button>
@@ -969,10 +973,10 @@ export default function Home() {
             ) : (
               /* Success Message */
               <div className="p-6 flex flex-col items-center justify-center min-h-[300px]">
-                <svg className="w-16 h-16 text-accent mb-4 animate-bounce" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-16 h-16 mb-4 text-accent animate-bounce" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
-                <h3 className="text-xl font-bold text-primary mb-2">
+                <h3 className="mb-2 text-xl font-bold text-primary">
                   {content.message_modal?.success_title || 'Message Sent!'}
                 </h3>
                 <p className="text-center text-secondary">
@@ -986,10 +990,10 @@ export default function Home() {
 
       {/* Booking Modal */}
       {showBookingModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in-down">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-primary text-secondary p-6 flex justify-between items-center border-b border-accent/20">
+            <div className="sticky top-0 flex items-center justify-between p-6 border-b bg-primary text-secondary border-accent/20">
               <h2 className="text-2xl font-bold">{content.reviews_section.cta_button}</h2>
               <button
                 onClick={() => {
@@ -1000,10 +1004,11 @@ export default function Home() {
                   setSelectedBookingService(null)
                   setSelectedDate(null)
                   setFormErrors({})
+                  setPolicyAccepted(false)
                   // Scroll to home
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
-                className="text-secondary/70 hover:text-secondary transition-colors text-2xl font-bold"
+                className="text-2xl font-bold transition-colors text-secondary/70 hover:text-secondary"
               >
                 ×
               </button>
@@ -1015,7 +1020,7 @@ export default function Home() {
               <div className="flex items-center justify-between mb-6">
                 <button
                   onClick={handlePrevMonth}
-                  className="px-4 py-2 bg-secondary/20 hover:bg-secondary/30 text-primary rounded transition-colors"
+                  className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
                 >
                   ←
                 </button>
@@ -1024,7 +1029,7 @@ export default function Home() {
                 </h3>
                 <button
                   onClick={handleNextMonth}
-                  className="px-4 py-2 bg-secondary/20 hover:bg-secondary/30 text-primary rounded transition-colors"
+                  className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
                 >
                   →
                 </button>
@@ -1033,9 +1038,9 @@ export default function Home() {
               {/* Calendar Grid */}
               <div className="space-y-4">
                 {/* Day headers */}
-                <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
+                <div className="grid grid-cols-7 gap-1 mb-4 sm:gap-2">
                   {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <div key={day} className="text-center text-sm font-bold text-primary/60">
+                    <div key={day} className="text-sm font-bold text-center text-primary/60">
                       {day}
                     </div>
                   ))}
@@ -1073,8 +1078,8 @@ export default function Home() {
 
               {/* Selected Date Display */}
               {selectedDate && (
-                <div className="bg-secondary/10 border border-secondary/30 rounded-lg p-4">
-                  <p className="text-sm text-primary/70 mb-1">Selected Date:</p>
+                <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30">
+                  <p className="mb-1 text-sm text-primary/70">Selected Date:</p>
                   <p className="text-lg font-bold text-primary">
                     {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
@@ -1082,12 +1087,12 @@ export default function Home() {
               )}
 
               {/* Customer Information */}
-              <div className="space-y-4 border-b border-secondary/20 pb-6">
+              <div className="pb-6 space-y-4 border-b border-secondary/20">
                 <h3 className="text-lg font-bold text-primary">Your Information</h3>
                 
                 {/* Name Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">Full Name</label>
+                  <label className="block mb-2 text-sm font-semibold text-primary">Full Name</label>
                   <input
                     type="text"
                     value={bookingName}
@@ -1099,12 +1104,12 @@ export default function Home() {
                     }`}
                     placeholder="John Doe"
                   />
-                  {formErrors.bookingName && <p className="text-red-500 text-xs mt-1">{formErrors.bookingName}</p>}
+                  {formErrors.bookingName && <p className="mt-1 text-xs text-red-500">{formErrors.bookingName}</p>}
                 </div>
 
                 {/* Email Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">Email</label>
+                  <label className="block mb-2 text-sm font-semibold text-primary">Email</label>
                   <input
                     type="email"
                     value={bookingEmail}
@@ -1116,12 +1121,12 @@ export default function Home() {
                     }`}
                     placeholder="john@example.com"
                   />
-                  {formErrors.bookingEmail && <p className="text-red-500 text-xs mt-1">{formErrors.bookingEmail}</p>}
+                  {formErrors.bookingEmail && <p className="mt-1 text-xs text-red-500">{formErrors.bookingEmail}</p>}
                 </div>
 
                 {/* Phone Input */}
                 <div>
-                  <label className="block text-sm font-semibold text-primary mb-2">Phone Number</label>
+                  <label className="block mb-2 text-sm font-semibold text-primary">Phone Number</label>
                   <input
                     type="tel"
                     value={bookingContact}
@@ -1133,7 +1138,7 @@ export default function Home() {
                     }`}
                     placeholder="(123) 456-7890"
                   />
-                  {formErrors.bookingContact && <p className="text-red-500 text-xs mt-1">{formErrors.bookingContact}</p>}
+                  {formErrors.bookingContact && <p className="mt-1 text-xs text-red-500">{formErrors.bookingContact}</p>}
                 </div>
               </div>
 
@@ -1143,7 +1148,7 @@ export default function Home() {
                 <select
                   value={selectedBookingCategory}
                   onChange={(e) => setSelectedBookingCategory(e.target.value)}
-                  className="w-full px-4 py-3 border border-secondary/30 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 bg-white text-primary font-medium"
+                  className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
                 >
                   {getCategories().map((category) => (
                     <option key={category} value={category}>
@@ -1155,14 +1160,14 @@ export default function Home() {
 
               {/* Services in Selected Category */}
               {selectedBookingCategory && (
-                <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-4">
-                  <p className="text-sm font-bold text-primary mb-3">Services in {selectedBookingCategory}:</p>
+                <div className="p-4 border rounded-lg bg-secondary/5 border-secondary/20">
+                  <p className="mb-3 text-sm font-bold text-primary">Services in {selectedBookingCategory}:</p>
                   <div className="space-y-2">
                     {getServicesByCategory(selectedBookingCategory).map((service) => (
-                      <div key={service.id} className="flex justify-between items-center text-xs sm:text-sm py-2 px-2 rounded hover:bg-secondary/10 transition">
+                      <div key={service.id} className="flex items-center justify-between px-2 py-2 text-xs transition rounded sm:text-sm hover:bg-secondary/10">
                         <div className="flex-1">
-                          <p className="text-primary font-medium">{service.name}</p>
-                          <p className="text-accent font-semibold">${service.price}</p>
+                          <p className="font-medium text-primary">{service.name}</p>
+                          <p className="font-semibold text-accent">${service.price}</p>
                         </div>
                         <button
                           onClick={() => setSelectedBookingService({ id: service.id, name: service.name, price: service.price })}
@@ -1182,11 +1187,45 @@ export default function Home() {
 
               {/* Selected Service Display */}
               {selectedBookingService && (
-                <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
-                  <p className="text-xs text-primary/70 mb-1">Selected Service:</p>
+                <div className="p-3 border rounded-lg bg-accent/10 border-accent/30">
+                  <p className="mb-1 text-xs text-primary/70">Selected Service:</p>
                   <p className="text-sm font-bold text-accent">{selectedBookingService.name}</p>
                 </div>
               )}
+
+              {/* Booking Disclaimer */}
+              <div className="p-4 space-y-1 text-xs border rounded-lg bg-amber-50 border-amber-200 text-amber-900">
+                <p className="text-sm font-bold">📋 Booking Policy</p>
+                <p>• {content.booking_disclaimer.deposit_note}</p>
+                <p>• {content.booking_disclaimer.cancellation_note}</p>
+                <p>• {content.booking_disclaimer.late_policy}</p>
+                <label className="flex items-start gap-3 mt-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={policyAccepted}
+                    onChange={(e) => setPolicyAccepted(e.target.checked)}
+                    className="mt-0.5 w-6 h-6 flex-shrink-0 accent-amber-700"
+                  />
+                  <span className="font-semibold">I have read and agree to the booking policy above.</span>
+                </label>
+              </div>
+
+              {/* Payment Options */}
+              <div className="p-4 space-y-3 border rounded-lg bg-green-50 border-green-200">
+                <p className="text-sm font-bold text-green-900">💳 Payment Options</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex flex-col items-center p-3 bg-white border border-purple-200 rounded-lg shadow-sm">
+                    <SiZelle className="text-3xl mb-1 text-purple-600" />
+                    <p className="text-xs font-bold text-purple-700">Zelle</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                  </div>
+                  <div className="flex flex-col items-center p-3 bg-white border border-green-200 rounded-lg shadow-sm">
+                    <SiCashapp className="text-3xl mb-1 text-green-600" />
+                    <p className="text-xs font-bold text-green-700">Cash App</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                  </div>
+                </div>
+              </div>
 
               {/* Continue Button */}
               <button
@@ -1212,13 +1251,13 @@ export default function Home() {
                   
                   setFormErrors(errors)
                   
-                  if (selectedDate && selectedBookingService && Object.keys(errors).length === 0) {
+                  if (selectedDate && selectedBookingService && policyAccepted && Object.keys(errors).length === 0) {
                     // Show confirmation modal
                     setShowConfirmationModal(true)
                   }
                 }}
-                disabled={!selectedDate || !selectedBookingService}
-                className="w-full bg-accent hover:bg-accent-light disabled:bg-secondary/30 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+                disabled={!selectedDate || !selectedBookingService || !policyAccepted}
+                className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light disabled:bg-secondary/30 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
               >
                 {selectedBookingService ? 'Confirm Booking' : 'Select a Service to Continue'}
               </button>
@@ -1229,10 +1268,10 @@ export default function Home() {
 
       {/* Booking Confirmation Modal */}
       {showConfirmationModal && selectedDate && selectedBookingService && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md animate-fade-in-down">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-2xl animate-fade-in-down">
             {/* Modal Header */}
-            <div className="bg-primary text-secondary p-6 border-b border-accent/20">
+            <div className="p-6 border-b bg-primary text-secondary border-accent/20">
               <h2 className="text-2xl font-bold">Confirm Your Booking</h2>
             </div>
 
@@ -1242,7 +1281,7 @@ export default function Home() {
               <div className="space-y-4">
                 {/* Date */}
                 <div className="pb-4 border-b border-secondary/20">
-                  <p className="text-xs text-primary/60 font-semibold mb-1">APPOINTMENT DATE</p>
+                  <p className="mb-1 text-xs font-semibold text-primary/60">APPOINTMENT DATE</p>
                   <p className="text-lg font-bold text-primary">
                     {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
@@ -1250,14 +1289,14 @@ export default function Home() {
 
                 {/* Service */}
                 <div className="pb-4 border-b border-secondary/20">
-                  <p className="text-xs text-primary/60 font-semibold mb-1">SERVICE</p>
+                  <p className="mb-1 text-xs font-semibold text-primary/60">SERVICE</p>
                   <p className="text-lg font-bold text-primary">{selectedBookingService.name}</p>
-                  <p className="text-sm text-accent font-semibold mt-1">${selectedBookingService.price}</p>
+                  <p className="mt-1 text-sm font-semibold text-accent">${selectedBookingService.price}</p>
                 </div>
 
                 {/* Customer Info */}
                 <div className="pb-4 border-b border-secondary/20">
-                  <p className="text-xs text-primary/60 font-semibold mb-2">YOUR INFORMATION</p>
+                  <p className="mb-2 text-xs font-semibold text-primary/60">YOUR INFORMATION</p>
                   <div className="space-y-2">
                     <div>
                       <p className="text-xs text-primary/60">Name</p>
@@ -1275,8 +1314,8 @@ export default function Home() {
                 </div>
 
                 {/* Salon Contact Info */}
-                <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4">
-                  <p className="text-xs text-primary/60 font-semibold mb-3">SALON LOCATION</p>
+                <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/20">
+                  <p className="mb-3 text-xs font-semibold text-primary/60">SALON LOCATION</p>
                   <div className="space-y-2">
                     <div>
                       <p className="text-xs text-primary/60">Address</p>
@@ -1290,11 +1329,34 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Disclaimer */}
+              <div className="p-3 text-xs border rounded-lg bg-amber-50 border-amber-200 text-amber-900">
+                <p>{content.booking_disclaimer.confirmation_note}</p>
+              </div>
+
+              {/* Payment Options */}
+              <div className="p-4 space-y-3 border rounded-lg bg-green-50 border-green-200">
+                <p className="text-sm font-bold text-green-900">💳 Send Your Deposit</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex flex-col items-center p-3 bg-white border border-purple-200 rounded-lg shadow-sm">
+                    <SiZelle className="text-3xl mb-1 text-purple-600" />
+                    <p className="text-xs font-bold text-purple-700">Zelle</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1 select-all">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                  </div>
+                  <div className="flex flex-col items-center p-3 bg-white border border-green-200 rounded-lg shadow-sm">
+                    <SiCashapp className="text-3xl mb-1 text-green-600" />
+                    <p className="text-xs font-bold text-green-700">Cash App</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1 select-all">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-center text-green-700 font-medium">Reference your booking # <span className="font-bold text-green-900">{bookingReference || 'in memo'}</span> when sending payment.</p>
+              </div>
+
               {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowConfirmationModal(false)}
-                  className="flex-1 bg-secondary/20 hover:bg-secondary/30 text-primary font-bold py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95"
+                  className="flex-1 py-3 font-bold transition-all duration-300 rounded-lg bg-secondary/20 hover:bg-secondary/30 text-primary hover:scale-105 active:scale-95"
                 >
                   Back
                 </button>
@@ -1318,11 +1380,12 @@ export default function Home() {
                       setBookingContact('')
                       setSelectedBookingService(null)
                       setSelectedDate(null)
+                      setPolicyAccepted(false)
                       // Scroll to home
                       window.scrollTo({ top: 0, behavior: 'smooth' })
                     }, 5000)
                   }}
-                  className="flex-1 bg-accent hover:bg-accent-light text-white font-bold py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+                  className="flex-1 py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
                 >
                   Complete Booking
                 </button>
@@ -1334,12 +1397,12 @@ export default function Home() {
 
       {/* Booking Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md animate-fade-in-down">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-2xl animate-fade-in-down">
             {/* Modal Body */}
-            <div className="p-8 flex flex-col items-center justify-center text-center space-y-6">
+            <div className="flex flex-col items-center justify-center p-8 space-y-6 text-center">
               {/* Success Checkmark */}
-              <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center animate-bounce">
+              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-accent/20 animate-bounce">
                 <svg className="w-12 h-12 text-accent" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
@@ -1347,18 +1410,18 @@ export default function Home() {
 
               {/* Success Message */}
               <div>
-                <h2 className="text-2xl font-bold text-primary mb-2">Booking Confirmed!</h2>
-                <p className="text-primary/70 text-sm">Your appointment has been successfully booked.</p>
+                <h2 className="mb-2 text-2xl font-bold text-primary">Booking Confirmed!</h2>
+                <p className="text-sm text-primary/70">Your appointment has been successfully booked.</p>
               </div>
 
               {/* Booking Reference */}
-              <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4 w-full">
-                <p className="text-xs text-primary/60 font-semibold mb-1">BOOKING REFERENCE</p>
-                <p className="text-2xl font-bold text-accent font-mono">{bookingReference}</p>
+              <div className="w-full p-4 border rounded-lg bg-secondary/10 border-secondary/20">
+                <p className="mb-1 text-xs font-semibold text-primary/60">BOOKING REFERENCE</p>
+                <p className="font-mono text-2xl font-bold text-accent">{bookingReference}</p>
               </div>
 
               {/* Confirmation Details */}
-              <div className="bg-secondary/5 border border-secondary/20 rounded-lg p-4 w-full text-left space-y-3">
+              <div className="w-full p-4 space-y-3 text-left border rounded-lg bg-secondary/5 border-secondary/20">
                 <p className="text-sm text-primary/70">
                   <span className="font-semibold text-primary">Confirmation email:</span> Sent to {bookingEmail}
                 </p>
@@ -1381,10 +1444,11 @@ export default function Home() {
                   setBookingContact('')
                   setSelectedBookingService(null)
                   setSelectedDate(null)
+                  setPolicyAccepted(false)
                   // Scroll to home
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
-                className="w-full bg-accent hover:bg-accent-light text-white font-bold py-3 rounded-lg transition-all duration-300 hover:scale-105 active:scale-95"
+                className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
               >
                 Done
               </button>
@@ -1398,10 +1462,10 @@ export default function Home() {
 
       {/* Careers Application Modal */}
       {showApplicationModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-accent/20 p-6 flex justify-between items-center z-10">
-              <h2 className="text-xl sm:text-2xl font-bold text-primary">Apply for {selectedPosition}</h2>
+            <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-white border-b border-accent/20">
+              <h2 className="text-xl font-bold sm:text-2xl text-primary">Apply for {selectedPosition}</h2>
               <button
                 onClick={() => {
                   setShowApplicationModal(false)
@@ -1418,12 +1482,12 @@ export default function Home() {
 
             {applicationSubmitted ? (
               <div className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-green-500 rounded-full">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-primary mb-2">Application Submitted!</h3>
+                <h3 className="mb-2 text-2xl font-bold text-primary">Application Submitted!</h3>
                 <p className="text-primary/80">Thank you for your interest. We'll review your application and get back to you soon.</p>
               </div>
             ) : (
@@ -1472,7 +1536,7 @@ export default function Home() {
               }} className="p-6 space-y-4">
                 {/* Full Name */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1486,12 +1550,12 @@ export default function Home() {
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.full_name ? 'border-red-500' : 'border-accent/30'}`}
                     placeholder="Your full name"
                   />
-                  {formErrors.full_name && <p className="text-red-500 text-sm mt-1">{formErrors.full_name}</p>}
+                  {formErrors.full_name && <p className="mt-1 text-sm text-red-500">{formErrors.full_name}</p>}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1505,12 +1569,12 @@ export default function Home() {
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.email ? 'border-red-500' : 'border-accent/30'}`}
                     placeholder="your.email@example.com"
                   />
-                  {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+                  {formErrors.email && <p className="mt-1 text-sm text-red-500">{formErrors.email}</p>}
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1524,12 +1588,12 @@ export default function Home() {
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.phone ? 'border-red-500' : 'border-accent/30'}`}
                     placeholder="(555) 123-4567"
                   />
-                  {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+                  {formErrors.phone && <p className="mt-1 text-sm text-red-500">{formErrors.phone}</p>}
                 </div>
 
                 {/* Employment Type */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Preferred Employment Type <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -1546,12 +1610,12 @@ export default function Home() {
                     <option value="Part-time">Part-time</option>
                     <option value="Flexible">Flexible</option>
                   </select>
-                  {formErrors.employment_type && <p className="text-red-500 text-sm mt-1">{formErrors.employment_type}</p>}
+                  {formErrors.employment_type && <p className="mt-1 text-sm text-red-500">{formErrors.employment_type}</p>}
                 </div>
 
                 {/* License Number */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Georgia Cosmetology License Number <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1565,12 +1629,12 @@ export default function Home() {
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.license_number ? 'border-red-500' : 'border-accent/30'}`}
                     placeholder="GA-COS-XXXXXX"
                   />
-                  {formErrors.license_number && <p className="text-red-500 text-sm mt-1">{formErrors.license_number}</p>}
+                  {formErrors.license_number && <p className="mt-1 text-sm text-red-500">{formErrors.license_number}</p>}
                 </div>
 
                 {/* Years Experience */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Years of Professional Experience <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -1585,12 +1649,12 @@ export default function Home() {
                     placeholder="5"
                     min="0"
                   />
-                  {formErrors.years_experience && <p className="text-red-500 text-sm mt-1">{formErrors.years_experience}</p>}
+                  {formErrors.years_experience && <p className="mt-1 text-sm text-red-500">{formErrors.years_experience}</p>}
                 </div>
 
                 {/* Specialties */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Specialties / Areas of Expertise <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -1604,12 +1668,12 @@ export default function Home() {
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.specialties ? 'border-red-500' : 'border-accent/30'}`}
                     placeholder="e.g., Balayage, Box Braids, Natural Hair, Color Corrections..."
                   />
-                  {formErrors.specialties && <p className="text-red-500 text-sm mt-1">{formErrors.specialties}</p>}
+                  {formErrors.specialties && <p className="mt-1 text-sm text-red-500">{formErrors.specialties}</p>}
                 </div>
 
                 {/* Portfolio URL */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Portfolio URL (Instagram, Website, etc.)
                   </label>
                   <input
@@ -1617,14 +1681,14 @@ export default function Home() {
                     name="portfolio_url"
                     value={applicationData.portfolio_url}
                     onChange={(e) => setApplicationData({ ...applicationData, portfolio_url: e.target.value })}
-                    className="w-full px-4 py-2 border border-accent/30 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
                     placeholder="https://instagram.com/yourportfolio"
                   />
                 </div>
 
                 {/* Certifications */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Certifications & Education
                   </label>
                   <textarea
@@ -1632,14 +1696,14 @@ export default function Home() {
                     value={applicationData.certifications}
                     onChange={(e) => setApplicationData({ ...applicationData, certifications: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-2 border border-accent/30 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
                     placeholder="List your cosmetology school, advanced certifications, workshops, etc."
                   />
                 </div>
 
                 {/* Availability */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Availability
                   </label>
                   <textarea
@@ -1647,14 +1711,14 @@ export default function Home() {
                     value={applicationData.availability}
                     onChange={(e) => setApplicationData({ ...applicationData, availability: e.target.value })}
                     rows={2}
-                    className="w-full px-4 py-2 border border-accent/30 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
                     placeholder="When can you start? What days/hours are you available?"
                   />
                 </div>
 
                 {/* Why Join */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Why do you want to join our team?
                   </label>
                   <textarea
@@ -1662,14 +1726,14 @@ export default function Home() {
                     value={applicationData.why_join}
                     onChange={(e) => setApplicationData({ ...applicationData, why_join: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-2 border border-accent/30 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
                     placeholder="Tell us what excites you about this opportunity..."
                   />
                 </div>
 
                 {/* References */}
                 <div>
-                  <label className="block text-sm font-medium text-primary mb-2">
+                  <label className="block mb-2 text-sm font-medium text-primary">
                     Professional References
                   </label>
                   <textarea
@@ -1677,7 +1741,7 @@ export default function Home() {
                     value={applicationData.references}
                     onChange={(e) => setApplicationData({ ...applicationData, references: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-2 border border-accent/30 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
                     placeholder="Name, Title, Phone/Email (2-3 references)"
                   />
                 </div>
@@ -1690,7 +1754,7 @@ export default function Home() {
                       setShowApplicationModal(false)
                       setFormErrors({})
                     }}
-                    className="flex-1 px-6 py-3 border border-accent/30 text-primary rounded-lg hover:bg-secondary/10 transition-colors"
+                    className="flex-1 px-6 py-3 transition-colors border rounded-lg border-accent/30 text-primary hover:bg-secondary/10"
                   >
                     Cancel
                   </button>
