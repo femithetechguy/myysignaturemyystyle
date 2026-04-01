@@ -99,7 +99,7 @@ export default function Gallery({ services, instagramUrl }: GalleryProps) {
           {filtered.map((service, idx) => (
             <div
               key={service.id}
-              className="group relative rounded-lg overflow-hidden aspect-square cursor-pointer shadow hover:shadow-xl transition-all duration-300"
+              className="group relative rounded-lg overflow-hidden cursor-pointer shadow hover:shadow-xl transition-all duration-300" style={{ aspectRatio: '4/5' }}
               onClick={() => openModal(idx)}
             >
               <Image
@@ -108,6 +108,11 @@ export default function Gallery({ services, instagramUrl }: GalleryProps) {
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
+                unoptimized
+                onError={(e) => {
+                  const slug = service.images[0].split('/').pop()?.replace(/_[a-z0-9]+$/, '') ?? ''
+                  ;(e.currentTarget as HTMLImageElement).src = `/assets/images/services/${slug}.jpeg`
+                }}
               />
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/55 transition-all duration-300 flex flex-col items-center justify-center p-3">
@@ -179,6 +184,7 @@ export default function Gallery({ services, instagramUrl }: GalleryProps) {
                 fill
                 sizes="(max-width: 768px) 100vw, 900px"
                 className="object-cover"
+                unoptimized
                 priority
               />
               {/* Prev / Next arrows */}

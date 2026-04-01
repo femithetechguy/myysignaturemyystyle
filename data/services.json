@@ -8,7 +8,7 @@
     "price_max": 45,
     "category": "Hair Cut",
     "images": [
-      "MyySignatureMyyStyle/hair_cut_hair_trim_1_e6zogm"
+      "hair_cut_hair_trim_1_e6zogm"
     ]
   },
   {
@@ -20,7 +20,7 @@
     "price_max": 65,
     "category": "Hair Cut",
     "images": [
-      "MyySignatureMyyStyle/hair_cut_bang_edge_trim_1_fiwdf3"
+      "hair_cut_bang_edge_trim_1_fiwdf3"
     ]
   },
   {
@@ -32,7 +32,7 @@
     "price_max": 85,
     "category": "Hair Cut",
     "images": [
-      "MyySignatureMyyStyle/hair_cut_adult_haircut_1_dm498g"
+      "hair_cut_adult_haircut_1_dm498g"
     ]
   },
   {
@@ -44,7 +44,7 @@
     "price_max": 40,
     "category": "Hair Cut",
     "images": [
-      "MyySignatureMyyStyle/hair_cut_kids_haircut_1_lemrhk"
+      "hair_cut_kids_haircut_1_lemrhk"
     ]
   },
   {
@@ -56,7 +56,7 @@
     "price_max": 45,
     "category": "Hair Cut",
     "images": [
-      "MyySignatureMyyStyle/hair_cut_military_haircut_1_kax3ty"
+      "hair_cut_military_haircut_1_kax3ty"
     ]
   },
   {
@@ -68,7 +68,7 @@
     "price_max": 65,
     "category": "Hair Cut",
     "images": [
-      "MyySignatureMyyStyle/hair_cut_fade_1_kn74at"
+      "hair_cut_fade_1_kn74at"
     ]
   },
   {
@@ -80,7 +80,7 @@
     "price_max": 130,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_relaxer_texturizer_1_2tcwng"
+      "chemical_service_relaxer_texturizer_1_ztcwng"
     ]
   },
   {
@@ -92,7 +92,7 @@
     "price_max": 150,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_perm_1_mt9v"
+      "chemical_service_perm_1_rnlr9v"
     ]
   },
   {
@@ -104,7 +104,7 @@
     "price_max": 110,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_grey_coverage_1_cohtb6"
+      "chemical_service_grey_coverage_1_cohkb6"
     ]
   },
   {
@@ -116,7 +116,7 @@
     "price_max": 95,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_root_touchup_1_xsarcs"
+      "chemical_service_root_touchup_1_xsarcu"
     ]
   },
   {
@@ -128,7 +128,7 @@
     "price_max": 130,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_single_process_color_1_evfe0a"
+      "chemical_service_single_process_color_1_evfe0a"
     ]
   },
   {
@@ -140,7 +140,7 @@
     "price_max": 190,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_double_process_color_1_ajdn0o"
+      "chemical_service_double_process_color_1_ajdrdo"
     ]
   },
   {
@@ -152,7 +152,7 @@
     "price_max": 160,
     "category": "Chemical Service",
     "images": [
-      "MyySignatureMyyStyle/chemical_service_partial_full_highlight_1_3eo66p"
+      "chemical_service_partial_full_highlight_1_ecr66p"
     ]
   },
   {
@@ -164,7 +164,7 @@
     "price_max": 55,
     "category": "Hair Treatment",
     "images": [
-      "MyySignatureMyyStyle/hair_treatment_deep_conditioning_treatment_1_atanzx"
+      "hair_treatment_deep_conditioning_treatment_1_atanzx"
     ]
   },
   {
@@ -176,7 +176,7 @@
     "price_max": 60,
     "category": "Hair Treatment",
     "images": [
-      "MyySignatureMyyStyle/hair_treatment_protein_treatment_1_gtc6s2"
+      "hair_treatment_protein_treatment_1_gdc8d2"
     ]
   },
   {
@@ -188,7 +188,7 @@
     "price_max": 50,
     "category": "Hair Treatment",
     "images": [
-      "MyySignatureMyyStyle/hair_treatment_oil_treatment_1_gnvaef"
+      "hair_treatment_oil_treatment_1_gnraef"
     ]
   },
   {
@@ -200,7 +200,7 @@
     "price_max": 65,
     "category": "Hair Treatment",
     "images": [
-      "MyySignatureMyyStyle/hair_treatment_scalp_treatment_1_dkwosx"
+      "hair_treatment_scalp_treatment_1_dcwosx"
     ]
   },
   {
@@ -212,7 +212,7 @@
     "price_max": 85,
     "category": "Hair Treatment",
     "images": [
-      "MyySignatureMyyStyle/hair_treatment_olaplex_bond_repair_treatment_1_x3zl81"
+      "hair_treatment_olaplex_bond_repair_treatment_1_x3zi81"
     ]
   },
   {
@@ -224,7 +224,7 @@
     "price_max": 80,
     "category": "Hair Treatment",
     "images": [
-      "MyySignatureMyyStyle/hair_treatment_dr_c_tuna_hair_treatment_1_g8gfn5"
+      "hair_treatment_dr_c_tuna_hair_treatment_1_g9g6n5"
     ]
   },
   {
@@ -236,7 +236,7 @@
     "price_max": 260,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_sew_in_1_jkde9i"
+      "extensions_sew_in_1_ykde9i"
     ]
   },
   {
@@ -248,7 +248,7 @@
     "price_max": 350,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_microlinks_1_6wc3mw"
+      "extensions_microlinks_1_dwz3mw"
     ]
   },
   {
@@ -260,7 +260,7 @@
     "price_max": 250,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_tape_in_1_xey1u0"
+      "extensions_tape_in_1_xey1u0"
     ]
   },
   {
@@ -272,7 +272,7 @@
     "price_max": 150,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_wig_installation_1_z0ffgs"
+      "extensions_wig_installation_1_odifga"
     ]
   },
   {
@@ -284,7 +284,7 @@
     "price_max": 130,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_up_do_1_ydegl1"
+      "extensions_up_do_1_ydegfi"
     ]
   },
   {
@@ -296,7 +296,7 @@
     "price_max": 220,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_pixie_natural_hair_sew_in_1_xlfou1"
+      "extensions_pixie_natural_hair_sew_in_1_kifoul"
     ]
   },
   {
@@ -308,7 +308,7 @@
     "price_max": 100,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_weave_maintenance_1_g8ioxi"
+      "extensions_weave_maintenance_1_gl8ooj"
     ]
   },
   {
@@ -320,7 +320,7 @@
     "price_max": 75,
     "category": "Extensions",
     "images": [
-      "MyySignatureMyyStyle/extensions_weave_take_down_1_tqis1c"
+      "extensions_weave_take_down_1_lqlx1c"
     ]
   },
   {
@@ -332,7 +332,7 @@
     "price_max": 260,
     "category": "Braids",
     "images": [
-      "MyySignatureMyyStyle/braids_feeding_fulani_lemonade_braids_1_px28gr"
+      "braids_feeding_fulani_lemonade_braids_1_pv28jy"
     ]
   },
   {
@@ -344,7 +344,7 @@
     "price_max": 230,
     "category": "Braids",
     "images": [
-      "MyySignatureMyyStyle/braids_senegalese_twist_1_cpe6w3"
+      "braids_senegalese_twist_1_cpe6w3"
     ]
   },
   {
@@ -356,7 +356,7 @@
     "price_max": 180,
     "category": "Braids",
     "images": [
-      "MyySignatureMyyStyle/braids_crochet_1_xbtgtb"
+      "braids_crochet_1_xblgtb"
     ]
   },
   {
@@ -368,7 +368,7 @@
     "price_max": 130,
     "category": "Braids",
     "images": [
-      "MyySignatureMyyStyle/braids_braids_maintenance_1_jp93t"
+      "braids_braids_maintenance_1_jpt93t"
     ]
   },
   {
@@ -380,7 +380,7 @@
     "price_max": 80,
     "category": "Braids",
     "images": [
-      "MyySignatureMyyStyle/braids_braids_take_down_1_sti43qz"
+      "braids_braids_take_down_1_sfd3qz"
     ]
   },
   {
@@ -392,7 +392,7 @@
     "price_max": 180,
     "category": "Locs",
     "images": [
-      "MyySignatureMyyStyle/locs_starter_locs_1_xkle1gs"
+      "locs_starter_locs_1_kke1gs"
     ]
   },
   {
@@ -404,7 +404,7 @@
     "price_max": 160,
     "category": "Locs",
     "images": [
-      "MyySignatureMyyStyle/locs_retwist_interloc_styles_1_dby69v"
+      "locs_retwist_interloc_styles_1_dbyb9v"
     ]
   },
   {
@@ -416,7 +416,7 @@
     "price_max": 130,
     "category": "Locs",
     "images": [
-      "MyySignatureMyyStyle/locs_loc_maintenance_1_eqzlwq"
+      "locs_loc_maintenance_1_eqzlwq"
     ]
   },
   {
@@ -428,7 +428,7 @@
     "price_max": 130,
     "category": "Natural Hair Styles",
     "images": [
-      "MyySignatureMyyStyle/natural_hair_styles_silk_press_1_ym0dka"
+      "natural_hair_styles_silk_press_1_ym0dka"
     ]
   },
   {
@@ -440,7 +440,7 @@
     "price_max": 140,
     "category": "Natural Hair Styles",
     "images": [
-      "MyySignatureMyyStyle/natural_hair_styles_two_strands_twist_1_xicpp"
+      "natural_hair_styles_two_strands_twist_1_wiqcpp"
     ]
   },
   {
@@ -452,7 +452,7 @@
     "price_max": 110,
     "category": "Natural Hair Styles",
     "images": [
-      "MyySignatureMyyStyle/natural_hair_styles_flat_twist_1_qllcirg"
+      "natural_hair_styles_flat_twist_1_oj0cxg"
     ]
   },
   {
@@ -464,7 +464,7 @@
     "price_max": 100,
     "category": "Natural Hair Styles",
     "images": [
-      "MyySignatureMyyStyle/natural_hair_styles_wash_and_go_1_jei8k0m"
+      "natural_hair_styles_wash_and_go_1_jw8k0m"
     ]
   },
   {
@@ -476,7 +476,7 @@
     "price_max": 110,
     "category": "Natural Hair Styles",
     "images": [
-      "MyySignatureMyyStyle/natural_hair_styles_wash_and_set_1_zc0j2k"
+      "natural_hair_styles_wash_and_set_1_zc0jzk"
     ]
   },
   {
@@ -488,7 +488,7 @@
     "price_max": 200,
     "category": "Bridal",
     "images": [
-      "MyySignatureMyyStyle/bridal_bridal_trial_1_jsd1no"
+      "bridal_bridal_trial_1_jsdnlo"
     ]
   },
   {
@@ -500,7 +500,7 @@
     "price_max": 300,
     "category": "Bridal",
     "images": [
-      "MyySignatureMyyStyle/bridal_wedding_day_style_1_ujnueg"
+      "bridal_wedding_day_style_1_uyueqg"
     ]
   },
   {
@@ -512,7 +512,7 @@
     "price_max": 55,
     "category": "Add On",
     "images": [
-      "MyySignatureMyyStyle/add_on_shampoo_hydrate_and_trim_1_f1une7"
+      "add_on_shampoo_hydrate_and_trim_1_f1une7"
     ]
   },
   {
@@ -524,7 +524,7 @@
     "price_max": 45,
     "category": "Add On",
     "images": [
-      "MyySignatureMyyStyle/add_on_scalp_stimulator_1_evctv0"
+      "add_on_scalp_stimulator_1_evcbvb"
     ]
   }
 ]

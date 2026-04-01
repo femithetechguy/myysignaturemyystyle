@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 1, 2026 (updated)
+Last updated: April 1, 2026 — pending commit on `develop`
 
 ---
 
@@ -50,13 +50,53 @@ Last updated: April 1, 2026 (updated)
 - [x] `deposit_note` in `app.json` updated to inform users payment options are listed below
 - [x] Confirmation modal includes booking reference in payment memo hint
 
+### Booking Modal — UX Consolidation
+- [x] 3 modals (Booking → Confirmation → Success) merged into 2
+  - Success view embedded inside confirmation modal via `confirmationStep: 'review' | 'confirmed'` state
+  - Old standalone success modal removed
+  - Done button resets all state and scrolls to top
+
+### Services Data
+- [x] `data/services.json` created — 44 services across 9 categories with `price_min`, `price_max`, `duration`, `images`
+- [x] Hair Cut category: **Adult Haircut**, **Kids Haircut**, **Military Haircut**, **Fade** added (`cut_003`–`cut_006`)
+- [x] All 44 services have Cloudinary public IDs wired in
+- [x] 44 placeholder JPEGs generated in `public/assets/images/services/` via `scripts/generate-service-images.py`
+- [x] `scripts/seed-services.py` — pandas script to regenerate `data/services.json`
+
+### Gallery
+- [x] `Gallery.tsx` fully rewritten — powered by `data/services.json` + Cloudinary
+  - 4-col square grid (2 mobile, 3 tablet, 4 desktop)
+  - Hover overlay shows service name + price
+  - Category filter tabs auto-generated from service categories
+  - **Lightbox modal**: prev/next arrows, dot indicators, counter, keyboard nav (← → Esc), body scroll lock
+  - Modal shows: image, service name, category, description, price range, duration
+- [x] `res.cloudinary.com` added to `next.config.js` `remotePatterns`
+- [x] Modal details cutoff fixed (image uses `flex-shrink` instead of `flex-shrink-0`)
+- [x] Gallery tiles changed from square to **4:5 portrait aspect ratio** (IG-style)
+- [x] `unoptimized` prop added to both `<Image>` components — Cloudinary handles optimization, fixes "upstream response is invalid" error
+- [x] `onError` fallback added — grid falls back to local placeholder JPEGs if Cloudinary image fails
+- [x] All 44 Cloudinary public IDs verified and corrected via API (all return HTTP 200)
+  - Root-level IDs only — `MyySignatureMyyStyle/` folder prefix stripped from all entries
+  - Individual suffix typos corrected using live Cloudinary API response
+  - `scripts/fetch-cloudinary-ids.py` — fetches all 181 assets from Cloudinary API, auto-matches to services
+  - `scripts/fix-cloudinary-ids.py` — applies known-good ID mapping for all 44 services
+
+### Booking Modal — Success View
+- [x] Copy button added to booking reference block in the confirmed/success view
+  - Reuses existing `copiedRef` / `setCopiedRef` state
+  - Shows "✓ Copied!" for 2 seconds after click
+
+### Instagram Integration
+- No access to client IG account — integration deferred
+- **Recommended approach when ready**: Behold.so embed widget (free tier, client self-serves login, one script tag to add)
+- Alternative: client generates a Graph API long-lived token → `scripts/fetch-instagram-posts.js` → `data/instagram.json` → rendered in Gallery
+
 ---
 
 ## 🔄 In Progress / Needs Attention
 
 ### Database
 - [ ] PostgreSQL is **not connected** — all admin data tabs return `ECONNREFUSED 127.0.0.1:5432`
-  - Services dropdown in the booking modal is empty as a result
   - Need to provision a local or remote Postgres instance and run migrations
   - Schema SQL files exist in `scripts/` — run `scripts/create-frontend-tables.sql` and `scripts/seed-frontend-data.sql` to bootstrap
 

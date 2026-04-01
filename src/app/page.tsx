@@ -1381,7 +1381,19 @@ export default function Home() {
                 </div>
                 <div className="w-full p-4 border rounded-lg bg-secondary/10 border-secondary/20">
                   <p className="mb-1 text-xs font-semibold text-primary/60">BOOKING REFERENCE</p>
-                  <p className="font-mono text-2xl font-bold text-accent">{bookingReference}</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-mono text-2xl font-bold text-accent">{bookingReference}</p>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(bookingReference)
+                        setCopiedRef(true)
+                        setTimeout(() => setCopiedRef(false), 2000)
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent/10 hover:bg-accent/20 text-accent transition-all text-xs font-bold flex-shrink-0"
+                    >
+                      {copiedRef ? '✓ Copied!' : '⧉ Copy'}
+                    </button>
+                  </div>
                 </div>
                 <div className="w-full p-4 space-y-3 text-left border rounded-lg bg-secondary/5 border-secondary/20">
                   <p className="text-sm text-primary/70"><span className="font-semibold text-primary">Confirmation email:</span> Sent to {bookingEmail}</p>
