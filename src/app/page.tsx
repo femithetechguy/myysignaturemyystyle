@@ -1,6 +1,6 @@
 'use client'
 
-import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
+import { getAppConfig, getContent, getGallery, getCareers, getServices } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { FiInstagram } from 'react-icons/fi'
@@ -9,7 +9,7 @@ import Gallery from '@/components/Gallery'
 
 export default function Home() {
   const appConfig = getAppConfig()
-  const [services, setServices] = useState([])
+  const services = getServices()
   const business = appConfig.business
   const content = getContent()
   const gallery = getGallery()
@@ -28,15 +28,15 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
-  const [selectedCategory, setSelectedCategory] = useState('Cuts')
+  const [selectedCategory, setSelectedCategory] = useState('Hair Cut')
   const [selectedBookingCategory, setSelectedBookingCategory] = useState('')
-  const [selectedBookingService, setSelectedBookingService] = useState<{ id: string; name: string; price: number } | null>(null)
+  const [selectedBookingService, setSelectedBookingService] = useState<{ id: string; name: string; category: string; price_min: number; price_max: number; duration: number } | null>(null)
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [bookingName, setBookingName] = useState('')
   const [bookingContact, setBookingContact] = useState('')
   const [bookingEmail, setBookingEmail] = useState('')
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [confirmationStep, setConfirmationStep] = useState<'review' | 'confirmed'>('review')
   const [bookingReference, setBookingReference] = useState('')
   const [showApplicationModal, setShowApplicationModal] = useState(false)
   const [selectedPosition, setSelectedPosition] = useState<string | null>(null)
@@ -57,6 +57,26 @@ export default function Home() {
   })
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
   const [policyAccepted, setPolicyAccepted] = useState(false)
+  const [copiedZelle, setCopiedZelle] = useState(false)
+  const [copiedCashapp, setCopiedCashapp] = useState(false)
+  const [copiedRef, setCopiedRef] = useState(false)
+  const [bookingToast, setBookingToast] = useState<string | null>(null)
+
+  const showBookingToast = (msg: string) => {
+    setBookingToast(msg)
+    setTimeout(() => setBookingToast(null), 4000)
+  }
+
+  const copyToClipboard = (value: string, type: 'zelle' | 'cashapp') => {
+    navigator.clipboard.writeText(value)
+    if (type === 'zelle') {
+      setCopiedZelle(true)
+      setTimeout(() => setCopiedZelle(false), 2000)
+    } else {
+      setCopiedCashapp(true)
+      setTimeout(() => setCopiedCashapp(false), 2000)
+    }
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,29 +109,6 @@ export default function Home() {
   }, [])
 
   // Fetch services from database
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch('/api/services', {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
-        })
-        if (response.ok) {
-          const data = await response.json()
-          setServices(data)
-        } else {
-          console.error('Failed to fetch services')
-        }
-      } catch (error) {
-        console.error('Error fetching services:', error)
-      }
-    }
-
-    fetchServices()
-  }, [])
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -165,7 +162,7 @@ export default function Home() {
   const handleScheduleClick = () => {
     setShowBookingModal(true)
     setSelectedDate(new Date())
-    setSelectedBookingCategory(getCategories()[0] || 'Cuts')
+    setSelectedBookingCategory(getCategories()[0] || 'Hair Cut')
     setFormErrors({})
     setBookingName('')
     setBookingContact('')
@@ -247,9 +244,14 @@ export default function Home() {
     return days
   }
 
+  const CATEGORY_ORDER = [
+    'Hair Cut', 'Chemical Service', 'Hair Treatment', 'Extensions',
+    'Braids', 'Locs', 'Natural Hair Styles', 'Bridal', 'Add On'
+  ]
+
   const getCategories = () => {
-    const categories = Array.from(new Set(services.map(s => s.category)))
-    return categories.sort()
+    const available = new Set(services.map(s => s.category))
+    return CATEGORY_ORDER.filter(c => available.has(c))
   }
 
   const getServicesByCategory = (category: string) => {
@@ -449,12 +451,12 @@ export default function Home() {
                 </div>
                 <p className="mb-4 text-sm text-gray-600 sm:text-base">{service.description}</p>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xl font-bold sm:text-2xl text-accent">${service.price}</span>
+                  <span className="text-xl font-bold sm:text-2xl text-accent">${service.price_min} – ${service.price_max}</span>
                   <span className="text-xs text-gray-500 sm:text-sm">{service.duration} min</span>
                 </div>
                 <button
                   onClick={() => {
-                    setSelectedBookingService({ id: service.id, name: service.name, price: service.price })
+                    setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })
                     setSelectedBookingCategory(service.category)
                     setShowBookingModal(true)
                     setSelectedDate(new Date())
@@ -476,7 +478,7 @@ export default function Home() {
 
       {/* Gallery Section */}
       <section id="gallery" className="bg-white">
-        <Gallery items={gallery?.items || []} instagramUrl={business.social.instagram} posts={gallery?.instagram_posts || []} />
+        <Gallery services={services} instagramUrl={business.social.instagram} />
       </section>
 
       {/* Section Divider */}
@@ -843,7 +845,7 @@ export default function Home() {
       {/* Message Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-2xl max-w-md md:max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="sticky top-0 flex items-center justify-between p-6 text-white bg-primary">
               <h2 className="text-xl font-bold">{content.message_modal?.title || 'Send us a Message'}</h2>
@@ -991,7 +993,14 @@ export default function Home() {
       {/* Booking Modal */}
       {showBookingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-fade-in-down">
+          {/* Toast */}
+          {bookingToast && (
+            <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] max-w-sm w-full mx-4 px-5 py-4 bg-red-600 text-white rounded-xl shadow-2xl flex items-start gap-3 animate-fade-in-down">
+              <span className="text-xl flex-shrink-0">⚠️</span>
+              <p className="text-sm font-semibold leading-snug">{bookingToast}</p>
+            </div>
+          )}
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-down">
             {/* Modal Header */}
             <div className="sticky top-0 flex items-center justify-between p-6 border-b bg-primary text-secondary border-accent/20">
               <h2 className="text-2xl font-bold">{content.reviews_section.cta_button}</h2>
@@ -1163,50 +1172,77 @@ export default function Home() {
                 <div className="p-4 border rounded-lg bg-secondary/5 border-secondary/20">
                   <p className="mb-3 text-sm font-bold text-primary">Services in {selectedBookingCategory}:</p>
                   <div className="space-y-2">
-                    {getServicesByCategory(selectedBookingCategory).map((service) => (
-                      <div key={service.id} className="flex items-center justify-between px-2 py-2 text-xs transition rounded sm:text-sm hover:bg-secondary/10">
-                        <div className="flex-1">
-                          <p className="font-medium text-primary">{service.name}</p>
-                          <p className="font-semibold text-accent">${service.price}</p>
-                        </div>
-                        <button
-                          onClick={() => setSelectedBookingService({ id: service.id, name: service.name, price: service.price })}
-                          className={`ml-2 px-3 py-1 rounded text-xs sm:text-sm font-bold transition ${
-                            selectedBookingService?.id === service.id
-                              ? 'bg-accent text-white'
-                              : 'bg-secondary/20 text-primary hover:bg-accent hover:text-white'
+                    {getServicesByCategory(selectedBookingCategory).map((service) => {
+                      const isSelected = selectedBookingService?.id === service.id
+                      return (
+                        <div
+                          key={service.id}
+                          onClick={() => setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })}
+                          className={`flex items-center justify-between px-3 py-3 text-xs rounded-lg cursor-pointer transition-all duration-200 sm:text-sm ${
+                            isSelected
+                              ? 'bg-accent text-white shadow-md scale-[1.02] border-2 border-accent'
+                              : 'hover:bg-secondary/10 border-2 border-transparent'
                           }`}
                         >
-                          {selectedBookingService?.id === service.id ? '✓ Selected' : 'Book'}
-                        </button>
-                      </div>
-                    ))}
+                          <div className="flex-1">
+                            <p className={`font-semibold ${isSelected ? 'text-white' : 'text-primary'}`}>{service.name}</p>
+                            <p className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-white/80' : 'text-accent'}`}>${service.price_min} – ${service.price_max}</p>
+                            <p className={`text-[10px] mt-0.5 ${isSelected ? 'text-white/60' : 'text-primary/50'}`}>⏱ {service.duration} min</p>
+                          </div>
+                          <div className={`ml-3 flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 ${
+                            isSelected
+                              ? 'bg-white text-accent'
+                              : 'bg-secondary/20 text-primary'
+                          }`}>
+                            {isSelected && <span className="text-sm">✓</span>}
+                            {isSelected ? 'Selected' : 'Select'}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}
 
               {/* Selected Service Display */}
               {selectedBookingService && (
-                <div className="p-3 border rounded-lg bg-accent/10 border-accent/30">
-                  <p className="mb-1 text-xs text-primary/70">Selected Service:</p>
-                  <p className="text-sm font-bold text-accent">{selectedBookingService.name}</p>
+                <div className="flex items-center gap-3 p-4 border-2 border-accent rounded-xl bg-accent/10 animate-fade-in-up shadow-sm">
+                  <div className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white text-base font-bold flex-shrink-0">✓</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-primary/60 uppercase tracking-wide">Selected Service</p>
+                    <p className="text-base font-bold text-accent truncate">{selectedBookingService.name}</p>
+                    <p className="text-[10px] text-primary/50 font-medium -mt-0.5">{selectedBookingService.category}</p>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <p className="text-xs font-semibold text-primary/70">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
+                      <p className="text-[10px] text-primary/50">⏱ {selectedBookingService.duration} min</p>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {/* Booking Disclaimer */}
-              <div className="p-4 space-y-1 text-xs border rounded-lg bg-amber-50 border-amber-200 text-amber-900">
+              <div className={`p-4 space-y-1 text-xs border-2 rounded-lg bg-amber-50 text-amber-900 transition-all duration-300 ${formErrors.policyAccepted ? 'border-red-400 bg-red-50' : 'border-amber-300'}`}>
                 <p className="text-sm font-bold">📋 Booking Policy</p>
                 <p>• {content.booking_disclaimer.deposit_note}</p>
                 <p>• {content.booking_disclaimer.cancellation_note}</p>
                 <p>• {content.booking_disclaimer.late_policy}</p>
-                <label className="flex items-start gap-3 mt-3 cursor-pointer select-none">
+                <label className={`flex items-center gap-3 mt-3 cursor-pointer select-none rounded-lg p-3 transition-all duration-200 ${policyAccepted ? 'bg-green-100 border border-green-400' : 'bg-white border-2 border-dashed border-amber-400 hover:border-amber-600'}`}>
+                  <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-200 ${policyAccepted ? 'bg-green-500 border-green-500' : 'bg-white border-amber-500'}`}>
+                    {policyAccepted && (
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
                   <input
                     type="checkbox"
                     checked={policyAccepted}
-                    onChange={(e) => setPolicyAccepted(e.target.checked)}
-                    className="mt-0.5 w-6 h-6 flex-shrink-0 accent-amber-700"
+                    onChange={(e) => { setPolicyAccepted(e.target.checked); if (e.target.checked) setFormErrors(prev => ({ ...prev, policyAccepted: '' })) }}
+                    className="sr-only"
                   />
-                  <span className="font-semibold">I have read and agree to the booking policy above.</span>
+                  <span className={`font-bold text-sm ${policyAccepted ? 'text-green-800' : 'text-amber-900'}`}>
+                    {policyAccepted ? '✓ Policy accepted' : 'I have read and agree to the booking policy above'}
+                  </span>
                 </label>
               </div>
 
@@ -1214,15 +1250,35 @@ export default function Home() {
               <div className="p-4 space-y-3 border rounded-lg bg-green-50 border-green-200">
                 <p className="text-sm font-bold text-green-900">💳 Payment Options</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="flex flex-col items-center p-3 bg-white border border-purple-200 rounded-lg shadow-sm">
-                    <SiZelle className="text-3xl mb-1 text-purple-600" />
-                    <p className="text-xs font-bold text-purple-700">Zelle</p>
-                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                  <div className="group flex flex-col items-center p-4 bg-white border-2 border-purple-200 rounded-xl shadow-sm transition-all duration-300 hover:border-purple-400 hover:shadow-purple-100 hover:shadow-md hover:-translate-y-1">
+                    <SiZelle className="text-4xl mb-2 text-purple-600 transition-transform duration-300 group-hover:scale-110" />
+                    <p className="text-xs font-bold text-purple-700 mb-1">Zelle</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                    <button
+                      onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.zelle.zelle_id, 'zelle')}
+                      className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                        copiedZelle
+                          ? 'bg-purple-600 text-white scale-95'
+                          : 'bg-purple-50 text-purple-700 border border-purple-300 hover:bg-purple-100'
+                      }`}
+                    >
+                      {copiedZelle ? '✓ Copied!' : 'Copy'}
+                    </button>
                   </div>
-                  <div className="flex flex-col items-center p-3 bg-white border border-green-200 rounded-lg shadow-sm">
-                    <SiCashapp className="text-3xl mb-1 text-green-600" />
-                    <p className="text-xs font-bold text-green-700">Cash App</p>
-                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                  <div className="group flex flex-col items-center p-4 bg-white border-2 border-green-200 rounded-xl shadow-sm transition-all duration-300 hover:border-green-400 hover:shadow-green-100 hover:shadow-md hover:-translate-y-1">
+                    <SiCashapp className="text-4xl mb-2 text-green-600 transition-transform duration-300 group-hover:scale-110" />
+                    <p className="text-xs font-bold text-green-700 mb-1">Cash App</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                    <button
+                      onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.cashapp.cashapp_id, 'cashapp')}
+                      className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                        copiedCashapp
+                          ? 'bg-green-600 text-white scale-95'
+                          : 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
+                      }`}
+                    >
+                      {copiedCashapp ? '✓ Copied!' : 'Copy'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1230,36 +1286,76 @@ export default function Home() {
               {/* Continue Button */}
               <button
                 onClick={() => {
-                  // Validate all required fields
                   const errors: { [key: string]: string } = {}
-                  
+                  const missing: string[] = []
+
+                  if (!selectedBookingService) missing.push('a service')
+                  if (!selectedDate) missing.push('an appointment date')
+
                   if (!bookingName.trim()) {
                     errors.bookingName = 'Name is required'
+                    missing.push('your name')
                   }
-                  
                   if (!bookingEmail.trim()) {
                     errors.bookingEmail = 'Email is required'
+                    missing.push('your email')
                   } else if (!/^\S+@\S+\.\S+$/.test(bookingEmail)) {
                     errors.bookingEmail = 'Please enter a valid email'
+                    missing.push('a valid email')
                   }
-                  
                   if (!bookingContact.trim()) {
                     errors.bookingContact = 'Phone number is required'
+                    missing.push('your phone number')
                   } else if (!/^[\d\s()\-+]+$/.test(bookingContact)) {
                     errors.bookingContact = 'Please enter a valid phone number'
+                    missing.push('a valid phone number')
                   }
-                  
+                  if (!policyAccepted) {
+                    errors.policyAccepted = 'Please accept the booking policy'
+                    missing.push('policy agreement (checkbox below)')
+                  }
+
                   setFormErrors(errors)
-                  
-                  if (selectedDate && selectedBookingService && policyAccepted && Object.keys(errors).length === 0) {
-                    // Show confirmation modal
-                    setShowConfirmationModal(true)
+
+                  if (missing.length > 0) {
+                    showBookingToast(`Still needed: ${missing.join(', ')}`)
+                    return
                   }
+
+                  setShowConfirmationModal(true)
                 }}
-                disabled={!selectedDate || !selectedBookingService || !policyAccepted}
-                className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light disabled:bg-secondary/30 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+                disabled={false}
+                style={(() => {
+                  const steps = [
+                    !!selectedBookingService,
+                    !!selectedDate,
+                    bookingName.trim().length > 0,
+                    /^\S+@\S+\.\S+$/.test(bookingEmail),
+                    /^[\d\s()\-+]+$/.test(bookingContact) && bookingContact.trim().length > 0,
+                    policyAccepted,
+                  ]
+                  const pct = Math.round((steps.filter(Boolean).length / steps.length) * 100)
+                  return {
+                    background: `linear-gradient(to right, var(--color-accent, #8B6F5E) ${pct}%, #c8b8b0 ${pct}%)`,
+                    transition: 'background 0.4s ease',
+                  }
+                })()}
+                className="relative w-full py-3 font-bold text-white rounded-lg shadow-lg overflow-hidden hover:scale-105 active:scale-95 transition-transform duration-300"
               >
-                {selectedBookingService ? 'Confirm Booking' : 'Select a Service to Continue'}
+                {(() => {
+                  const steps = [
+                    !!selectedBookingService,
+                    !!selectedDate,
+                    bookingName.trim().length > 0,
+                    /^\S+@\S+\.\S+$/.test(bookingEmail),
+                    /^[\d\s()\-+]+$/.test(bookingContact) && bookingContact.trim().length > 0,
+                    policyAccepted,
+                  ]
+                  const done = steps.filter(Boolean).length
+                  const total = steps.length
+                  if (done === total) return 'Confirm Booking'
+                  return `${done} / ${total} steps complete — tap to see what's missing`
+                })()}
               </button>
             </div>
           </div>
@@ -1269,33 +1365,78 @@ export default function Home() {
       {/* Booking Confirmation Modal */}
       {showConfirmationModal && selectedDate && selectedBookingService && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-white rounded-lg shadow-2xl animate-fade-in-down">
+          <div className="w-full max-w-md md:max-w-2xl bg-white rounded-lg shadow-2xl animate-fade-in-down flex flex-col max-h-[90vh]">
+
+            {confirmationStep === 'confirmed' ? (
+              /* ── SUCCESS VIEW ── */
+              <div className="flex flex-col items-center justify-center p-8 space-y-6 text-center animate-fade-in-up">
+                <div className="flex items-center justify-center w-20 h-20 rounded-full bg-accent/20">
+                  <svg className="w-12 h-12 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="mb-2 text-2xl font-bold text-primary">Booking Confirmed!</h2>
+                  <p className="text-sm text-primary/70">Your appointment has been successfully booked.</p>
+                </div>
+                <div className="w-full p-4 border rounded-lg bg-secondary/10 border-secondary/20">
+                  <p className="mb-1 text-xs font-semibold text-primary/60">BOOKING REFERENCE</p>
+                  <p className="font-mono text-2xl font-bold text-accent">{bookingReference}</p>
+                </div>
+                <div className="w-full p-4 space-y-3 text-left border rounded-lg bg-secondary/5 border-secondary/20">
+                  <p className="text-sm text-primary/70"><span className="font-semibold text-primary">Confirmation email:</span> Sent to {bookingEmail}</p>
+                  <p className="text-sm text-primary/70"><span className="font-semibold text-primary">Appointment:</span> {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                  <p className="text-sm text-primary/70"><span className="font-semibold text-primary">Service:</span> {selectedBookingService.name}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowConfirmationModal(false)
+                    setShowBookingModal(false)
+                    setConfirmationStep('review')
+                    setBookingName(''); setBookingEmail(''); setBookingContact('')
+                    setSelectedBookingService(null); setSelectedDate(null); setPolicyAccepted(false)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
+                >
+                  Done
+                </button>
+                <p className="text-xs text-primary/50">This window will close automatically in 5 seconds</p>
+              </div>
+            ) : (
+              /* ── REVIEW VIEW ── */
+              <>
             {/* Modal Header */}
-            <div className="p-6 border-b bg-primary text-secondary border-accent/20">
+            <div className="p-6 border-b bg-primary text-secondary border-accent/20 flex-shrink-0">
               <h2 className="text-2xl font-bold">Confirm Your Booking</h2>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6">
-              {/* Booking Summary */}
-              <div className="space-y-4">
+            <div className="p-6 space-y-6 overflow-y-auto">
+              {/* Booking Summary — top row: Date + Service side by side on desktop */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Date */}
-                <div className="pb-4 border-b border-secondary/20">
+                <div className="p-4 rounded-lg border border-secondary/20 bg-secondary/5">
                   <p className="mb-1 text-xs font-semibold text-primary/60">APPOINTMENT DATE</p>
-                  <p className="text-lg font-bold text-primary">
+                  <p className="text-base font-bold text-primary">
                     {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
 
                 {/* Service */}
-                <div className="pb-4 border-b border-secondary/20">
+                <div className="p-4 rounded-lg border border-secondary/20 bg-secondary/5">
                   <p className="mb-1 text-xs font-semibold text-primary/60">SERVICE</p>
-                  <p className="text-lg font-bold text-primary">{selectedBookingService.name}</p>
-                  <p className="mt-1 text-sm font-semibold text-accent">${selectedBookingService.price}</p>
+                  <p className="text-base font-bold text-primary">{selectedBookingService.name}</p>
+                  <p className="text-xs text-primary/50 font-medium">{selectedBookingService.category}</p>
+                  <p className="mt-1 text-sm font-semibold text-accent">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
+                  <p className="text-xs text-primary/50 mt-0.5">⏱ {selectedBookingService.duration} min</p>
                 </div>
+              </div>
 
+              {/* Bottom row: Your Info + Salon Location side by side on desktop */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Customer Info */}
-                <div className="pb-4 border-b border-secondary/20">
+                <div className="p-4 rounded-lg border border-secondary/20 bg-secondary/5">
                   <p className="mb-2 text-xs font-semibold text-primary/60">YOUR INFORMATION</p>
                   <div className="space-y-2">
                     <div>
@@ -1314,7 +1455,7 @@ export default function Home() {
                 </div>
 
                 {/* Salon Contact Info */}
-                <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/20">
+                <div className="p-4 rounded-lg border border-secondary/20 bg-secondary/10">
                   <p className="mb-3 text-xs font-semibold text-primary/60">SALON LOCATION</p>
                   <div className="space-y-2">
                     <div>
@@ -1338,50 +1479,82 @@ export default function Home() {
               <div className="p-4 space-y-3 border rounded-lg bg-green-50 border-green-200">
                 <p className="text-sm font-bold text-green-900">💳 Send Your Deposit</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="flex flex-col items-center p-3 bg-white border border-purple-200 rounded-lg shadow-sm">
-                    <SiZelle className="text-3xl mb-1 text-purple-600" />
-                    <p className="text-xs font-bold text-purple-700">Zelle</p>
-                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1 select-all">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                  <div className="group flex flex-col items-center p-4 bg-white border-2 border-purple-200 rounded-xl shadow-sm transition-all duration-300 hover:border-purple-400 hover:shadow-purple-100 hover:shadow-md hover:-translate-y-1">
+                    <SiZelle className="text-4xl mb-2 text-purple-600 transition-transform duration-300 group-hover:scale-110" />
+                    <p className="text-xs font-bold text-purple-700 mb-1">Zelle</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                    <button
+                      onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.zelle.zelle_id, 'zelle')}
+                      className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                        copiedZelle
+                          ? 'bg-purple-600 text-white scale-95'
+                          : 'bg-purple-50 text-purple-700 border border-purple-300 hover:bg-purple-100'
+                      }`}
+                    >
+                      {copiedZelle ? '✓ Copied!' : 'Copy'}
+                    </button>
                   </div>
-                  <div className="flex flex-col items-center p-3 bg-white border border-green-200 rounded-lg shadow-sm">
-                    <SiCashapp className="text-3xl mb-1 text-green-600" />
-                    <p className="text-xs font-bold text-green-700">Cash App</p>
-                    <p className="text-xs font-semibold text-gray-800 break-all text-center mt-1 select-all">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                  <div className="group flex flex-col items-center p-4 bg-white border-2 border-green-200 rounded-xl shadow-sm transition-all duration-300 hover:border-green-400 hover:shadow-green-100 hover:shadow-md hover:-translate-y-1">
+                    <SiCashapp className="text-4xl mb-2 text-green-600 transition-transform duration-300 group-hover:scale-110" />
+                    <p className="text-xs font-bold text-green-700 mb-1">Cash App</p>
+                    <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                    <button
+                      onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.cashapp.cashapp_id, 'cashapp')}
+                      className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                        copiedCashapp
+                          ? 'bg-green-600 text-white scale-95'
+                          : 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
+                      }`}
+                    >
+                      {copiedCashapp ? '✓ Copied!' : 'Copy'}
+                    </button>
                   </div>
                 </div>
-                <p className="text-xs text-center text-green-700 font-medium">Reference your booking # <span className="font-bold text-green-900">{bookingReference || 'in memo'}</span> when sending payment.</p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
+                <p className="text-xs text-center text-green-700 font-medium mb-2">Include this reference in your payment memo:</p>
                 <button
-                  onClick={() => setShowConfirmationModal(false)}
+                  onClick={() => {
+                    if (bookingReference) {
+                      navigator.clipboard.writeText(bookingReference)
+                      setCopiedRef(true)
+                      setTimeout(() => setCopiedRef(false), 2000)
+                    }
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 font-mono font-bold text-sm transition-all duration-200 ${
+                    copiedRef
+                      ? 'bg-green-600 border-green-600 text-white scale-95'
+                      : 'bg-white border-green-400 text-green-800 hover:bg-green-50 hover:border-green-600'
+                  }`}
+                >
+                  <span>{bookingReference || 'Generating...'}</span>
+                  <span className="text-xs font-sans font-bold ml-3">{copiedRef ? '✓ Copied!' : 'Copy'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons - pinned footer */}
+            <div className="flex gap-3 p-6 pt-4 border-t border-secondary/20 flex-shrink-0">
+                <button
+                  onClick={() => { setShowConfirmationModal(false); setConfirmationStep('review') }}
                   className="flex-1 py-3 font-bold transition-all duration-300 rounded-lg bg-secondary/20 hover:bg-secondary/30 text-primary hover:scale-105 active:scale-95"
                 >
                   Back
                 </button>
                 <button
                   onClick={() => {
-                    // Generate booking reference number
                     const refNumber = 'BK' + Date.now().toString().slice(-8)
                     setBookingReference(refNumber)
-                    
-                    // Close confirmation modal and show success modal
-                    setShowConfirmationModal(false)
-                    setShowSuccessModal(true)
-                    
-                    // Auto-close success modal after 5 seconds
+                    setConfirmationStep('confirmed')
+                    // Auto-close after 5 seconds
                     setTimeout(() => {
-                      setShowSuccessModal(false)
+                      setShowConfirmationModal(false)
                       setShowBookingModal(false)
-                      // Reset form
+                      setConfirmationStep('review')
                       setBookingName('')
                       setBookingEmail('')
                       setBookingContact('')
                       setSelectedBookingService(null)
                       setSelectedDate(null)
                       setPolicyAccepted(false)
-                      // Scroll to home
                       window.scrollTo({ top: 0, behavior: 'smooth' })
                     }, 5000)
                   }}
@@ -1390,72 +1563,8 @@ export default function Home() {
                   Complete Booking
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Booking Success Modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-white rounded-lg shadow-2xl animate-fade-in-down">
-            {/* Modal Body */}
-            <div className="flex flex-col items-center justify-center p-8 space-y-6 text-center">
-              {/* Success Checkmark */}
-              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-accent/20 animate-bounce">
-                <svg className="w-12 h-12 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                </svg>
-              </div>
-
-              {/* Success Message */}
-              <div>
-                <h2 className="mb-2 text-2xl font-bold text-primary">Booking Confirmed!</h2>
-                <p className="text-sm text-primary/70">Your appointment has been successfully booked.</p>
-              </div>
-
-              {/* Booking Reference */}
-              <div className="w-full p-4 border rounded-lg bg-secondary/10 border-secondary/20">
-                <p className="mb-1 text-xs font-semibold text-primary/60">BOOKING REFERENCE</p>
-                <p className="font-mono text-2xl font-bold text-accent">{bookingReference}</p>
-              </div>
-
-              {/* Confirmation Details */}
-              <div className="w-full p-4 space-y-3 text-left border rounded-lg bg-secondary/5 border-secondary/20">
-                <p className="text-sm text-primary/70">
-                  <span className="font-semibold text-primary">Confirmation email:</span> Sent to {bookingEmail}
-                </p>
-                <p className="text-sm text-primary/70">
-                  <span className="font-semibold text-primary">Appointment:</span> {selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
-                <p className="text-sm text-primary/70">
-                  <span className="font-semibold text-primary">Service:</span> {selectedBookingService?.name}
-                </p>
-              </div>
-
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  setShowSuccessModal(false)
-                  setShowBookingModal(false)
-                  // Reset form
-                  setBookingName('')
-                  setBookingEmail('')
-                  setBookingContact('')
-                  setSelectedBookingService(null)
-                  setSelectedDate(null)
-                  setPolicyAccepted(false)
-                  // Scroll to home
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-                className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
-              >
-                Done
-              </button>
-
-              {/* Auto-close Message */}
-              <p className="text-xs text-primary/50">This window will close automatically in 5 seconds</p>
-            </div>
+              </>
+            )}
           </div>
         </div>
       )}

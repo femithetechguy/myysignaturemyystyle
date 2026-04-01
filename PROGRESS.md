@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 1, 2026
+Last updated: April 1, 2026 (updated)
 
 ---
 
@@ -80,7 +80,18 @@ Last updated: April 1, 2026
 - [ ] Replace `landing.png` hero background image
 - [ ] Add real portfolio/gallery images to `public/assets/images/portfolio/` (currently 7 placeholder IG posts)
 - [ ] Fill in `app.json` → `business.social.facebook` (currently empty string)
-- [ ] Review and finalise all service names, descriptions, and pricing in `app.json → services.default_services`
+- [x] Hair Cut category expanded: **Adult Haircut**, **Kids Haircut**, **Military Haircut**, **Fade** added to `data/services.json` (44 services total)
+  - `cut_003` renamed from "Haircut" → "Adult Haircut"
+  - `cut_004` Kids Haircut ($25–$40, 45 min)
+  - `cut_005` Military Haircut ($30–$45, 45 min)
+  - `cut_006` Fade ($45–$65, 60 min)
+- [x] 44 placeholder JPEGs regenerated in `public/assets/images/services/` (covers all services including 3 new haircut services)
+- [x] Cloudinary public IDs wired into all 4 new haircut services in `data/services.json`
+  - `hair_cut_adult_haircut_1_dm498g`
+  - `hair_cut_kids_haircut_1_lemrhk`
+  - `hair_cut_military_haircut_1_kax3ty`
+  - `hair_cut_fade_1_kn74at`
+- [ ] Review and finalise all service names, descriptions, and pricing in `data/services.json`
 - [ ] Review and update staff bios / headshots
 - [ ] Verify business address, phone, email are live and correct
 

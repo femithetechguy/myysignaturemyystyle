@@ -4,7 +4,11 @@
     "slug": "myy-signature-myy-style",
     "version": "1.0.0",
     "scheme": "myysignaturemyystyle",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "owner": "Egwono Okpako",
     "description": "Premium hair salon specializing in expert cuts, colors, braids, and styling for all hair types with modern booking and payment processing."
   },
@@ -12,7 +16,9 @@
     "name": "Myy Signature Myy Style",
     "slug": "myy-signature-myy-style",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTabletMode": true,
       "bundleIdentifier": "com.myysignaturemyystyle.salon"
@@ -35,10 +41,17 @@
     "plugins": [
       "expo-calendar",
       "expo-notifications",
-      ["expo-notifications", {
-        "sounds": ["./assets/notification-sound.wav"],
-        "modes": ["production"]
-      }]
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ],
+          "modes": [
+            "production"
+          ]
+        }
+      ]
     ]
   },
   "business": {
@@ -314,22 +327,38 @@
         "color_palette_matching": [
           {
             "portfolio_style": "Warm Tones (Golden Blondes, Warm Reds, Caramels)",
-            "best_palettes": ["Organic", "Quiet Luxury", "Warm Earthy"],
+            "best_palettes": [
+              "Organic",
+              "Quiet Luxury",
+              "Warm Earthy"
+            ],
             "reasoning": "Warm colors in photos complement warm color palettes without clashing"
           },
           {
             "portfolio_style": "Cool Tones (Ash Blonde, Platinum, Cool Brunettes)",
-            "best_palettes": ["2025 Trendsetter", "Modern Minimalist", "Luxury Cool"],
+            "best_palettes": [
+              "2025 Trendsetter",
+              "Modern Minimalist",
+              "Luxury Cool"
+            ],
             "reasoning": "Cool palette (Future Dusk + Moonlit Grey) enhances cool-toned hair colors"
           },
           {
             "portfolio_style": "Vibrant/Bold Colors (Fashion Colors, Rainbow)",
-            "best_palettes": ["2025 Trendsetter", "Bold & Creative", "Pop & Energy"],
+            "best_palettes": [
+              "2025 Trendsetter",
+              "Bold & Creative",
+              "Pop & Energy"
+            ],
             "reasoning": "The Zesty Yellow accent pops against vibrant hair colors without competing"
           },
           {
             "portfolio_style": "Natural/Neutral (Brunettes, Naturals, Minimalist Cuts)",
-            "best_palettes": ["Quiet Luxury", "Modern Minimalist", "2025 Trendsetter"],
+            "best_palettes": [
+              "Quiet Luxury",
+              "Modern Minimalist",
+              "2025 Trendsetter"
+            ],
             "reasoning": "Neutral photos work with almost any palette; prioritize clean design instead"
           }
         ],
@@ -403,12 +432,23 @@
     },
     "payment_processing": {
       "enabled": true,
-      "processors": ["stripe", "square", "paypal"],
+      "processors": [
+        "stripe",
+        "square",
+        "paypal"
+      ],
       "deposit_required": true,
       "deposit_percentage": 50,
       "full_payment_option": true,
-      "accepted_cards": ["visa", "mastercard", "amex", "discover"],
-      "currencies": ["USD"]
+      "accepted_cards": [
+        "visa",
+        "mastercard",
+        "amex",
+        "discover"
+      ],
+      "currencies": [
+        "USD"
+      ]
     },
     "contact_forms": {
       "enabled": true,
@@ -419,7 +459,11 @@
     "newsletter": {
       "enabled": true,
       "email_platform": "mailchimp",
-      "frequency_options": ["weekly", "monthly", "special_offers"]
+      "frequency_options": [
+        "weekly",
+        "monthly",
+        "special_offers"
+      ]
     },
     "social_media": {
       "enabled": true,
@@ -440,187 +484,6 @@
       "email_marketing": true,
       "customer_reviews": true
     }
-  },
-  "services": {
-    "default_services": [
-      {
-        "id": "service_001",
-        "name": "Women's Haircut",
-        "description": "Professional women's cut with expert styling",
-        "duration": 60,
-        "price": 50,
-        "category": "Cuts"
-      },
-      {
-        "id": "service_002",
-        "name": "Men's Haircut",
-        "description": "Classic men's cut with fade and finish",
-        "duration": 30,
-        "price": 35,
-        "category": "Cuts"
-      },
-      {
-        "id": "service_003",
-        "name": "Kids Haircut",
-        "description": "Professional haircut for children",
-        "duration": 30,
-        "price": 28,
-        "category": "Cuts"
-      },
-      {
-        "id": "service_004",
-        "name": "Full Head Color",
-        "description": "Complete hair coloring service",
-        "duration": 120,
-        "price": 95,
-        "category": "Color"
-      },
-      {
-        "id": "service_005",
-        "name": "Highlights/Balayage",
-        "description": "Partial highlights or balayage coloring",
-        "duration": 120,
-        "price": 85,
-        "category": "Color"
-      },
-      {
-        "id": "service_006",
-        "name": "Color Touch-Up",
-        "description": "Root touch-up and color refresh",
-        "duration": 90,
-        "price": 65,
-        "category": "Color"
-      },
-      {
-        "id": "service_007",
-        "name": "Ombre/Sombre",
-        "description": "Gradient color technique for modern look",
-        "duration": 150,
-        "price": 110,
-        "category": "Color"
-      },
-      {
-        "id": "service_008",
-        "name": "Blow Dry Style",
-        "description": "Professional blow dry and styling",
-        "duration": 45,
-        "price": 45,
-        "category": "Styling"
-      },
-      {
-        "id": "service_009",
-        "name": "Blowout",
-        "description": "Voluminous blowout styling",
-        "duration": 45,
-        "price": 50,
-        "category": "Styling"
-      },
-      {
-        "id": "service_010",
-        "name": "Braids",
-        "description": "Various braiding styles and extensions",
-        "duration": 180,
-        "price": 120,
-        "category": "Braids"
-      },
-      {
-        "id": "service_011",
-        "name": "Box Braids",
-        "description": "Box braids with extensions",
-        "duration": 240,
-        "price": 150,
-        "category": "Braids"
-      },
-      {
-        "id": "service_012",
-        "name": "Cornrows",
-        "description": "Cornrows with or without extensions",
-        "duration": 180,
-        "price": 100,
-        "category": "Braids"
-      },
-      {
-        "id": "service_013",
-        "name": "Twists",
-        "description": "Senegalese twists or two-strand twists",
-        "duration": 180,
-        "price": 110,
-        "category": "Braids"
-      },
-      {
-        "id": "service_014",
-        "name": "Goddess Braids",
-        "description": "Elegant goddess braid styles",
-        "duration": 150,
-        "price": 130,
-        "category": "Braids"
-      },
-      {
-        "id": "service_015",
-        "name": "Locs Installation",
-        "description": "Install or retwist locs",
-        "duration": 180,
-        "price": 120,
-        "category": "Locs"
-      },
-      {
-        "id": "service_016",
-        "name": "Loc Retwist",
-        "description": "Retwist and maintain locs",
-        "duration": 120,
-        "price": 80,
-        "category": "Locs"
-      },
-      {
-        "id": "service_017",
-        "name": "Hair Treatment",
-        "description": "Deep conditioning or keratin treatment",
-        "duration": 60,
-        "price": 60,
-        "category": "Treatments"
-      },
-      {
-        "id": "service_018",
-        "name": "Silk Press",
-        "description": "Relaxer-free straightening treatment",
-        "duration": 90,
-        "price": 75,
-        "category": "Treatments"
-      },
-      {
-        "id": "service_019",
-        "name": "Scalp Treatment",
-        "description": "Therapeutic scalp massage and treatment",
-        "duration": 45,
-        "price": 50,
-        "category": "Treatments"
-      },
-      {
-        "id": "service_020",
-        "name": "Hair Extension Installation",
-        "description": "Install hair extensions (tape-in, sew-in, clip-in)",
-        "duration": 120,
-        "price": 150,
-        "category": "Extensions"
-      },
-      {
-        "id": "service_021",
-        "name": "Weave Removal & Install",
-        "description": "Remove existing weave and install new weave",
-        "duration": 180,
-        "price": 140,
-        "category": "Extensions"
-      },
-      {
-        "id": "service_022",
-        "name": "Wig Styling",
-        "description": "Cut, style, and color wig to preference",
-        "duration": 60,
-        "price": 65,
-        "category": "Styling"
-      }
-    ],
-    "note": "Premium hair salon specializing in cuts, color, braids, and professional styling services"
   },
   "staff": {
     "multi_stylist": true,
@@ -769,14 +632,21 @@
           "name": "position",
           "label": "Position Applying For",
           "type": "select",
-          "options": ["Hairstylist", "Other"],
+          "options": [
+            "Hairstylist",
+            "Other"
+          ],
           "required": true
         },
         {
           "name": "employment_type",
           "label": "Preferred Employment Type",
           "type": "select",
-          "options": ["Full-time", "Part-time", "Flexible"],
+          "options": [
+            "Full-time",
+            "Part-time",
+            "Flexible"
+          ],
           "required": true
         },
         {
@@ -960,7 +830,12 @@
   },
   "authentication": {
     "enabled": true,
-    "methods": ["email", "phone", "google", "facebook"],
+    "methods": [
+      "email",
+      "phone",
+      "google",
+      "facebook"
+    ],
     "jwt_secret": "YOUR_JWT_SECRET_KEY",
     "session_timeout": 1800,
     "two_factor_auth": false
@@ -993,6 +868,10 @@
     "api_documentation": "Swagger/OpenAPI"
   },
   "integrations": {
+    "cloudinary": {
+      "cloud_name": "dvkbgsaaf",
+      "base_url": "https://res.cloudinary.com/dvkbgsaaf/image/upload"
+    },
     "payment_gateway": {
       "stripe": {
         "enabled": true,
@@ -1122,16 +1001,30 @@
       "Payment processor selection"
     ]
   },
-
   "content": {
     "navigation": {
       "brand": "Myy Signature Myy Style",
       "links": [
-        { "label": "Services", "href": "#services" },
-        { "label": "Gallery", "href": "#gallery" },
-        { "label": "Careers", "href": "#careers" },
-        { "label": "About", "href": "#about" },
-        { "label": "Contact", "href": "#contact" }
+        {
+          "label": "Services",
+          "href": "#services"
+        },
+        {
+          "label": "Gallery",
+          "href": "#gallery"
+        },
+        {
+          "label": "Careers",
+          "href": "#careers"
+        },
+        {
+          "label": "About",
+          "href": "#about"
+        },
+        {
+          "label": "Contact",
+          "href": "#contact"
+        }
       ],
       "cta_button": "Schedule Appointment"
     },
@@ -1148,7 +1041,7 @@
       "title": "Your Hair Deserves Excellence",
       "description": "Specializing in innovative hair techniques, premium color services, and personalized styling for every client.",
       "location_text": "Located in {ADDRESS}, we provide premium salon services with a modern, welcoming atmosphere.",
-      "stat_1_value": "5000+",
+      "stat_1_value": "500+",
       "stat_1_label": "Happy Clients",
       "stat_2_value": "15+",
       "stat_2_label": "Years Experience"
@@ -1190,11 +1083,26 @@
         "navigation": {
           "title": "Quick Links",
           "links": [
-            { "label": "Services", "href": "#services" },
-            { "label": "Gallery", "href": "#gallery" },
-            { "label": "Book", "href": "#book" },
-            { "label": "About", "href": "#about" },
-            { "label": "Contact", "href": "#contact" }
+            {
+              "label": "Services",
+              "href": "#services"
+            },
+            {
+              "label": "Gallery",
+              "href": "#gallery"
+            },
+            {
+              "label": "Book",
+              "href": "#book"
+            },
+            {
+              "label": "About",
+              "href": "#about"
+            },
+            {
+              "label": "Contact",
+              "href": "#contact"
+            }
           ]
         },
         "contact": {
@@ -1233,11 +1141,31 @@
       "success_message": "Thank you for your message. We'll get back to you soon!"
     },
     "message_types": [
-      { "id": "inquiry", "label": "General Inquiry", "placeholder": "Ask us anything..." },
-      { "id": "booking", "label": "Booking Request", "placeholder": "Tell us about your desired appointment..." },
-      { "id": "review", "label": "Leave a Review", "placeholder": "Share your experience with us..." },
-      { "id": "recommendation", "label": "Recommendation", "placeholder": "Tell us how we can improve..." },
-      { "id": "feedback", "label": "Feedback", "placeholder": "Any feedback or suggestions?" }
+      {
+        "id": "inquiry",
+        "label": "General Inquiry",
+        "placeholder": "Ask us anything..."
+      },
+      {
+        "id": "booking",
+        "label": "Booking Request",
+        "placeholder": "Tell us about your desired appointment..."
+      },
+      {
+        "id": "review",
+        "label": "Leave a Review",
+        "placeholder": "Share your experience with us..."
+      },
+      {
+        "id": "recommendation",
+        "label": "Recommendation",
+        "placeholder": "Tell us how we can improve..."
+      },
+      {
+        "id": "feedback",
+        "label": "Feedback",
+        "placeholder": "Any feedback or suggestions?"
+      }
     ],
     "gallery": {
       "title": "Our Gallery",

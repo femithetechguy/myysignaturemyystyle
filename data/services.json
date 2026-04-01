@@ -1,0 +1,530 @@
+[
+  {
+    "id": "cut_001",
+    "name": "Hair Trim",
+    "description": "Clean-up trim to remove split ends and maintain shape",
+    "duration": 60,
+    "price_min": 30,
+    "price_max": 45,
+    "category": "Hair Cut",
+    "images": [
+      "MyySignatureMyyStyle/hair_cut_hair_trim_1_e6zogm"
+    ]
+  },
+  {
+    "id": "cut_002",
+    "name": "Bang / Edge Trim",
+    "description": "Precision trim of bangs and edges for a polished finish",
+    "duration": 60,
+    "price_min": 50,
+    "price_max": 65,
+    "category": "Hair Cut",
+    "images": [
+      "MyySignatureMyyStyle/hair_cut_bang_edge_trim_1_fiwdf3"
+    ]
+  },
+  {
+    "id": "cut_003",
+    "name": "Adult Haircut",
+    "description": "Full haircut with expert shaping and styling",
+    "duration": 60,
+    "price_min": 65,
+    "price_max": 85,
+    "category": "Hair Cut",
+    "images": [
+      "MyySignatureMyyStyle/hair_cut_adult_haircut_1_dm498g"
+    ]
+  },
+  {
+    "id": "cut_004",
+    "name": "Kids Haircut",
+    "description": "Fun and quick haircut for kids with gentle styling",
+    "duration": 45,
+    "price_min": 25,
+    "price_max": 40,
+    "category": "Hair Cut",
+    "images": [
+      "MyySignatureMyyStyle/hair_cut_kids_haircut_1_lemrhk"
+    ]
+  },
+  {
+    "id": "cut_005",
+    "name": "Military Haircut",
+    "description": "Clean, precise military-style cut with sharp lines",
+    "duration": 45,
+    "price_min": 30,
+    "price_max": 45,
+    "category": "Hair Cut",
+    "images": [
+      "MyySignatureMyyStyle/hair_cut_military_haircut_1_kax3ty"
+    ]
+  },
+  {
+    "id": "cut_006",
+    "name": "Fade",
+    "description": "Smooth gradient fade blended to perfection",
+    "duration": 60,
+    "price_min": 45,
+    "price_max": 65,
+    "category": "Hair Cut",
+    "images": [
+      "MyySignatureMyyStyle/hair_cut_fade_1_kn74at"
+    ]
+  },
+  {
+    "id": "chem_001",
+    "name": "Relaxer / Texturizer",
+    "description": "Chemical straightening or light texture softening service",
+    "duration": 120,
+    "price_min": 80,
+    "price_max": 130,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_relaxer_texturizer_1_2tcwng"
+    ]
+  },
+  {
+    "id": "chem_002",
+    "name": "Perm",
+    "description": "Chemical wave or curl perm service",
+    "duration": 120,
+    "price_min": 100,
+    "price_max": 150,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_perm_1_mt9v"
+    ]
+  },
+  {
+    "id": "chem_003",
+    "name": "Grey Coverage",
+    "description": "Full grey coverage color application",
+    "duration": 90,
+    "price_min": 75,
+    "price_max": 110,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_grey_coverage_1_cohtb6"
+    ]
+  },
+  {
+    "id": "chem_004",
+    "name": "Root Touchup",
+    "description": "Color refresh and root touch-up application",
+    "duration": 90,
+    "price_min": 60,
+    "price_max": 95,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_root_touchup_1_xsarcs"
+    ]
+  },
+  {
+    "id": "chem_005",
+    "name": "Single Process Color",
+    "description": "One all-over color application",
+    "duration": 120,
+    "price_min": 85,
+    "price_max": 130,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_single_process_color_1_evfe0a"
+    ]
+  },
+  {
+    "id": "chem_006",
+    "name": "Double Process Color",
+    "description": "Two-step color process \u2014 lift and tone",
+    "duration": 180,
+    "price_min": 130,
+    "price_max": 190,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_double_process_color_1_ajdn0o"
+    ]
+  },
+  {
+    "id": "chem_007",
+    "name": "Partial / Full Highlight",
+    "description": "Partial or full foil highlights for dimension and brightness",
+    "duration": 120,
+    "price_min": 100,
+    "price_max": 160,
+    "category": "Chemical Service",
+    "images": [
+      "MyySignatureMyyStyle/chemical_service_partial_full_highlight_1_3eo66p"
+    ]
+  },
+  {
+    "id": "treat_001",
+    "name": "Deep Conditioning Treatment",
+    "description": "Intensive moisture replenishment for dry or damaged hair",
+    "duration": 30,
+    "price_min": 35,
+    "price_max": 55,
+    "category": "Hair Treatment",
+    "images": [
+      "MyySignatureMyyStyle/hair_treatment_deep_conditioning_treatment_1_atanzx"
+    ]
+  },
+  {
+    "id": "treat_002",
+    "name": "Protein Treatment",
+    "description": "Strengthening protein treatment to restore hair integrity",
+    "duration": 30,
+    "price_min": 35,
+    "price_max": 60,
+    "category": "Hair Treatment",
+    "images": [
+      "MyySignatureMyyStyle/hair_treatment_protein_treatment_1_gtc6s2"
+    ]
+  },
+  {
+    "id": "treat_003",
+    "name": "Oil Treatment",
+    "description": "Nourishing hot oil treatment for shine and softness",
+    "duration": 30,
+    "price_min": 30,
+    "price_max": 50,
+    "category": "Hair Treatment",
+    "images": [
+      "MyySignatureMyyStyle/hair_treatment_oil_treatment_1_gnvaef"
+    ]
+  },
+  {
+    "id": "treat_004",
+    "name": "Scalp Treatment",
+    "description": "Therapeutic scalp treatment targeting dryness or buildup",
+    "duration": 45,
+    "price_min": 40,
+    "price_max": 65,
+    "category": "Hair Treatment",
+    "images": [
+      "MyySignatureMyyStyle/hair_treatment_scalp_treatment_1_dkwosx"
+    ]
+  },
+  {
+    "id": "treat_005",
+    "name": "Olaplex / Bond Repair Treatment",
+    "description": "Bond-building treatment to repair chemically or heat-damaged hair",
+    "duration": 45,
+    "price_min": 50,
+    "price_max": 85,
+    "category": "Hair Treatment",
+    "images": [
+      "MyySignatureMyyStyle/hair_treatment_olaplex_bond_repair_treatment_1_x3zl81"
+    ]
+  },
+  {
+    "id": "treat_006",
+    "name": "Dr C Tuna Hair Treatment",
+    "description": "Farmasi Dr C Tuna restorative hair and scalp care treatment",
+    "duration": 45,
+    "price_min": 50,
+    "price_max": 80,
+    "category": "Hair Treatment",
+    "images": [
+      "MyySignatureMyyStyle/hair_treatment_dr_c_tuna_hair_treatment_1_g8gfn5"
+    ]
+  },
+  {
+    "id": "ext_001",
+    "name": "Sew-In",
+    "description": "Full sew-in weave installation with natural hair braided down",
+    "duration": 180,
+    "price_min": 175,
+    "price_max": 260,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_sew_in_1_jkde9i"
+    ]
+  },
+  {
+    "id": "ext_002",
+    "name": "Microlinks",
+    "description": "Individual microlink / I-tip extension installation",
+    "duration": 240,
+    "price_min": 200,
+    "price_max": 350,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_microlinks_1_6wc3mw"
+    ]
+  },
+  {
+    "id": "ext_003",
+    "name": "Tape In",
+    "description": "Tape-in weft extension application",
+    "duration": 180,
+    "price_min": 150,
+    "price_max": 250,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_tape_in_1_xey1u0"
+    ]
+  },
+  {
+    "id": "ext_004",
+    "name": "Wig Installation",
+    "description": "Custom wig fitting, glueless or adhesive installation",
+    "duration": 180,
+    "price_min": 80,
+    "price_max": 150,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_wig_installation_1_z0ffgs"
+    ]
+  },
+  {
+    "id": "ext_005",
+    "name": "Up Do",
+    "description": "Elegant pinned or swept-up style with extensions",
+    "duration": 120,
+    "price_min": 75,
+    "price_max": 130,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_up_do_1_ydegl1"
+    ]
+  },
+  {
+    "id": "ext_006",
+    "name": "Pixie Natural Hair / Sew-In",
+    "description": "Pixie cut style achieved with natural hair or sew-in technique",
+    "duration": 180,
+    "price_min": 150,
+    "price_max": 220,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_pixie_natural_hair_sew_in_1_xlfou1"
+    ]
+  },
+  {
+    "id": "ext_007",
+    "name": "Weave Maintenance",
+    "description": "Upkeep, tightening, and care for existing weave installation",
+    "duration": 60,
+    "price_min": 60,
+    "price_max": 100,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_weave_maintenance_1_g8ioxi"
+    ]
+  },
+  {
+    "id": "ext_008",
+    "name": "Weave Take Down",
+    "description": "Safe removal of weave and gentle detangle of natural hair",
+    "duration": 45,
+    "price_min": 40,
+    "price_max": 75,
+    "category": "Extensions",
+    "images": [
+      "MyySignatureMyyStyle/extensions_weave_take_down_1_tqis1c"
+    ]
+  },
+  {
+    "id": "braid_001",
+    "name": "Feeding / Fulani / Lemonade Braids",
+    "description": "Feed-in, Fulani, or lemonade braid styles with extensions",
+    "duration": 180,
+    "price_min": 150,
+    "price_max": 260,
+    "category": "Braids",
+    "images": [
+      "MyySignatureMyyStyle/braids_feeding_fulani_lemonade_braids_1_px28gr"
+    ]
+  },
+  {
+    "id": "braid_002",
+    "name": "Senegalese Twist",
+    "description": "Rope twist style using Kanekalon or Marley hair",
+    "duration": 180,
+    "price_min": 150,
+    "price_max": 230,
+    "category": "Braids",
+    "images": [
+      "MyySignatureMyyStyle/braids_senegalese_twist_1_cpe6w3"
+    ]
+  },
+  {
+    "id": "braid_003",
+    "name": "Crochet",
+    "description": "Crochet braid installation with various hair textures",
+    "duration": 120,
+    "price_min": 100,
+    "price_max": 180,
+    "category": "Braids",
+    "images": [
+      "MyySignatureMyyStyle/braids_crochet_1_xbtgtb"
+    ]
+  },
+  {
+    "id": "braid_004",
+    "name": "Braids Maintenance",
+    "description": "Re-do edges, moisturize, and maintain existing braid style",
+    "duration": 120,
+    "price_min": 75,
+    "price_max": 130,
+    "category": "Braids",
+    "images": [
+      "MyySignatureMyyStyle/braids_braids_maintenance_1_jp93t"
+    ]
+  },
+  {
+    "id": "braid_005",
+    "name": "Braids Take Down",
+    "description": "Careful removal of braids with detangle and wash option",
+    "duration": 60,
+    "price_min": 50,
+    "price_max": 80,
+    "category": "Braids",
+    "images": [
+      "MyySignatureMyyStyle/braids_braids_take_down_1_sti43qz"
+    ]
+  },
+  {
+    "id": "locs_001",
+    "name": "Starter Locs",
+    "description": "Begin your loc journey \u2014 two-strand, interloc, or comb coils",
+    "duration": 120,
+    "price_min": 100,
+    "price_max": 180,
+    "category": "Locs",
+    "images": [
+      "MyySignatureMyyStyle/locs_starter_locs_1_xkle1gs"
+    ]
+  },
+  {
+    "id": "locs_002",
+    "name": "Retwist / Interloc / Styles",
+    "description": "Professional retwist, interlocking, or styled loc maintenance",
+    "duration": 120,
+    "price_min": 80,
+    "price_max": 160,
+    "category": "Locs",
+    "images": [
+      "MyySignatureMyyStyle/locs_retwist_interloc_styles_1_dby69v"
+    ]
+  },
+  {
+    "id": "locs_003",
+    "name": "Loc Maintenance",
+    "description": "General loc upkeep including cleansing, conditioning, and re-palmrolling",
+    "duration": 120,
+    "price_min": 65,
+    "price_max": 130,
+    "category": "Locs",
+    "images": [
+      "MyySignatureMyyStyle/locs_loc_maintenance_1_eqzlwq"
+    ]
+  },
+  {
+    "id": "nat_001",
+    "name": "Silk Press",
+    "description": "Relaxer-free silk press for smooth, sleek, heat-styled natural hair",
+    "duration": 180,
+    "price_min": 75,
+    "price_max": 130,
+    "category": "Natural Hair Styles",
+    "images": [
+      "MyySignatureMyyStyle/natural_hair_styles_silk_press_1_ym0dka"
+    ]
+  },
+  {
+    "id": "nat_002",
+    "name": "Two Strands Twist",
+    "description": "Two-strand twists on natural hair with or without extensions",
+    "duration": 120,
+    "price_min": 80,
+    "price_max": 140,
+    "category": "Natural Hair Styles",
+    "images": [
+      "MyySignatureMyyStyle/natural_hair_styles_two_strands_twist_1_xicpp"
+    ]
+  },
+  {
+    "id": "nat_003",
+    "name": "Flat Twist",
+    "description": "Flat twists styled close to the scalp for a sleek natural look",
+    "duration": 90,
+    "price_min": 65,
+    "price_max": 110,
+    "category": "Natural Hair Styles",
+    "images": [
+      "MyySignatureMyyStyle/natural_hair_styles_flat_twist_1_qllcirg"
+    ]
+  },
+  {
+    "id": "nat_004",
+    "name": "Wash and Go",
+    "description": "Cleanse, condition, and define natural curl pattern \u2014 no heat",
+    "duration": 120,
+    "price_min": 60,
+    "price_max": 100,
+    "category": "Natural Hair Styles",
+    "images": [
+      "MyySignatureMyyStyle/natural_hair_styles_wash_and_go_1_jei8k0m"
+    ]
+  },
+  {
+    "id": "nat_005",
+    "name": "Wash and Set",
+    "description": "Shampoo, condition, and roller or wrap set for a smooth finish",
+    "duration": 120,
+    "price_min": 65,
+    "price_max": 110,
+    "category": "Natural Hair Styles",
+    "images": [
+      "MyySignatureMyyStyle/natural_hair_styles_wash_and_set_1_zc0j2k"
+    ]
+  },
+  {
+    "id": "bridal_001",
+    "name": "Bridal Trial",
+    "description": "Pre-wedding style rehearsal to perfect your wedding day look",
+    "duration": 90,
+    "price_min": 100,
+    "price_max": 200,
+    "category": "Bridal",
+    "images": [
+      "MyySignatureMyyStyle/bridal_bridal_trial_1_jsd1no"
+    ]
+  },
+  {
+    "id": "bridal_002",
+    "name": "Wedding Day Style",
+    "description": "Full bridal styling service on your wedding day",
+    "duration": 120,
+    "price_min": 150,
+    "price_max": 300,
+    "category": "Bridal",
+    "images": [
+      "MyySignatureMyyStyle/bridal_wedding_day_style_1_ujnueg"
+    ]
+  },
+  {
+    "id": "addon_001",
+    "name": "Shampoo / Hydrate and Trim",
+    "description": "Cleansing shampoo, deep hydration, and light trim add-on",
+    "duration": 120,
+    "price_min": 30,
+    "price_max": 55,
+    "category": "Add On",
+    "images": [
+      "MyySignatureMyyStyle/add_on_shampoo_hydrate_and_trim_1_f1une7"
+    ]
+  },
+  {
+    "id": "addon_002",
+    "name": "Scalp Stimulator",
+    "description": "Invigorating scalp massage and stimulating serum application",
+    "duration": 30,
+    "price_min": 25,
+    "price_max": 45,
+    "category": "Add On",
+    "images": [
+      "MyySignatureMyyStyle/add_on_scalp_stimulator_1_evctv0"
+    ]
+  }
+]
