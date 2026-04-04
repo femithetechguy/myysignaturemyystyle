@@ -112,6 +112,24 @@ nav a:hover {
   }
 }
 
+@keyframes reviewCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes reviewGlow {
+  0%, 100% { box-shadow: 0 0 8px 0 rgba(167,138,100,0.3), 0 10px 30px -5px rgba(167,138,100,0.2); }
+  50% { box-shadow: 0 0 18px 2px rgba(167,138,100,0.5), 0 10px 30px -5px rgba(167,138,100,0.35); }
+}
+
+.animate-review-cursor {
+  animation: reviewCursor 0.8s step-end infinite;
+}
+
+.review-active-glow {
+  animation: reviewGlow 2.5s ease-in-out infinite;
+}
+
 .animate-fade-in-down {
   animation: fadeInDown 0.8s ease-out;
 }

@@ -3,7 +3,7 @@
 import { getAppConfig, getContent, getGallery, getCareers, getServices } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
@@ -18,6 +18,10 @@ export default function Home() {
   const [navBackground, setNavBackground] = useState('dark')
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [addressCopied, setAddressCopied] = useState(false)
+  const [activeReviewIndex, setActiveReviewIndex] = useState(1)
+  const [typedReviewText, setTypedReviewText] = useState('')
+  const [isTypingReview, setIsTypingReview] = useState(true)
   const [messageType, setMessageType] = useState('inquiry')
   const [selectedService, setSelectedService] = useState('')
   const [name, setName] = useState('')
@@ -106,6 +110,36 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Typewriter effect for active review
+  useEffect(() => {
+    const reviews = content.reviews_section.reviews
+    const fullText = reviews[activeReviewIndex].text
+    let i = 0
+    setTypedReviewText('')
+    setIsTypingReview(true)
+    const typeInterval = setInterval(() => {
+      i++
+      if (i <= fullText.length) {
+        setTypedReviewText(fullText.slice(0, i))
+      } else {
+        setIsTypingReview(false)
+        clearInterval(typeInterval)
+      }
+    }, 22)
+    return () => clearInterval(typeInterval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeReviewIndex])
+
+  // Auto-rotate reviews
+  useEffect(() => {
+    const reviews = content.reviews_section.reviews
+    const interval = setInterval(() => {
+      setActiveReviewIndex(prev => (prev + 1) % reviews.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Fetch services from database
@@ -380,13 +414,13 @@ export default function Home() {
       <section className="relative flex items-center justify-center w-full h-screen overflow-hidden bg-primary">
         {/* Background Image */}
         <Image
-          src="/assets/images/others/landing.png"
+          src="https://res.cloudinary.com/dvkbgsaaf/image/upload/f_auto,q_auto,w_1920/landing_m6le9k"
           alt="Myy Signature Hair Salon"
           fill
           priority
           className="object-cover object-center"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
-          quality={85}
+          onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/others/landing.png' }}
         />
         
         {/* Dark overlay for text readability - Enhanced for better contrast */}
@@ -503,27 +537,65 @@ export default function Home() {
 
           {/* Reviews Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-8">
-            {content.reviews_section.reviews.map((review, index) => (
-              <div 
-                key={index}
-                className="p-6 transition-all duration-300 border rounded-lg bg-secondary/10 border-accent/20 hover:shadow-lg animate-fade-in-up hover:border-accent"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {/* Stars */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  ))}
+            {content.reviews_section.reviews.map((review, index) => {
+              const isActive = index === activeReviewIndex
+              return (
+                <div
+                  key={index}
+                  onClick={() => setActiveReviewIndex(index)}
+                  className={`p-6 rounded-lg border cursor-pointer animate-fade-in-up transition-all duration-500 ${
+                    isActive
+                      ? 'bg-secondary/20 border-accent shadow-xl shadow-accent/20 scale-105 review-active-glow'
+                      : 'bg-secondary/10 border-accent/20 hover:shadow-lg hover:border-accent/60 opacity-60 hover:opacity-90'
+                  }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <svg
+                        key={i}
+                        className={`transition-all duration-300 ${
+                          isActive ? 'w-6 h-6 text-accent drop-shadow-[0_0_4px_rgba(167,138,100,0.8)]' : 'w-5 h-5 text-accent/60'
+                        }`}
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Review Text */}
+                  <p className="mb-4 text-sm italic sm:text-base text-primary/80 min-h-[4.5rem]">
+                    &quot;{isActive ? typedReviewText : review.text}&quot;
+                    {isActive && isTypingReview && (
+                      <span className="inline-block w-0.5 h-4 ml-0.5 bg-accent align-middle animate-review-cursor" />
+                    )}
+                  </p>
+
+                  {/* Author */}
+                  <p className={`font-semibold transition-colors duration-300 ${
+                    isActive ? 'text-accent' : 'text-primary'
+                  }`}>- {review.name}</p>
                 </div>
+              )
+            })}
+          </div>
 
-                {/* Review Text */}
-                <p className="mb-4 text-sm italic text-primary/80 sm:text-base">&quot;{review.text}&quot;</p>
-
-                {/* Author */}
-                <p className="font-semibold text-primary">- {review.name}</p>
-              </div>
+          {/* Dot indicators */}
+          <div className="flex justify-center gap-2 mt-8">
+            {content.reviews_section.reviews.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveReviewIndex(index)}
+                className={`rounded-full transition-all duration-300 ${
+                  index === activeReviewIndex
+                    ? 'w-6 h-2.5 bg-accent'
+                    : 'w-2.5 h-2.5 bg-accent/30 hover:bg-accent/60'
+                }`}
+                aria-label={`Review ${index + 1}`}
+              />
             ))}
           </div>
         </div>
@@ -681,7 +753,30 @@ export default function Home() {
               <div className="flex flex-col justify-center animate-fade-in-up">
                 <div className="mb-8">
                   <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Visit Us</h3>
-                  <p className="text-sm sm:text-base text-primary/80">{business.address}</p>
+                  <p className="mb-3 text-sm sm:text-base text-primary/80">{business.address}</p>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(business.address)
+                        setAddressCopied(true)
+                        setTimeout(() => setAddressCopied(false), 2000)
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-md border-accent/40 text-primary/70 hover:text-accent hover:border-accent transition-colors duration-200"
+                    >
+                      <FiCopy className="w-3.5 h-3.5" />
+                      {addressCopied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-md border-accent/40 text-primary/70 hover:text-accent hover:border-accent transition-colors duration-200"
+                    >
+                      <FiMap className="w-3.5 h-3.5" />
+                      Directions
+                    </a>
+                  </div>
                 </div>
                 
                 <div className="mb-8">
@@ -733,6 +828,17 @@ export default function Home() {
                 >
                   Leave A Message
                 </button>
+                <div className="w-full mt-8">
+                  <Image
+                    src="https://res.cloudinary.com/dvkbgsaaf/image/upload/f_auto,q_auto,w_900/out_landing_vnkdxq"
+                    alt="Myy Signature storefront"
+                    width={800}
+                    height={600}
+                    className="w-full h-auto rounded-lg"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/others/out_landing.png' }}
+                  />
+                </div>
               </div>
             </div>
           </div>
