@@ -28,6 +28,8 @@ export default function Home() {
   const [contact, setContact] = useState('')
   const [message, setMessage] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [contactSending, setContactSending] = useState(false)
+  const [contactError, setContactError] = useState('')
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
@@ -162,46 +164,32 @@ export default function Home() {
     setShowModal(true)
   }
 
-  const handleSubmitMessage = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
-    // Validate form fields
+    setContactError('')
+
     const errors: { [key: string]: string } = {}
-    
-    if (!name.trim()) {
-      errors.name = 'Name is required'
-    }
-    
+    if (!name.trim()) errors.name = 'Name is required'
     if (!contact.trim()) {
       errors.contact = 'Email or phone is required'
     } else if (!/^\S+@\S+\.\S+$/.test(contact) && !/^[\d\s()\-+]+$/.test(contact)) {
       errors.contact = 'Please enter a valid email or phone number'
     }
-    
-    if (!message.trim()) {
-      errors.message = 'Message is required'
-    }
-    
-    if (messageType === 'booking' && !selectedService) {
-      errors.service = 'Please select a service'
-    }
-    
+    if (!message.trim()) errors.message = 'Message is required'
+    if (messageType === 'booking' && !selectedService) errors.service = 'Please select a service'
+
     setFormErrors(errors)
-    
-    // Only submit if no errors
-    if (Object.keys(errors).length === 0) {
-      setSubmitted(true)
-      fetch('/api/contact', {
+    if (Object.keys(errors).length > 0) return
+
+    setContactSending(true)
+    try {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          contact,
-          message,
-          message_type: messageType,
-          selected_service: selectedService,
-        }),
-      }).catch((err) => console.error('[contact email]', err))
+        body: JSON.stringify({ name, contact, message, message_type: messageType, selected_service: selectedService }),
+      })
+      if (!res.ok) throw new Error('Server error')
+      setSubmitted(true)
       setTimeout(() => {
         setShowModal(false)
         setName('')
@@ -211,7 +199,12 @@ export default function Home() {
         setSelectedService('')
         setSubmitted(false)
         setFormErrors({})
-      }, 2000)
+        setContactError('')
+      }, 2500)
+    } catch {
+      setContactError('Something went wrong. Please try again or call us directly.')
+    } finally {
+      setContactSending(false)
     }
   }
 
@@ -1017,7 +1010,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => { setName(e.target.value); if (formErrors.name) setFormErrors((p) => ({ ...p, name: '' })) }}
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
                       formErrors.name
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
@@ -1036,7 +1029,7 @@ export default function Home() {
                   <input
                     type="text"
                     value={contact}
-                    onChange={(e) => setContact(e.target.value)}
+                    onChange={(e) => { setContact(e.target.value); if (formErrors.contact) setFormErrors((p) => ({ ...p, contact: '' })) }}
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
                       formErrors.contact
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
@@ -1073,7 +1066,7 @@ export default function Home() {
                     </label>
                     <select
                       value={selectedService}
-                      onChange={(e) => setSelectedService(e.target.value)}
+                      onChange={(e) => { setSelectedService(e.target.value); if (formErrors.service) setFormErrors((p) => ({ ...p, service: '' })) }}
                       className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white text-primary font-medium transition ${
                         formErrors.service
                           ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
@@ -1098,7 +1091,7 @@ export default function Home() {
                   </label>
                   <textarea
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => { setMessage(e.target.value); if (formErrors.message) setFormErrors((p) => ({ ...p, message: '' })) }}
                     rows={4}
                     className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 resize-none transition text-primary placeholder-gray-400 ${
                       formErrors.message
@@ -1110,12 +1103,29 @@ export default function Home() {
                   {formErrors.message && <p className="mt-1 text-xs text-red-500">{formErrors.message}</p>}
                 </div>
 
+                {/* API error banner */}
+                {contactError && (
+                  <div className="flex items-start gap-2 px-4 py-3 text-sm text-red-700 rounded-lg bg-red-50 border border-red-200">
+                    <span className="text-base flex-shrink-0">⚠️</span>
+                    <p>{contactError}</p>
+                  </div>
+                )}
+
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
+                  disabled={contactSending}
+                  className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
                 >
-                  {content.message_modal?.submit_button || 'Send Message'}
+                  {contactSending ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                      Sending...
+                    </span>
+                  ) : (content.message_modal?.submit_button || 'Send Message')}
                 </button>
               </form>
             ) : (
