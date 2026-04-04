@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Appointment – Admin Notification</title>
+</head>
+<body style="margin:0;padding:0;background-color:#F0EBE5;font-family:Georgia,serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F0EBE5;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.10);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#3D2B1F;padding:28px 40px;text-align:center;">
+              <p style="margin:0 0 4px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8C6E5A;">Admin Notification</p>
+              <h1 style="margin:0;font-size:22px;font-weight:normal;color:#F5ECD7;letter-spacing:1px;">New Appointment Booked</h1>
+              <div style="margin:12px auto 0;width:40px;height:2px;background-color:#B8963E;"></div>
+            </td>
+          </tr>
+
+          <!-- Alert Banner -->
+          <tr>
+            <td style="background-color:#B8963E;padding:10px 40px;text-align:center;">
+              <p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;">Action Required – Review &amp; Confirm</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 40px 28px;">
+
+              <p style="margin:0 0 24px;font-size:14px;color:#3D2B1F;line-height:1.7;">
+                A new appointment has been submitted through the booking form. Details are below.
+              </p>
+
+              <!-- Reference -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;background-color:#FBF6F0;border-radius:6px;border-left:4px solid #B8963E;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#B8963E;">Booking Reference</p>
+                    <p style="margin:4px 0 0;font-size:20px;font-weight:bold;color:#5C3D2E;font-family:monospace;letter-spacing:2px;">{{booking_reference}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Customer Info -->
+              <p style="margin:0 0 10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#B8963E;">Customer Information</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;border:1px solid #E8DDD0;border-radius:6px;overflow:hidden;">
+                <tr style="background-color:#FBF6F0;">
+                  <td width="40%" style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;border-bottom:1px solid #E8DDD0;">Name</td>
+                  <td width="60%" style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;border-bottom:1px solid #E8DDD0;">{{customer_name}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;border-bottom:1px solid #E8DDD0;">Email</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;border-bottom:1px solid #E8DDD0;"><a href="mailto:{{customer_email}}" style="color:#5C3D2E;text-decoration:none;">{{customer_email}}</a></td>
+                </tr>
+                <tr style="background-color:#FBF6F0;">
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;">Phone</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;"><a href="tel:{{customer_phone}}" style="color:#5C3D2E;text-decoration:none;">{{customer_phone}}</a></td>
+                </tr>
+              </table>
+
+              <!-- Service Info -->
+              <p style="margin:0 0 10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#B8963E;">Service Details</p>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;border:1px solid #E8DDD0;border-radius:6px;overflow:hidden;">
+                <tr style="background-color:#FBF6F0;">
+                  <td width="40%" style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;border-bottom:1px solid #E8DDD0;">Service</td>
+                  <td width="60%" style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;border-bottom:1px solid #E8DDD0;">{{service_name}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;border-bottom:1px solid #E8DDD0;">Category</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;border-bottom:1px solid #E8DDD0;">{{service_category}}</td>
+                </tr>
+                <tr style="background-color:#FBF6F0;">
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;border-bottom:1px solid #E8DDD0;">Date &amp; Time</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;border-bottom:1px solid #E8DDD0;">{{appointment_date}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;border-bottom:1px solid #E8DDD0;">Duration</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;border-bottom:1px solid #E8DDD0;">{{service_duration}} min</td>
+                </tr>
+                <tr style="background-color:#FBF6F0;">
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#8C6E5A;">Est. Price Range</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;">${{service_price_min}} – ${{service_price_max}}</td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:#5C3D2E;border-radius:4px;">
+                    <a href="{{base_url}}/admin" style="display:inline-block;padding:12px 28px;font-size:13px;letter-spacing:1px;color:#F5ECD7;text-decoration:none;">View in Admin Panel</a>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#3D2B1F;padding:20px 40px;text-align:center;">
+              <p style="margin:0 0 4px;font-size:11px;color:#C8A882;">Myy Signature Myy Style Salon — Admin System</p>
+              <p style="margin:0;font-size:11px;color:#6B5040;">This is an automated notification. Do not reply to this email.</p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

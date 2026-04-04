@@ -3,7 +3,7 @@
 import { getAppConfig, getContent, getGallery, getCareers, getServices } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram, FiCopy, FiMap } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap, FiShare2 } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
@@ -60,15 +60,26 @@ export default function Home() {
     references: ''
   })
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
+  const [appAvailDays, setAppAvailDays] = useState<string[]>([])
+  const [appAvailStartDate, setAppAvailStartDate] = useState<number | null>(null)
+  const [appAvailMonth, setAppAvailMonth] = useState(new Date().getMonth())
+  const [appAvailYear, setAppAvailYear] = useState(new Date().getFullYear())
   const [policyAccepted, setPolicyAccepted] = useState(false)
   const [copiedZelle, setCopiedZelle] = useState(false)
   const [copiedCashapp, setCopiedCashapp] = useState(false)
   const [copiedRef, setCopiedRef] = useState(false)
   const [bookingToast, setBookingToast] = useState<string | null>(null)
+  const [appToast, setAppToast] = useState<string | null>(null)
+  const [sharedPosition, setSharedPosition] = useState<string | null>(null)
 
   const showBookingToast = (msg: string) => {
     setBookingToast(msg)
     setTimeout(() => setBookingToast(null), 4000)
+  }
+
+  const showAppToast = (msg: string) => {
+    setAppToast(msg)
+    setTimeout(() => setAppToast(null), 4000)
   }
 
   const copyToClipboard = (value: string, type: 'zelle' | 'cashapp') => {
@@ -180,6 +191,17 @@ export default function Home() {
     // Only submit if no errors
     if (Object.keys(errors).length === 0) {
       setSubmitted(true)
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          contact,
+          message,
+          message_type: messageType,
+          selected_service: selectedService,
+        }),
+      }).catch((err) => console.error('[contact email]', err))
       setTimeout(() => {
         setShowModal(false)
         setName('')
@@ -196,7 +218,7 @@ export default function Home() {
   const handleScheduleClick = () => {
     setShowBookingModal(true)
     setSelectedDate(new Date())
-    setSelectedBookingCategory(getCategories()[0] || 'Hair Cut')
+    setSelectedBookingCategory('')
     setFormErrors({})
     setBookingName('')
     setBookingContact('')
@@ -295,7 +317,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Navigation */}
-      <header className={`fixed top-0 w-full px-4 sm:px-8 md:px-16 py-5 sm:py-6 md:py-6 flex justify-center md:justify-center items-center z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 w-full px-4 md:px-16 py-5 md:py-6 flex justify-between md:justify-center items-center z-50 transition-all duration-300 ${
         showMobileMenu
           ? 'bg-transparent backdrop-blur-0'
           : navBackground === 'dark' 
@@ -304,10 +326,9 @@ export default function Home() {
           ? 'bg-black/50 backdrop-blur-md'
           : 'bg-white/95 backdrop-blur-sm'
       }`}>
-        {/* Brand Logo - Mobile Only */}
+        {/* Brand Logo - Mobile (in-flow, left) */}
         <button 
           onClick={() => {
-            // Close booking modal and return home
             if (showBookingModal) {
               setShowBookingModal(false)
               setBookingName('')
@@ -318,18 +339,16 @@ export default function Home() {
               setFormErrors({})
               setPolicyAccepted(false)
             }
-            // Always scroll to home
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
-          className="absolute transition-opacity left-4 sm:left-8 md:hidden hover:opacity-80"
+          className="md:hidden hover:opacity-80 transition-opacity flex-shrink-0"
         >
           <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-20" />
         </button>
 
-        {/* Brand Logo - Desktop */}
+        {/* Brand Logo - Desktop (absolute, left) */}
         <button 
           onClick={() => {
-            // Close booking modal and return home
             if (showBookingModal) {
               setShowBookingModal(false)
               setBookingName('')
@@ -340,10 +359,9 @@ export default function Home() {
               setFormErrors({})
               setPolicyAccepted(false)
             }
-            // Always scroll to home
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
-          className="absolute hidden transition-opacity md:block left-8 hover:opacity-80"
+          className="absolute hidden md:block left-8 hover:opacity-80 transition-opacity"
         >
           <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={112} height={112} className="w-auto h-28" />
         </button>
@@ -368,20 +386,18 @@ export default function Home() {
           ))}
         </nav>
 
-        {/* Mobile Menu Button - Right Side */}
+        {/* Mobile Menu Button (in-flow, right) */}
         <button
           onClick={() => setShowMobileMenu(!showMobileMenu)}
-          className={`absolute right-2 sm:right-6 md:hidden p-2 transition-colors duration-300 ${
-            navBackground === 'dark'
+          className={`md:hidden p-1 transition-colors duration-300 flex-shrink-0 ${
+            navBackground === 'dark' || navBackground === 'secondary'
               ? 'text-white hover:text-white/80'
-              : navBackground === 'secondary'
-              ? 'text-white hover:text-white/80'
-              : 'text-primary hover:text-primary/80'
+              : 'text-white hover:text-white/80'
           }`}
           style={{textShadow: '0 2px 4px rgba(0,0,0,0.5)'}}
           aria-label="Toggle menu"
         >
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-9 h-9" fill="currentColor" viewBox="0 0 24 24">
             {showMobileMenu ? (
               <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
             ) : (
@@ -631,16 +647,40 @@ export default function Home() {
                         <span className="px-3 py-1 rounded-full bg-secondary/20 text-primary">📍 {position.location}</span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        setSelectedPosition(position.title)
-                        setApplicationData({ ...applicationData, position: position.title })
-                        setShowApplicationModal(true)
-                      }}
-                      className="text-sm btn-accent whitespace-nowrap"
-                    >
-                      JOIN OUR STYLISTS
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {/* Share button */}
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const url = `${window.location.origin}${window.location.pathname}#careers`
+                          const shareText = `Check out this ${position.title} position at Myy Signature Myy Style! ${url}`
+                          // Always copy to clipboard first
+                          navigator.clipboard.writeText(shareText)
+                          setSharedPosition(position.id)
+                          setTimeout(() => setSharedPosition(null), 2500)
+                          showAppToast('Link copied! Ready to share.')
+                          // Also open native share sheet if available
+                          if (navigator.share) {
+                            try { await navigator.share({ title: `${position.title} — Myy Signature`, text: shareText, url }) } catch {}
+                          }
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium border rounded-lg border-accent/30 text-primary/60 hover:text-accent hover:border-accent transition-colors duration-200 whitespace-nowrap"
+                        title="Share this position"
+                      >
+                        <FiShare2 className="w-3.5 h-3.5" />
+                        {sharedPosition === position.id ? 'Link Copied!' : 'Share'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedPosition(position.title)
+                          setApplicationData({ ...applicationData, position: position.title })
+                          setShowApplicationModal(true)
+                        }}
+                        className="text-sm btn-accent whitespace-nowrap"
+                      >
+                        JOIN OUR STYLISTS
+                      </button>
+                    </div>
                   </div>
                   <p className="mb-4 text-sm text-primary/80">{position.description}</p>
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -1265,6 +1305,7 @@ export default function Home() {
                   onChange={(e) => setSelectedBookingCategory(e.target.value)}
                   className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
                 >
+                  <option value="" disabled>— Choose a Hair Service —</option>
                   {getCategories().map((category) => (
                     <option key={category} value={category}>
                       {category}
@@ -1428,6 +1469,7 @@ export default function Home() {
                     return
                   }
 
+                  setBookingReference('BK' + Date.now().toString().slice(-8))
                   setShowConfirmationModal(true)
                 }}
                 disabled={false}
@@ -1643,7 +1685,7 @@ export default function Home() {
                       : 'bg-white border-green-400 text-green-800 hover:bg-green-50 hover:border-green-600'
                   }`}
                 >
-                  <span>{bookingReference || 'Generating...'}</span>
+                  <span>{bookingReference}</span>
                   <span className="text-xs font-sans font-bold ml-3">{copiedRef ? '✓ Copied!' : 'Copy'}</span>
                 </button>
               </div>
@@ -1659,9 +1701,23 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => {
-                    const refNumber = 'BK' + Date.now().toString().slice(-8)
-                    setBookingReference(refNumber)
                     setConfirmationStep('confirmed')
+                    fetch('/api/booking', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        booking_reference: bookingReference,
+                        customer_name: bookingName,
+                        customer_email: bookingEmail,
+                        customer_phone: bookingContact,
+                        service_name: selectedBookingService?.name,
+                        service_category: selectedBookingService?.category,
+                        service_duration: selectedBookingService?.duration,
+                        service_price_min: selectedBookingService?.price_min,
+                        service_price_max: selectedBookingService?.price_max,
+                        appointment_date: selectedDate?.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+                      }),
+                    }).catch((err) => console.error('[booking email]', err))
                     // Auto-close after 5 seconds
                     setTimeout(() => {
                       setShowConfirmationModal(false)
@@ -1688,8 +1744,25 @@ export default function Home() {
       )}
 
       {/* Careers Application Modal */}
+      {/* Global app toast — visible on page and inside modal */}
+      {appToast && !showApplicationModal && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] max-w-sm w-full mx-4 px-5 py-4 bg-primary text-secondary rounded-xl shadow-2xl flex items-start gap-3 animate-fade-in-down">
+          <span className="text-xl flex-shrink-0">✓</span>
+          <p className="text-sm font-semibold leading-snug">{appToast}</p>
+        </div>
+      )}
+
       {showApplicationModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/50 backdrop-blur-sm">
+          {/* Toast */}
+          {appToast && (
+            <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[60] max-w-sm w-full mx-4 px-5 py-4 rounded-xl shadow-2xl flex items-start gap-3 animate-fade-in-down ${
+              appToast.startsWith('Still needed') ? 'bg-red-600 text-white' : 'bg-primary text-secondary'
+            }`}>
+              <span className="text-xl flex-shrink-0">{appToast.startsWith('Still needed') ? '⚠️' : '✓'}</span>
+              <p className="text-sm font-semibold leading-snug">{appToast}</p>
+            </div>
+          )}
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-white border-b border-accent/20">
               <h2 className="text-xl font-bold sm:text-2xl text-primary">Apply for {selectedPosition}</h2>
@@ -1721,7 +1794,7 @@ export default function Home() {
               <form onSubmit={(e) => {
                 e.preventDefault()
                 
-                // Basic validation
+                // Build validation errors
                 const errors: { [key: string]: string } = {}
                 if (!applicationData.full_name.trim()) errors.full_name = 'Name is required'
                 if (!applicationData.email.trim()) {
@@ -1731,18 +1804,48 @@ export default function Home() {
                 }
                 if (!applicationData.phone.trim()) errors.phone = 'Phone is required'
                 if (!applicationData.employment_type) errors.employment_type = 'Employment type is required'
-                if (!applicationData.license_number.trim()) errors.license_number = 'License number is required'
                 if (!applicationData.years_experience.trim()) errors.years_experience = 'Experience is required'
                 if (!applicationData.specialties.trim()) errors.specialties = 'Specialties are required'
 
                 setFormErrors(errors)
-                if (Object.keys(errors).length === 0) {
-                  // Submit application
-                  console.log('Application submitted:', applicationData)
+
+                // Build friendly toast for missing fields
+                const missing: string[] = []
+                if (!applicationData.full_name.trim()) missing.push('your name')
+                if (!applicationData.email.trim() || !/^\S+@\S+\.\S+$/.test(applicationData.email)) missing.push('a valid email')
+                if (!applicationData.phone.trim()) missing.push('your phone')
+                if (!applicationData.employment_type) missing.push('employment type')
+                if (!applicationData.years_experience.trim()) missing.push('years of experience')
+                if (!applicationData.specialties.trim()) missing.push('your specialties')
+
+                if (missing.length > 0) {
+                  showAppToast(`Still needed: ${missing.join(', ')}`)
+                  // Scroll to first error
+                  const firstError = document.querySelector('[data-app-error]')
+                  firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  return
+                }
+                  // Compose availability string from interactive state
+                  const availParts: string[] = []
+                  if (appAvailDays.length > 0) availParts.push(`Days: ${appAvailDays.join(', ')}`)
+                  if (appAvailStartDate) {
+                    const d = new Date(appAvailYear, appAvailMonth, appAvailStartDate)
+                    availParts.push(`Start: ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`)
+                  }
+                  const finalData = { ...applicationData, availability: availParts.join(' | ') }
+                  fetch('/api/application', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(finalData),
+                  }).catch((err) => console.error('[application email]', err))
                   setApplicationSubmitted(true)
                   setTimeout(() => {
                     setShowApplicationModal(false)
                     setApplicationSubmitted(false)
+                    setAppAvailDays([])
+                    setAppAvailStartDate(null)
+                    setAppAvailMonth(new Date().getMonth())
+                    setAppAvailYear(new Date().getFullYear())
                     setApplicationData({
                       full_name: '',
                       email: '',
@@ -1759,238 +1862,230 @@ export default function Home() {
                       references: ''
                     })
                   }, 3000)
-                }
-              }} className="p-6 space-y-4">
-                {/* Full Name */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="full_name"
-                    value={applicationData.full_name}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, full_name: e.target.value })
-                      if (formErrors.full_name) setFormErrors({ ...formErrors, full_name: '' })
-                    }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.full_name ? 'border-red-500' : 'border-accent/30'}`}
-                    placeholder="Your full name"
-                  />
-                  {formErrors.full_name && <p className="mt-1 text-sm text-red-500">{formErrors.full_name}</p>}
+              }} className="p-6 space-y-5">
+
+                {/* Row 1: Name + Email */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Full Name <span className="text-red-500">*</span></label>
+                    <input type="text" value={applicationData.full_name}
+                      onChange={(e) => { setApplicationData({ ...applicationData, full_name: e.target.value }); if (formErrors.full_name) setFormErrors({ ...formErrors, full_name: '' }) }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400 ${formErrors.full_name ? 'border-red-500' : 'border-accent/30'}`}
+                      placeholder="Your full name" />
+                    {formErrors.full_name && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.full_name}</p>}
+                  </div>
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Email <span className="text-red-500">*</span></label>
+                    <input type="email" value={applicationData.email}
+                      onChange={(e) => { setApplicationData({ ...applicationData, email: e.target.value }); if (formErrors.email) setFormErrors({ ...formErrors, email: '' }) }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400 ${formErrors.email ? 'border-red-500' : 'border-accent/30'}`}
+                      placeholder="your.email@example.com" />
+                    {formErrors.email && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.email}</p>}
+                  </div>
                 </div>
 
-                {/* Email */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Email <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={applicationData.email}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, email: e.target.value })
-                      if (formErrors.email) setFormErrors({ ...formErrors, email: '' })
-                    }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.email ? 'border-red-500' : 'border-accent/30'}`}
-                    placeholder="your.email@example.com"
-                  />
-                  {formErrors.email && <p className="mt-1 text-sm text-red-500">{formErrors.email}</p>}
+                {/* Row 2: Phone + Employment Type */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Phone <span className="text-red-500">*</span></label>
+                    <input type="tel" value={applicationData.phone}
+                      onChange={(e) => { setApplicationData({ ...applicationData, phone: e.target.value }); if (formErrors.phone) setFormErrors({ ...formErrors, phone: '' }) }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400 ${formErrors.phone ? 'border-red-500' : 'border-accent/30'}`}
+                      placeholder="(555) 123-4567" />
+                    {formErrors.phone && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.phone}</p>}
+                  </div>
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Employment Type <span className="text-red-500">*</span></label>
+                    <select value={applicationData.employment_type}
+                      onChange={(e) => { setApplicationData({ ...applicationData, employment_type: e.target.value }); if (formErrors.employment_type) setFormErrors({ ...formErrors, employment_type: '' }) }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary ${formErrors.employment_type ? 'border-red-500' : 'border-accent/30'}`}>
+                      <option value="">Select type</option>
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Flexible">Flexible</option>
+                    </select>
+                    {formErrors.employment_type && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.employment_type}</p>}
+                  </div>
                 </div>
 
-                {/* Phone */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Phone Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={applicationData.phone}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, phone: e.target.value })
-                      if (formErrors.phone) setFormErrors({ ...formErrors, phone: '' })
-                    }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.phone ? 'border-red-500' : 'border-accent/30'}`}
-                    placeholder="(555) 123-4567"
-                  />
-                  {formErrors.phone && <p className="mt-1 text-sm text-red-500">{formErrors.phone}</p>}
-                </div>
+                {/* License note */}
+                <p className="text-xs text-primary/50 italic">Your Georgia Cosmetology License number may be requested during final selection.</p>
 
-                {/* Employment Type */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Preferred Employment Type <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    name="employment_type"
-                    value={applicationData.employment_type}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, employment_type: e.target.value })
-                      if (formErrors.employment_type) setFormErrors({ ...formErrors, employment_type: '' })
-                    }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.employment_type ? 'border-red-500' : 'border-accent/30'}`}
-                  >
-                    <option value="">Select type</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Flexible">Flexible</option>
-                  </select>
-                  {formErrors.employment_type && <p className="mt-1 text-sm text-red-500">{formErrors.employment_type}</p>}
-                </div>
-
-                {/* License Number */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Georgia Cosmetology License Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="license_number"
-                    value={applicationData.license_number}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, license_number: e.target.value })
-                      if (formErrors.license_number) setFormErrors({ ...formErrors, license_number: '' })
-                    }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.license_number ? 'border-red-500' : 'border-accent/30'}`}
-                    placeholder="GA-COS-XXXXXX"
-                  />
-                  {formErrors.license_number && <p className="mt-1 text-sm text-red-500">{formErrors.license_number}</p>}
-                </div>
-
-                {/* Years Experience */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Years of Professional Experience <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="years_experience"
-                    value={applicationData.years_experience}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, years_experience: e.target.value })
-                      if (formErrors.years_experience) setFormErrors({ ...formErrors, years_experience: '' })
-                    }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.years_experience ? 'border-red-500' : 'border-accent/30'}`}
-                    placeholder="5"
-                    min="0"
-                  />
-                  {formErrors.years_experience && <p className="mt-1 text-sm text-red-500">{formErrors.years_experience}</p>}
+                {/* Row 3: Years Experience + Portfolio */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Years of Experience <span className="text-red-500">*</span></label>
+                    <input type="number" value={applicationData.years_experience} min="0"
+                      onChange={(e) => { setApplicationData({ ...applicationData, years_experience: e.target.value }); if (formErrors.years_experience) setFormErrors({ ...formErrors, years_experience: '' }) }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400 ${formErrors.years_experience ? 'border-red-500' : 'border-accent/30'}`}
+                      placeholder="5" />
+                    {formErrors.years_experience && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.years_experience}</p>}
+                  </div>
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Portfolio URL <span className="text-primary/40 font-normal text-xs">(Instagram, website…)</span></label>
+                    <input type="url" value={applicationData.portfolio_url}
+                      onChange={(e) => setApplicationData({ ...applicationData, portfolio_url: e.target.value })}
+                      className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400" />
+                  </div>
                 </div>
 
                 {/* Specialties */}
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Specialties / Areas of Expertise <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    name="specialties"
-                    value={applicationData.specialties}
-                    onChange={(e) => {
-                      setApplicationData({ ...applicationData, specialties: e.target.value })
-                      if (formErrors.specialties) setFormErrors({ ...formErrors, specialties: '' })
-                    }}
-                    rows={3}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent ${formErrors.specialties ? 'border-red-500' : 'border-accent/30'}`}
-                    placeholder="e.g., Balayage, Box Braids, Natural Hair, Color Corrections..."
-                  />
-                  {formErrors.specialties && <p className="mt-1 text-sm text-red-500">{formErrors.specialties}</p>}
-                </div>
-
-                {/* Portfolio URL */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Portfolio URL (Instagram, Website, etc.)
-                  </label>
-                  <input
-                    type="url"
-                    name="portfolio_url"
-                    value={applicationData.portfolio_url}
-                    onChange={(e) => setApplicationData({ ...applicationData, portfolio_url: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
-                    placeholder="https://instagram.com/yourportfolio"
-                  />
+                  <label className="block mb-1.5 text-sm font-medium text-primary">Specialties / Areas of Expertise <span className="text-red-500">*</span></label>
+                  <textarea value={applicationData.specialties} rows={2}
+                    onChange={(e) => { setApplicationData({ ...applicationData, specialties: e.target.value }); if (formErrors.specialties) setFormErrors({ ...formErrors, specialties: '' }) }}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400 ${formErrors.specialties ? 'border-red-500' : 'border-accent/30'}`}
+                    placeholder="e.g., Balayage, Box Braids, Natural Hair, Color Corrections…" />
+                  {formErrors.specialties && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.specialties}</p>}
                 </div>
 
                 {/* Certifications */}
                 <div>
                   <label className="block mb-2 text-sm font-medium text-primary">
-                    Certifications & Education
+                    Certifications & Education <span className="text-primary/40 font-normal">(select all that apply)</span>
                   </label>
-                  <textarea
-                    name="certifications"
-                    value={applicationData.certifications}
-                    onChange={(e) => setApplicationData({ ...applicationData, certifications: e.target.value })}
-                    rows={3}
-                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
-                    placeholder="List your cosmetology school, advanced certifications, workshops, etc."
-                  />
+                  <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                    {[
+                      'Licensed Cosmetologist',
+                      'Cosmetology School',
+                      'Self Taught',
+                      'Natural Hair Certified',
+                      'Color Specialist',
+                      'Braiding Certified',
+                      'Extensions Certified',
+                      'Locs Specialist',
+                      'Advanced Workshops',
+                    ].map((cert) => {
+                      const checked = applicationData.certifications.split(',').map(s => s.trim()).filter(Boolean).includes(cert)
+                      return (
+                        <label key={cert} className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-xs transition-all duration-150 ${
+                          checked ? 'bg-accent/10 border-accent text-accent font-semibold' : 'border-accent/20 text-primary/70 hover:border-accent/50'
+                        }`}>
+                          <input type="checkbox" className="hidden" checked={checked}
+                            onChange={() => {
+                              const current = applicationData.certifications.split(',').map(s => s.trim()).filter(Boolean)
+                              const next = checked ? current.filter(c => c !== cert) : [...current, cert]
+                              setApplicationData({ ...applicationData, certifications: next.join(', ') })
+                            }} />
+                          <span className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-[10px] ${
+                            checked ? 'bg-accent border-accent text-white' : 'border-accent/30'
+                          }`}>{checked ? '✓' : ''}</span>
+                          {cert}
+                        </label>
+                      )
+                    })}
+                  </div>
                 </div>
 
                 {/* Availability */}
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Availability
-                  </label>
-                  <textarea
-                    name="availability"
-                    value={applicationData.availability}
-                    onChange={(e) => setApplicationData({ ...applicationData, availability: e.target.value })}
-                    rows={2}
-                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
-                    placeholder="When can you start? What days/hours are you available?"
-                  />
+                  <label className="block mb-2 text-sm font-medium text-primary">Availability</label>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {/* Day toggles */}
+                    <div>
+                      <p className="mb-2 text-xs text-primary/60">Available days</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day) => {
+                          const on = appAvailDays.includes(day)
+                          return (
+                            <button key={day} type="button"
+                              onClick={() => setAppAvailDays(on ? appAvailDays.filter(d => d !== day) : [...appAvailDays, day])}
+                              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                                on ? 'bg-accent text-white border-accent' : 'border-accent/30 text-primary/60 hover:border-accent/60'
+                              }`}>{day}</button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    {/* Mini calendar — earliest start date */}
+                    <div>
+                      <p className="mb-2 text-xs text-primary/60">Earliest start date</p>
+                      <div className="border rounded-lg border-accent/20 p-3 bg-secondary/5">
+                        {/* Month nav */}
+                        <div className="flex items-center justify-between mb-2">
+                          <button type="button" onClick={() => {
+                            if (appAvailMonth === 0) { setAppAvailMonth(11); setAppAvailYear(appAvailYear - 1) }
+                            else setAppAvailMonth(appAvailMonth - 1)
+                          }} className="p-1 rounded hover:bg-accent/10 text-primary/60 hover:text-accent transition-colors">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                          </button>
+                          <span className="text-xs font-semibold text-primary">
+                            {new Date(appAvailYear, appAvailMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                          </span>
+                          <button type="button" onClick={() => {
+                            if (appAvailMonth === 11) { setAppAvailMonth(0); setAppAvailYear(appAvailYear + 1) }
+                            else setAppAvailMonth(appAvailMonth + 1)
+                          }} className="p-1 rounded hover:bg-accent/10 text-primary/60 hover:text-accent transition-colors">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                          </button>
+                        </div>
+                        {/* Day headers */}
+                        <div className="grid grid-cols-7 mb-1">
+                          {['S','M','T','W','T','F','S'].map((d, i) => (
+                            <div key={i} className="text-center text-[10px] font-bold text-primary/40">{d}</div>
+                          ))}
+                        </div>
+                        {/* Days grid */}
+                        <div className="grid grid-cols-7 gap-y-0.5">
+                          {(() => {
+                            const firstDay = new Date(appAvailYear, appAvailMonth, 1).getDay()
+                            const daysInMonth = new Date(appAvailYear, appAvailMonth + 1, 0).getDate()
+                            const today = new Date(); today.setHours(0,0,0,0)
+                            const cells = []
+                            for (let i = 0; i < firstDay; i++) cells.push(<div key={`e${i}`} />)
+                            for (let d = 1; d <= daysInMonth; d++) {
+                              const date = new Date(appAvailYear, appAvailMonth, d)
+                              const isPast = date < today
+                              const isSelected = appAvailStartDate === d && !isPast
+                              cells.push(
+                                <button key={d} type="button" disabled={isPast}
+                                  onClick={() => setAppAvailStartDate(d)}
+                                  className={`text-[11px] w-full aspect-square rounded-full transition-all duration-100 ${
+                                    isSelected ? 'bg-accent text-white font-bold' :
+                                    isPast ? 'text-primary/20 cursor-not-allowed' :
+                                    'text-primary/70 hover:bg-accent/10 hover:text-accent'
+                                  }`}>{d}</button>
+                              )
+                            }
+                            return cells
+                          })()}
+                        </div>
+                        {appAvailStartDate && (
+                          <p className="mt-2 text-[11px] text-center text-accent font-semibold">
+                            Starting {new Date(appAvailYear, appAvailMonth, appAvailStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Why Join */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Why do you want to join our team?
-                  </label>
-                  <textarea
-                    name="why_join"
-                    value={applicationData.why_join}
-                    onChange={(e) => setApplicationData({ ...applicationData, why_join: e.target.value })}
-                    rows={3}
-                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
-                    placeholder="Tell us what excites you about this opportunity..."
-                  />
+                {/* Why Join + References side by side on desktop */}
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Why do you want to join our team?</label>
+                    <textarea value={applicationData.why_join} rows={3}
+                      onChange={(e) => setApplicationData({ ...applicationData, why_join: e.target.value })}
+                      className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400"
+                      placeholder="Tell us what excites you about this opportunity…" />
+                  </div>
+                  <div>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">Professional References</label>
+                    <textarea value={applicationData.references} rows={3}
+                      onChange={(e) => setApplicationData({ ...applicationData, references: e.target.value })}
+                      className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400"
+                      placeholder="Name, Title, Phone/Email (2–3 references)" />
+                  </div>
                 </div>
 
-                {/* References */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">
-                    Professional References
-                  </label>
-                  <textarea
-                    name="references"
-                    value={applicationData.references}
-                    onChange={(e) => setApplicationData({ ...applicationData, references: e.target.value })}
-                    rows={3}
-                    className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent"
-                    placeholder="Name, Title, Phone/Email (2-3 references)"
-                  />
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowApplicationModal(false)
-                      setFormErrors({})
-                    }}
-                    className="flex-1 px-6 py-3 transition-colors border rounded-lg border-accent/30 text-primary hover:bg-secondary/10"
-                  >
+                {/* Submit */}
+                <div className="flex gap-4 pt-2">
+                  <button type="button"
+                    onClick={() => { setShowApplicationModal(false); setFormErrors({}) }}
+                    className="flex-1 px-6 py-3 transition-colors border rounded-lg border-accent/30 text-primary hover:bg-secondary/10">
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    className="flex-1 btn-accent"
-                  >
-                    Submit Application
-                  </button>
+                  <button type="submit" className="flex-1 btn-accent">Submit Application</button>
                 </div>
               </form>
             )}

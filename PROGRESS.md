@@ -112,6 +112,64 @@ Last updated: April 4, 2026
 - [x] Dot indicators below grid — active dot expands into a pill shape
 - [x] New CSS keyframes added to `globals.css`: `reviewCursor`, `reviewGlow`
 
+### Booking Modal — UX Fixes
+- [x] Service category dropdown no longer pre-selects "Hair Cut" — shows `— Choose a Hair Service —` placeholder by default
+- [x] Booking reference (`BK…`) generated the moment the confirmation modal opens — eliminates "Generating..." flash
+- [x] Hamburger menu icon enlarged from `w-6 h-6` → `w-9 h-9` for easier tap on mobile
+
+### Apply for Hairstylist Modal — Full Overhaul
+- [x] **GA Cosmetology License field removed** — replaced with a small italic note that it may be requested during final selection
+- [x] **Certifications & Education** replaced with tap-friendly pill checkboxes (2-col mobile, 3-col desktop):
+  - Licensed Cosmetologist, Cosmetology School, Self Taught, Natural Hair Certified, Color Specialist, Braiding Certified, Extensions Certified, Locs Specialist, Advanced Workshops
+- [x] **2-column desktop layout** — fields grouped in `md:grid-cols-2` rows to reduce scrolling
+- [x] **Availability section** redesigned:
+  - Day-of-week pill toggles (Mon–Sun)
+  - Mini calendar for earliest start date (past dates disabled, selected date highlighted in accent)
+- [x] **Form validation** matching booking modal pattern:
+  - Inline red border + error message per required field
+  - Red `⚠️` toast listing all missing fields (e.g. *"Still needed: your name, a valid email"*)
+  - Auto-scrolls to first error element via `data-app-error` attribute
+  - Inline errors clear as user types; toast dismisses after 4 s
+- [x] **Input text colour** fixed — all apply form inputs/textareas now have `text-primary` so typed text is readable (was grey)
+- [x] **Share button** added to each Open Positions card:
+  - Always copies shareable text + `#careers` link to clipboard immediately
+  - Also opens native OS share sheet on mobile (iMessage, WhatsApp, etc.)
+  - Button briefly shows "Link Copied!" for 2.5 s
+  - Dark `✓` toast shown on page: *"Link copied! Ready to share."*
+  - Validation toast inside modal remains red `⚠️`; share toast uses dark primary colour
+
+### Mobile Header — Hamburger Position Fix
+- [x] Root cause identified: `absolute` positioning for mobile logo + hamburger inside `flex justify-center` caused layout shift on render
+- [x] Header restructured — mobile uses `justify-between` with logo and hamburger as **in-flow flex children** (no `absolute`)
+- [x] Desktop layout unchanged — logo stays `absolute left-8`, nav centered via `md:justify-center`
+- [x] Hamburger `flex-shrink-0`; mobile logo `flex-shrink-0` — no reflow
+
+### Email System (Nodemailer)
+- [x] `nodemailer` already in `package.json` — no install needed
+- [x] **6 HTML email templates** created in `emails/` folder (inline styles, email-client safe):
+  - `appointment-confirmation-customer.html` — sent to customer on booking
+  - `appointment-notification-admin.html` — sent to admin on booking
+  - `application-confirmation-applicant.html` — sent to applicant on application submit
+  - `application-notification-admin.html` — sent to admin on application submit
+  - `contact-confirmation-visitor.html` — sent to visitor on contact form submit
+  - `contact-notification-admin.html` — sent to admin on contact form submit
+  - All templates use `{{double_brace}}` variables; admin templates link to `{{base_url}}/admin`
+- [x] **`lib/mailer.ts`** — shared utility: creates transporter, loads & hydrates templates, sends via `sendMail()`
+- [x] **3 new API routes** created:
+  - `pages/api/contact.ts` — `POST /api/contact`
+  - `pages/api/booking.ts` — `POST /api/booking`
+  - `pages/api/application.ts` — `POST /api/application`
+  - Each route sends 2 emails in parallel (`Promise.all`) — one to the user, one to admin
+- [x] **Forms wired** to their API routes:
+  - Contact form (`handleSubmitMessage`) — `fetch('/api/contact', ...)`
+  - Booking "Complete Booking" button — `fetch('/api/booking', ...)`
+  - Application form submit — `fetch('/api/application', ...)`
+- [x] **`.env.local`** updated with all email config:
+  - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_SECURE`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`, `EMAIL_ADMIN`
+  - `NEXT_PUBLIC_SITE_URL` — controls the "View in Admin Panel" link in admin emails; set per environment
+- [x] SMTP connection verified (`transporter.verify()` → ✅) and test email confirmed delivered
+- [x] Public-facing email in `app.json` updated to `egwonookpako559@gmail.com`
+
 ---
 
 ## 🔄 In Progress / Needs Attention
@@ -159,7 +217,9 @@ Last updated: April 4, 2026
 ### Booking System
 - [ ] Wire booking form submissions to a backend endpoint (`pages/api/bookings.js` or similar)
   - Currently no API route handles `POST` booking data — form submissions go nowhere
-- [ ] Send confirmation email on booking (nodemailer or third-party, e.g. Resend / SendGrid)
+- [x] Send confirmation email on booking — nodemailer wired, `POST /api/booking` sends customer + admin emails
+- [x] Contact form email — `POST /api/contact` sends visitor confirmation + admin notification
+- [x] Application form email — `POST /api/application` sends applicant confirmation + admin notification
 - [ ] Integrate payment processor for the 25% deposit (Stripe recommended)
   - Stripe setup: create `pages/api/payments/create-checkout.js`, add `STRIPE_SECRET_KEY` to `.env.local`
 - [ ] Build available-dates logic (block already-booked slots on the booking calendar)
