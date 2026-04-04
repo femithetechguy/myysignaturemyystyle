@@ -1,210 +1,246 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
-import { FiInstagram } from 'react-icons/fi'
+import { FiInstagram, FiX, FiChevronLeft, FiChevronRight, FiClock, FiTag } from 'react-icons/fi'
+import { getCloudinaryUrl } from '@/lib/config'
 
-// Extend Window type for Instagram embed
-declare global {
-  interface Window {
-    instgrm?: {
-      Embeds?: {
-        process: () => void
-      }
-    }
-  }
-}
-
-interface GalleryItem {
+interface Service {
   id: string
-  title: string
-  category: string
-  image: string
+  name: string
   description: string
-}
-
-interface GalleryItemDisplay extends GalleryItem {
-  postUrl?: string
+  duration: number
+  price_min: number
+  price_max: number
+  category: string
+  images: string[]
 }
 
 interface GalleryProps {
-  items: GalleryItem[]
+  services: Service[]
   instagramUrl?: string
-  posts?: Array<{ id: string; image: string; postUrl: string }>
 }
 
-export default function Gallery({ items, instagramUrl, posts = [] }: GalleryProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All')
-  const [selectedPost, setSelectedPost] = useState<{ id: string; image: string; postUrl: string } | null>(null)
+export default function Gallery({ services, instagramUrl }: GalleryProps) {
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [modalIndex, setModalIndex] = useState<number | null>(null)
 
-  // Process Instagram embeds when modal opens
+  // Only services that have at least one image
+  const withImages = services.filter(s => s.images.length > 0)
+
+  const categories = ['All', ...Array.from(new Set(withImages.map(s => s.category)))]
+
+  const filtered = selectedCategory === 'All'
+    ? withImages
+    : withImages.filter(s => s.category === selectedCategory)
+
+  const current = modalIndex !== null ? filtered[modalIndex] : null
+
+  const openModal = (idx: number) => setModalIndex(idx)
+  const closeModal = () => setModalIndex(null)
+
+  const prev = useCallback(() => {
+    setModalIndex(i => i !== null ? (i - 1 + filtered.length) % filtered.length : null)
+  }, [filtered.length])
+
+  const next = useCallback(() => {
+    setModalIndex(i => i !== null ? (i + 1) % filtered.length : null)
+  }, [filtered.length])
+
+  // Keyboard navigation
   useEffect(() => {
-    if (selectedPost && window.instgrm?.Embeds?.process) {
-      window.instgrm.Embeds.process()
+    if (modalIndex === null) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') prev()
+      if (e.key === 'ArrowRight') next()
+      if (e.key === 'Escape') closeModal()
     }
-  }, [selectedPost])
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [modalIndex, prev, next])
 
-  // Get unique categories from items
-  const categories = ['All', ...Array.from(new Set(items.map(item => item.category)))]
-
-  // Filter items based on selected category
-  const filteredItems = selectedCategory === 'All' 
-    ? items 
-    : items.filter(item => item.category === selectedCategory)
-
-  // Limit display to 6 items
-  const displayItems = filteredItems.slice(0, 6)
-  
-  // Use posts if available, otherwise convert items to post format with optional fields
-  const galleryItems: GalleryItemDisplay[] = posts.length > 0 
-    ? posts.map(post => ({ ...post, title: '', category: '', description: '' }))
-    : displayItems
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = modalIndex !== null ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [modalIndex])
 
   return (
     <section className="w-full py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#2a2420] mb-4">
-            Our Gallery
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4">Our Gallery</h2>
+          <p className="text-lg text-primary/60 max-w-2xl mx-auto">
             Explore our portfolio of stunning transformations and creative hair designs
           </p>
         </div>
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {items.length > 0 && categories.map(category => (
+          {categories.map(cat => (
             <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
-                selectedCategory === category
-                  ? 'bg-[#a89880] text-white shadow-lg scale-105'
-                  : 'bg-gray-200 text-[#2a2420] hover:bg-gray-300'
+              key={cat}
+              onClick={() => { setSelectedCategory(cat); setModalIndex(null) }}
+              className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 ${
+                selectedCategory === cat
+                  ? 'bg-accent text-white shadow-md scale-105'
+                  : 'bg-secondary/30 text-primary hover:bg-secondary/60'
               }`}
             >
-              {category}
+              {cat}
             </button>
           ))}
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
-          {galleryItems.map(item => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-12">
+          {filtered.map((service, idx) => (
             <div
-              key={item.id}
-              className="group rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
-              onClick={() => setSelectedPost({ id: item.id, image: item.image, postUrl: item.postUrl || '' })}
+              key={service.id}
+              className="group relative rounded-lg overflow-hidden cursor-pointer shadow hover:shadow-xl transition-all duration-300" style={{ aspectRatio: '4/5' }}
+              onClick={() => openModal(idx)}
             >
-              {/* Image Container */}
-              <div className="relative w-full aspect-[9/16] bg-gray-200 overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.id}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
-                  onError={(e) => {
-                    // Fallback if image doesn't load
-                    const imgElement = e.currentTarget
-                    imgElement.style.display = 'none'
-                  }}
-                />
-                {/* Overlay with Play Button for Instagram Posts */}
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-40 transition-opacity duration-300" />
-                {posts.length > 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-white rounded-full p-4 opacity-80 group-hover:opacity-100 transition-opacity">
-                      <svg className="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
+              <Image
+                src={getCloudinaryUrl(service.images[0], 'w_400,h_400,c_fill,q_auto,f_auto')}
+                alt={service.name}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                unoptimized
+                onError={(e) => {
+                  const slug = service.images[0].split('/').pop()?.replace(/_[a-z0-9]+$/, '') ?? ''
+                  ;(e.currentTarget as HTMLImageElement).src = `/assets/images/services/${slug}.jpeg`
+                }}
+              />
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/55 transition-all duration-300 flex flex-col items-center justify-center p-3">
+                <p className="text-white font-bold text-sm text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 leading-tight">
+                  {service.name}
+                </p>
+                <span className="mt-1 text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  ${service.price_min}–${service.price_max}
+                </span>
               </div>
-
-              {/* Card Content - Only show for non-post items */}
-              {posts.length === 0 && item.title && (
-                <div className="p-6 bg-white">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-bold text-[#2a2420]">
-                      {item.title}
-                    </h3>
-                    {item.category && (
-                      <span className="text-sm font-semibold text-[#a89880] bg-amber-50 px-3 py-1 rounded-full">
-                        {item.category}
-                      </span>
-                    )}
-                  </div>
-                  {item.description && (
-                    <p className="text-gray-600 line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-                </div>
-              )}
+              {/* Category badge */}
+              <div className="absolute top-2 left-2 bg-accent/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {service.category}
+              </div>
             </div>
           ))}
         </div>
 
-        {/* View More on Instagram */}
-        {posts.length > 0 && instagramUrl && (
+        {/* Instagram CTA */}
+        {instagramUrl && (
           <div className="text-center">
             <a
               href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-[#a89880] hover:bg-[#9a8870] text-white font-bold rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-accent hover:bg-accent/80 text-white font-bold rounded-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
             >
-              <FiInstagram className="w-6 h-6" />
+              <FiInstagram className="w-5 h-5" />
               View More on Our IG Page
             </a>
           </div>
         )}
 
-        {/* Empty State */}
-        {galleryItems.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-xl text-gray-500">
-              No gallery items found
-            </p>
-          </div>
+        {filtered.length === 0 && (
+          <div className="text-center py-16 text-primary/40 text-lg">No items in this category yet.</div>
         )}
       </div>
 
-      {/* Instagram Post Modal */}
-      {selectedPost && (
-        <div 
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedPost(null)}
+      {/* Lightbox Modal */}
+      {current && modalIndex !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={closeModal}
         >
-          <div 
-            className="bg-black rounded-lg shadow-2xl w-full max-w-sm h-[90vh] overflow-hidden flex flex-col animate-fade-in-down"
-            onClick={(e) => e.stopPropagation()}
+          <div
+            className="relative w-full max-w-3xl bg-primary rounded-xl overflow-hidden shadow-2xl flex flex-col" style={{ maxHeight: '92dvh' }}
+            onClick={e => e.stopPropagation()}
           >
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-[#2a2420] text-white p-4 flex justify-between items-center border-b border-[#a89880]">
-              <h2 className="text-xl font-bold">Instagram Post</h2>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
+              <div>
+                <h3 className="text-white font-bold text-lg leading-tight">{current.name}</h3>
+                <span className="text-accent text-xs font-semibold">{current.category}</span>
+              </div>
               <button
-                onClick={() => setSelectedPost(null)}
-                className="text-white/70 hover:text-white transition-colors text-3xl font-bold leading-none"
+                onClick={closeModal}
+                className="text-white/60 hover:text-white transition-colors p-1"
+                aria-label="Close"
               >
-                ×
+                <FiX className="w-6 h-6" />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="flex-1 relative flex items-center justify-center bg-black overflow-y-auto">
-              {/* Instagram Embed */}
-              {selectedPost.postUrl && (
-                <blockquote
-                  className="instagram-media"
-                  data-instgrm-permalink={selectedPost.postUrl}
-                  data-instgrm-version="14"
-                />
+            {/* Image */}
+            <div className="relative w-full min-h-0 flex-shrink" style={{ aspectRatio: '4/3' }}>
+              <Image
+                src={getCloudinaryUrl(current.images[0], 'w_900,h_675,c_fill,q_auto,f_auto')}
+                alt={current.name}
+                fill
+                sizes="(max-width: 768px) 100vw, 900px"
+                className="object-cover"
+                unoptimized
+                priority
+              />
+              {/* Prev / Next arrows */}
+              {filtered.length > 1 && (
+                <>
+                  <button
+                    onClick={prev}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 transition-all"
+                    aria-label="Previous"
+                  >
+                    <FiChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={next}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 transition-all"
+                    aria-label="Next"
+                  >
+                    <FiChevronRight className="w-6 h-6" />
+                  </button>
+                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    {modalIndex + 1} / {filtered.length}
+                  </div>
+                </>
               )}
             </div>
+
+            {/* Details */}
+            <div className="px-5 py-4 overflow-y-auto flex-shrink-0 bg-primary">
+              <p className="text-white/70 text-sm mb-4 leading-relaxed">{current.description}</p>
+              <div className="flex items-center gap-5 flex-wrap">
+                <div className="flex items-center gap-1.5 text-accent font-bold text-base">
+                  <FiTag className="w-4 h-4" />
+                  ${current.price_min}–${current.price_max}
+                </div>
+                <div className="flex items-center gap-1.5 text-white/50 text-sm">
+                  <FiClock className="w-4 h-4" />
+                  {current.duration} min
+                </div>
+              </div>
+            </div>
+
+            {/* Dot indicators */}
+            {filtered.length > 1 && (
+              <div className="flex justify-center gap-1.5 pb-4 flex-shrink-0 bg-primary">
+                {filtered.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setModalIndex(i)}
+                    className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                      i === modalIndex ? 'bg-accent scale-125' : 'bg-white/30 hover:bg-white/60'
+                    }`}
+                    aria-label={`Go to ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

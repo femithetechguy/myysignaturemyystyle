@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Company Name",
+    "name": "Myy Signature Myy Style",
     "description": "Admin panel for managing application data",
     "colors": {
       "primary": "#1B1B1B",
@@ -32,13 +32,13 @@
   "adminLogin": {
     "title": "Admin Panel",
     "icon": "🛡️",
-    "subtitle": "Company Name",
+    "subtitle": "Myy Signature Myy Style",
     "username_label": "Username",
     "username_placeholder": "Enter username",
     "password_label": "Password",
     "password_placeholder": "Enter password",
     "login_btn": "🔐 Login",
-    "footer": "Company Name © 2026"
+    "footer": "Myy Signature Myy Style © 2026"
   },
   "admin": {
     "tabs": [

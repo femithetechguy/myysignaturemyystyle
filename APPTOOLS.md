@@ -138,7 +138,7 @@ export default function Home() {
 ```json
 {
   "app": {
-    "name": "Company Name",
+    "name": "Myy Signature Myy Style",
     "description": "Admin panel for managing application data",
     "colors": {
       "primary": "#1B1B1B",
@@ -157,7 +157,7 @@ export default function Home() {
   "adminLogin": {
     "title": "Admin Panel",
     "icon": "🛡️",
-    "subtitle": "Company Name"
+    "subtitle": "Myy Signature Myy Style"
   },
   "admin": {
     "tabs": [...],

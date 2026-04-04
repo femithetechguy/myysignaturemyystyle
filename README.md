@@ -126,7 +126,7 @@ The admin panel is fully configurable via this single JSON file. It controls:
 ```json
 {
   "app": {
-    "name": "Company Name",
+    "name": "Myy Signature Myy Style",
     "colors": {
       "primary": "#1B1B1B",
       "secondary": "#D4AF37",
