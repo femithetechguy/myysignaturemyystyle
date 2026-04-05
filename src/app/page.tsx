@@ -402,7 +402,10 @@ export default function Home() {
 
       {/* Mobile Navigation Dropdown */}
       {showMobileMenu && (
-        <div className="fixed top-0 left-0 right-0 z-40 pt-20 bg-black/60 md:hidden animate-fade-in-down">
+        <div className="fixed top-0 left-0 right-0 z-40 pt-28 bg-black/80 md:hidden animate-fade-in-down">
+          <div className="px-6 py-3 border-b border-white/10">
+            <p className="text-xs font-light tracking-widest text-center uppercase text-white/50">Menu</p>
+          </div>
           <nav className="flex flex-col gap-0 py-0">
             {content.navigation.links.map((link) => (
               <a 
@@ -413,7 +416,12 @@ export default function Home() {
                   setShowMobileMenu(false)
                   const id = link.href.replace('#', '')
                   setTimeout(() => {
-                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+                    const el = document.getElementById(id)
+                    if (el) {
+                      const headerHeight = document.querySelector('header')?.offsetHeight ?? 80
+                      const top = el.getBoundingClientRect().top + window.scrollY - headerHeight
+                      window.scrollTo({ top, behavior: 'smooth' })
+                    }
                   }, 50)
                 }}
                 className="px-6 py-4 text-base font-bold tracking-wider text-right text-white uppercase transition-all duration-300 border-b hover:bg-white/15 border-white/20 last:border-b-0"
