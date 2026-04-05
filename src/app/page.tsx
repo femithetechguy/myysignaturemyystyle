@@ -359,6 +359,12 @@ export default function Home() {
           <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={112} height={112} className="w-auto h-28" />
         </button>
 
+        {/* Mobile Center Branding */}
+        <div className="absolute left-0 right-0 flex flex-col items-center pointer-events-none md:hidden">
+          <p className="text-xs font-bold tracking-widest uppercase text-white/90" style={{textShadow:'0 2px 4px rgba(0,0,0,0.8)'}}>{content.navigation.brand}</p>
+          <p className="text-[10px] font-light tracking-widest text-white/50">— Hair Salon —</p>
+        </div>
+
         {/* Desktop Navigation - Centered */}
         <nav className="justify-center hidden gap-8 md:flex lg:gap-20">
           {content.navigation.links.map((link) => (
@@ -403,9 +409,6 @@ export default function Home() {
       {/* Mobile Navigation Dropdown */}
       {showMobileMenu && (
         <div className="fixed top-0 left-0 right-0 z-40 pt-28 bg-black/80 md:hidden animate-fade-in-down">
-          <div className="px-6 py-3 border-b border-white/10">
-            <p className="text-xs font-light tracking-widest text-center uppercase text-white/50">Menu</p>
-          </div>
           <nav className="flex flex-col gap-0 py-0">
             {content.navigation.links.map((link) => (
               <a 
