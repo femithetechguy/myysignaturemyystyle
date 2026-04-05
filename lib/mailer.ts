@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer'
 import fs from 'fs'
 import path from 'path'
+import appConfig from '../app.json'
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -43,6 +44,11 @@ export async function sendMail({
   const html = loadTemplate(template, {
     ...vars,
     base_url: process.env.NEXT_PUBLIC_SITE_URL ?? '',
+    business_phone: appConfig.business.contact.phone,
+    business_phone_raw: appConfig.business.contact.phone.replace(/\D/g, ''),
+    business_email: appConfig.business.contact.email,
+    business_address: appConfig.business.address,
+    business_name: appConfig.business.name,
   })
 
   await transporter.sendMail({
