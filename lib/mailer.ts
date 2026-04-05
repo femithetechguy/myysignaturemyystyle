@@ -47,7 +47,7 @@ export async function sendMail({
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM,
-    replyTo: process.env.EMAIL_ADMIN,
+    replyTo: process.env.EMAIL_REPLY_TO ?? process.env.EMAIL_ADMIN,
     to: Array.isArray(to) ? to.join(', ') : to,
     subject,
     html,
