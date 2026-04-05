@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Message Received – Myy Signature Myy Style</title>
+</head>
+<body style="margin:0;padding:0;background-color:#FBF6F0;font-family:Georgia,serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FBF6F0;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#5C3D2E;padding:36px 40px;text-align:center;">
+              <p style="margin:0 0 4px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#C8A882;">Myy Signature Myy Style Salon</p>
+              <h1 style="margin:0;font-size:26px;font-weight:normal;color:#F5ECD7;letter-spacing:1px;">We Got Your Message</h1>
+              <div style="margin:16px auto 0;width:48px;height:2px;background-color:#B8963E;"></div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+
+              <p style="margin:0 0 20px;font-size:15px;color:#3D2B1F;line-height:1.7;">
+                Hi <strong>{{name}}</strong>,
+              </p>
+              <p style="margin:0 0 28px;font-size:15px;color:#3D2B1F;line-height:1.7;">
+                Thank you for reaching out! We've received your message and will get back to you as soon as possible — usually within 1–2 business days.
+              </p>
+
+              <!-- Message Summary -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#FBF6F0;border-radius:6px;border-left:4px solid #B8963E;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:24px 28px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="50%" style="padding:6px 0;vertical-align:top;">
+                          <p style="margin:0;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Inquiry Type</p>
+                          <p style="margin:4px 0 0;font-size:14px;font-weight:bold;color:#5C3D2E;text-transform:capitalize;">{{message_type}}</p>
+                        </td>
+                        <td width="50%" style="padding:6px 0;vertical-align:top;">
+                          <p style="margin:0;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Service of Interest</p>
+                          <p style="margin:4px 0 0;font-size:14px;font-weight:bold;color:#5C3D2E;">
+                            {{#if selected_service}}{{selected_service}}{{else}}<span style="color:#6B4226;font-weight:normal;">Not specified</span>{{/if}}
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" style="padding:16px 0 0;border-top:1px solid #E8DDD0;margin-top:12px;">
+                          <p style="margin:0 0 6px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Your Message</p>
+                          <p style="margin:0;font-size:14px;color:#3D2B1F;line-height:1.7;font-style:italic;">"{{message}}"</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Contact Info -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px 24px;background-color:#F5ECD7;border-radius:6px;">
+                    <p style="margin:0 0 8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#B8963E;">Contact Us Directly</p>
+                    <p style="margin:0 0 4px;font-size:14px;color:#3D2B1F;">
+                      <a href="tel:{{business_phone_raw}}" style="color:#5C3D2E;text-decoration:none;">{{business_phone}}</a>
+                    </p>
+                    <p style="margin:0 0 4px;font-size:14px;color:#3D2B1F;">
+                      <a href="mailto:{{business_email}}" style="color:#5C3D2E;text-decoration:none;">{{business_email}}</a>
+                    </p>
+                    <p style="margin:0;font-size:14px;color:#3D2B1F;">{{business_address}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0;font-size:14px;color:#A08060;line-height:1.7;border-left:3px solid #C8A882;padding-left:16px;">
+                Didn't send this message? You can safely ignore this email.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#3D2B1F;padding:24px 40px;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;color:#C8A882;letter-spacing:1px;">Myy Signature Myy Style Salon</p>
+              <p style="margin:0 0 6px;font-size:12px;color:#6B4226;">{{business_address}}</p>
+              <p style="margin:0 0 10px;font-size:12px;color:#6B4226;">{{business_phone}} &nbsp;|&nbsp; {{business_email}}</p>
+              <a href="https://www.instagram.com/myysignaturemyystyle" style="font-size:12px;color:#B8963E;text-decoration:none;">@myysignaturemyystyle</a>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

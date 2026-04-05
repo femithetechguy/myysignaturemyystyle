@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 1, 2026 — pending commit on `develop`
+Last updated: April 5, 2026
 
 ---
 
@@ -91,6 +91,107 @@ Last updated: April 1, 2026 — pending commit on `develop`
 - **Recommended approach when ready**: Behold.so embed widget (free tier, client self-serves login, one script tag to add)
 - Alternative: client generates a Graph API long-lived token → `scripts/fetch-instagram-posts.js` → `data/instagram.json` → rendered in Gallery
 
+### Hero & Storefront Images
+- [x] `landing.png` hero background replaced with updated image (Next.js image cache cleared)
+- [x] Hero image migrated to Cloudinary — `landing_m6le9k` (`f_auto,q_auto,w_1920`)
+- [x] Local `/assets/images/others/landing.png` kept as `onError` fallback
+
+### Contact Section
+- [x] Storefront photo (`out_landing_vnkdxq`) added to Contact section below "Leave A Message" button
+  - Migrated to Cloudinary — `out_landing_vnkdxq` (`f_auto,q_auto,w_900`)
+  - Local file kept as `onError` fallback
+- [x] **Copy** and **Directions** buttons added to the "Visit Us" address
+  - Copy: writes address to clipboard, shows "Copied!" for 2 s
+  - Directions: opens `maps.google.com/?q=<address>` — hands off to native Maps app on mobile
+
+### Reviews Section
+- [x] Typewriter animation on active review card — text types in at ~22 ms/char with blinking cursor
+- [x] Auto-rotate active card every 6 s; clicking a card sets it as active
+- [x] Active card: scaled up (`scale-105`), pulsing gold glow, larger glowing stars, accent-coloured author name
+- [x] Inactive cards: dimmed to 60% opacity
+- [x] Dot indicators below grid — active dot expands into a pill shape
+- [x] New CSS keyframes added to `globals.css`: `reviewCursor`, `reviewGlow`
+
+### Booking Modal — UX Fixes
+- [x] Service category dropdown no longer pre-selects "Hair Cut" — shows `— Choose a Hair Service —` placeholder by default
+- [x] Booking reference (`BK…`) generated the moment the confirmation modal opens — eliminates "Generating..." flash
+- [x] Hamburger menu icon enlarged from `w-6 h-6` → `w-9 h-9` for easier tap on mobile
+
+### Apply for Hairstylist Modal — Full Overhaul
+- [x] **GA Cosmetology License field removed** — replaced with a small italic note that it may be requested during final selection
+- [x] **Certifications & Education** replaced with tap-friendly pill checkboxes (2-col mobile, 3-col desktop):
+  - Licensed Cosmetologist, Cosmetology School, Self Taught, Natural Hair Certified, Color Specialist, Braiding Certified, Extensions Certified, Locs Specialist, Advanced Workshops
+- [x] **2-column desktop layout** — fields grouped in `md:grid-cols-2` rows to reduce scrolling
+- [x] **Availability section** redesigned:
+  - Day-of-week pill toggles (Mon–Sun)
+  - Mini calendar for earliest start date (past dates disabled, selected date highlighted in accent)
+- [x] **Form validation** matching booking modal pattern:
+  - Inline red border + error message per required field
+  - Red `⚠️` toast listing all missing fields (e.g. *"Still needed: your name, a valid email"*)
+  - Auto-scrolls to first error element via `data-app-error` attribute
+  - Inline errors clear as user types; toast dismisses after 4 s
+- [x] **Input text colour** fixed — all apply form inputs/textareas now have `text-primary` so typed text is readable (was grey)
+- [x] **Share button** added to each Open Positions card:
+  - Always copies shareable text + `#careers` link to clipboard immediately
+  - Also opens native OS share sheet on mobile (iMessage, WhatsApp, etc.)
+  - Button briefly shows "Link Copied!" for 2.5 s
+  - Dark `✓` toast shown on page: *"Link copied! Ready to share."*
+  - Validation toast inside modal remains red `⚠️`; share toast uses dark primary colour
+
+### Mobile Header — Hamburger Position Fix
+- [x] Root cause identified: `absolute` positioning for mobile logo + hamburger inside `flex justify-center` caused layout shift on render
+- [x] Header restructured — mobile uses `justify-between` with logo and hamburger as **in-flow flex children** (no `absolute`)
+- [x] Desktop layout unchanged — logo stays `absolute left-8`, nav centered via `md:justify-center`
+- [x] Hamburger `flex-shrink-0`; mobile logo `flex-shrink-0` — no reflow
+
+### Email System (Nodemailer)
+- [x] `nodemailer` already in `package.json` — no install needed
+- [x] **6 HTML email templates** created in `emails/` folder (inline styles, email-client safe):
+  - `appointment-confirmation-customer.html` — sent to customer on booking
+  - `appointment-notification-admin.html` — sent to admin on booking
+  - `application-confirmation-applicant.html` — sent to applicant on application submit
+  - `application-notification-admin.html` — sent to admin on application submit
+  - `contact-confirmation-visitor.html` — sent to visitor on contact form submit
+  - `contact-notification-admin.html` — sent to admin on contact form submit
+  - All templates use `{{double_brace}}` variables; admin templates link to `{{base_url}}/admin`
+- [x] **`lib/mailer.ts`** — shared utility: creates transporter, loads & hydrates templates, sends via `sendMail()`
+- [x] **3 new API routes** created:
+  - `pages/api/contact.ts` — `POST /api/contact`
+  - `pages/api/booking.ts` — `POST /api/booking`
+  - `pages/api/application.ts` — `POST /api/application`
+  - Each route sends 2 emails in parallel (`Promise.all`) — one to the user, one to admin
+- [x] **Forms wired** to their API routes:
+  - Contact form (`handleSubmitMessage`) — `fetch('/api/contact', ...)`
+  - Booking "Complete Booking" button — `fetch('/api/booking', ...)`
+  - Application form submit — `fetch('/api/application', ...)`
+- [x] **`.env.local`** updated with all email config:
+  - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_SECURE`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`, `EMAIL_ADMIN`
+  - `NEXT_PUBLIC_SITE_URL` — controls the "View in Admin Panel" link in admin emails; set per environment
+- [x] SMTP connection verified (`transporter.verify()` → ✅) and test email confirmed delivered
+- [x] Public-facing email in `app.json` updated to `egwonookpako559@gmail.com`
+
+### Email System — Polish & Fixes (commits `e49f854`–`98fd0c8`)
+- [x] **Conditional template rendering** — `mailer.ts` now processes `{{#if var}}...{{else}}...{{/if}}` blocks via regex before simple `{{var}}` replacement — eliminates raw template syntax in sent emails
+- [x] **Email color contrast** improved across all 6 templates:
+  - Header category labels on dark bg: `#8C6E5A` → `#C8A882`
+  - Table row labels on light bg: `#8C6E5A` → `#5C3D2E`
+  - Fallback/empty text: `#8C6E5A` → `#6B4226`
+  - Footer secondary text on dark: `#6B5040` → `#A08060`
+- [x] **Reply-To header** set on all outgoing mail — client replies route to admin (`fttgsolutions@gmail.com`), not to the sending SMTP address
+- [x] **`EMAIL_REPLY_TO`** added as dedicated env var in `.env.local` (falls back to `EMAIL_ADMIN` if unset)
+- [x] **Business contact vars injected from `app.json`** — all 6 templates fully dynamic, no hardcoded contact info:
+  - `{{business_phone}}`, `{{business_phone_raw}}`, `{{business_email}}`, `{{business_address}}`, `{{business_name}}`
+  - Auto-injected in every `sendMail()` call from `appConfig.business.*`
+- [x] **Booking policy section** added to appointment email templates:
+  - Customer confirmation: full "Booking Policy — Accepted" table with 3 bullets (deposit / cancellation / late arrival)
+  - Admin notification: compact "Policy Acknowledged by Client" sidebar with left border accent
+
+### Mobile Navigation — Scroll & Header Fixes (commits `1730681`–`d82a5d2`)
+- [x] **Mobile nav link scroll fixed** — `preventDefault` + 50 ms deferred `scrollTo` prevents menu-close re-render from interrupting hash navigation
+- [x] **Fixed-header offset** — scroll target uses `header.offsetHeight` dynamically (not hardcoded) so content lands below the sticky header
+- [x] **Mobile menu top padding** increased to `pt-28` to fully clear the actual header height
+- [x] **Business name always visible in mobile header** — `absolute` centered div shows `{content.navigation.brand}` + "— Hair Salon —" subtext at all times; `pointer-events-none` prevents tap-through interference
+
 ---
 
 ## 🔄 In Progress / Needs Attention
@@ -117,7 +218,7 @@ Last updated: April 1, 2026 — pending commit on `develop`
 
 ### Content & Branding
 - [ ] Replace placeholder logo files — `logo_trans.png` and `logo_opoque.jpg` in `public/assets/images/others/`
-- [ ] Replace `landing.png` hero background image
+- [x] `landing.png` hero background image replaced and migrated to Cloudinary
 - [ ] Add real portfolio/gallery images to `public/assets/images/portfolio/` (currently 7 placeholder IG posts)
 - [ ] Fill in `app.json` → `business.social.facebook` (currently empty string)
 - [x] Hair Cut category expanded: **Adult Haircut**, **Kids Haircut**, **Military Haircut**, **Fade** added to `data/services.json` (44 services total)
@@ -138,7 +239,9 @@ Last updated: April 1, 2026 — pending commit on `develop`
 ### Booking System
 - [ ] Wire booking form submissions to a backend endpoint (`pages/api/bookings.js` or similar)
   - Currently no API route handles `POST` booking data — form submissions go nowhere
-- [ ] Send confirmation email on booking (nodemailer or third-party, e.g. Resend / SendGrid)
+- [x] Send confirmation email on booking — nodemailer wired, `POST /api/booking` sends customer + admin emails
+- [x] Contact form email — `POST /api/contact` sends visitor confirmation + admin notification
+- [x] Application form email — `POST /api/application` sends applicant confirmation + admin notification
 - [ ] Integrate payment processor for the 25% deposit (Stripe recommended)
   - Stripe setup: create `pages/api/payments/create-checkout.js`, add `STRIPE_SECRET_KEY` to `.env.local`
 - [ ] Build available-dates logic (block already-booked slots on the booking calendar)
