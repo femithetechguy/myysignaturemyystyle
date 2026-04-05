@@ -408,7 +408,14 @@ export default function Home() {
               <a 
                 key={link.href} 
                 href={link.href} 
-                onClick={() => setShowMobileMenu(false)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  setShowMobileMenu(false)
+                  const id = link.href.replace('#', '')
+                  setTimeout(() => {
+                    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+                  }, 50)
+                }}
                 className="px-6 py-4 text-base font-bold tracking-wider text-right text-white uppercase transition-all duration-300 border-b hover:bg-white/15 border-white/20 last:border-b-0"
                 style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}
               >
