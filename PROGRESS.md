@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 4, 2026
+Last updated: April 5, 2026
 
 ---
 
@@ -169,6 +169,28 @@ Last updated: April 4, 2026
   - `NEXT_PUBLIC_SITE_URL` — controls the "View in Admin Panel" link in admin emails; set per environment
 - [x] SMTP connection verified (`transporter.verify()` → ✅) and test email confirmed delivered
 - [x] Public-facing email in `app.json` updated to `egwonookpako559@gmail.com`
+
+### Email System — Polish & Fixes (commits `e49f854`–`98fd0c8`)
+- [x] **Conditional template rendering** — `mailer.ts` now processes `{{#if var}}...{{else}}...{{/if}}` blocks via regex before simple `{{var}}` replacement — eliminates raw template syntax in sent emails
+- [x] **Email color contrast** improved across all 6 templates:
+  - Header category labels on dark bg: `#8C6E5A` → `#C8A882`
+  - Table row labels on light bg: `#8C6E5A` → `#5C3D2E`
+  - Fallback/empty text: `#8C6E5A` → `#6B4226`
+  - Footer secondary text on dark: `#6B5040` → `#A08060`
+- [x] **Reply-To header** set on all outgoing mail — client replies route to admin (`fttgsolutions@gmail.com`), not to the sending SMTP address
+- [x] **`EMAIL_REPLY_TO`** added as dedicated env var in `.env.local` (falls back to `EMAIL_ADMIN` if unset)
+- [x] **Business contact vars injected from `app.json`** — all 6 templates fully dynamic, no hardcoded contact info:
+  - `{{business_phone}}`, `{{business_phone_raw}}`, `{{business_email}}`, `{{business_address}}`, `{{business_name}}`
+  - Auto-injected in every `sendMail()` call from `appConfig.business.*`
+- [x] **Booking policy section** added to appointment email templates:
+  - Customer confirmation: full "Booking Policy — Accepted" table with 3 bullets (deposit / cancellation / late arrival)
+  - Admin notification: compact "Policy Acknowledged by Client" sidebar with left border accent
+
+### Mobile Navigation — Scroll & Header Fixes (commits `1730681`–`d82a5d2`)
+- [x] **Mobile nav link scroll fixed** — `preventDefault` + 50 ms deferred `scrollTo` prevents menu-close re-render from interrupting hash navigation
+- [x] **Fixed-header offset** — scroll target uses `header.offsetHeight` dynamically (not hardcoded) so content lands below the sticky header
+- [x] **Mobile menu top padding** increased to `pt-28` to fully clear the actual header height
+- [x] **Business name always visible in mobile header** — `absolute` centered div shows `{content.navigation.brand}` + "— Hair Salon —" subtext at all times; `pointer-events-none` prevents tap-through interference
 
 ---
 
