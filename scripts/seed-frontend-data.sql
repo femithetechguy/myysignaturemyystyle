@@ -2,31 +2,62 @@
 -- Run this AFTER create-frontend-tables.sql to populate with initial data from app.json
 
 -- ============================================================================
--- SEED SERVICES FROM APP.JSON
+-- SEED SERVICES FROM DATA/SERVICES.JSON (real salon services)
 -- ============================================================================
-INSERT INTO services (service_id, name, description, duration, price, category, display_order, status) VALUES
-('service_001', 'Women''s Haircut', 'Professional women''s cut with expert styling', 60, 50.00, 'Cuts', 1, 'active'),
-('service_002', 'Men''s Haircut', 'Classic men''s cut with fade and finish', 30, 35.00, 'Cuts', 2, 'active'),
-('service_003', 'Kids Haircut', 'Professional haircut for children', 30, 28.00, 'Cuts', 3, 'active'),
-('service_004', 'Full Head Color', 'Complete hair coloring service', 120, 95.00, 'Color', 4, 'active'),
-('service_005', 'Highlights/Balayage', 'Partial highlights or balayage coloring', 120, 85.00, 'Color', 5, 'active'),
-('service_006', 'Color Touch-Up', 'Root touch-up and color refresh', 90, 65.00, 'Color', 6, 'active'),
-('service_007', 'Ombre/Sombre', 'Gradient color technique for modern look', 150, 110.00, 'Color', 7, 'active'),
-('service_008', 'Blow Dry Style', 'Professional blow dry and styling', 45, 45.00, 'Styling', 8, 'active'),
-('service_009', 'Blowout', 'Voluminous blowout styling', 45, 50.00, 'Styling', 9, 'active'),
-('service_010', 'Braids', 'Various braiding styles and extensions', 180, 120.00, 'Braids', 10, 'active'),
-('service_011', 'Box Braids', 'Box braids with extensions', 240, 150.00, 'Braids', 11, 'active'),
-('service_012', 'Cornrows', 'Cornrows with or without extensions', 180, 100.00, 'Braids', 12, 'active'),
-('service_013', 'Twists', 'Senegalese twists or two-strand twists', 180, 110.00, 'Braids', 13, 'active'),
-('service_014', 'Goddess Braids', 'Elegant goddess braid styles', 150, 130.00, 'Braids', 14, 'active'),
-('service_015', 'Locs Installation', 'Install or retwist locs', 180, 120.00, 'Locs', 15, 'active'),
-('service_016', 'Loc Retwist', 'Retwist and maintain locs', 120, 80.00, 'Locs', 16, 'active'),
-('service_017', 'Hair Treatment', 'Deep conditioning or keratin treatment', 60, 60.00, 'Treatments', 17, 'active'),
-('service_018', 'Silk Press', 'Relaxer-free straightening treatment', 90, 75.00, 'Treatments', 18, 'active'),
-('service_019', 'Scalp Treatment', 'Therapeutic scalp massage and treatment', 45, 50.00, 'Treatments', 19, 'active'),
-('service_020', 'Hair Extension Installation', 'Install hair extensions (tape-in, sew-in, clip-in)', 120, 150.00, 'Extensions', 20, 'active'),
-('service_021', 'Weave Removal & Install', 'Remove existing weave and install new weave', 180, 140.00, 'Extensions', 21, 'active'),
-('service_022', 'Wig Styling', 'Cut, style, and color wig to preference', 60, 65.00, 'Styling', 22, 'active')
+INSERT INTO services (service_id, name, description, duration, price_min, price_max, category, images, display_order, status) VALUES
+-- Hair Cut
+('cut_001', 'Hair Trim', 'Clean-up trim to remove split ends and maintain shape', 60, 30.00, 45.00, 'Hair Cut', '["hair_cut_hair_trim_1_e6zogm"]', 1, 'active'),
+('cut_002', 'Bang / Edge Trim', 'Precision trim of bangs and edges for a polished finish', 60, 50.00, 65.00, 'Hair Cut', '["hair_cut_bang_edge_trim_1_fiwdf3"]', 2, 'active'),
+('cut_003', 'Adult Haircut', 'Full haircut with expert shaping and styling', 60, 65.00, 85.00, 'Hair Cut', '["hair_cut_adult_haircut_1_dm498g"]', 3, 'active'),
+('cut_004', 'Kids Haircut', 'Fun and quick haircut for kids with gentle styling', 45, 25.00, 40.00, 'Hair Cut', '["hair_cut_kids_haircut_1_lemrhk"]', 4, 'active'),
+('cut_005', 'Military Haircut', 'Clean, precise military-style cut with sharp lines', 45, 30.00, 45.00, 'Hair Cut', '["hair_cut_military_haircut_1_kax3ty"]', 5, 'active'),
+('cut_006', 'Fade', 'Smooth gradient fade blended to perfection', 60, 45.00, 65.00, 'Hair Cut', '["hair_cut_fade_1_kn74at"]', 6, 'active'),
+-- Chemical Service
+('chem_001', 'Relaxer / Texturizer', 'Chemical straightening or light texture softening service', 120, 80.00, 130.00, 'Chemical Service', '["chemical_service_relaxer_texturizer_1_ztcwng"]', 7, 'active'),
+('chem_002', 'Perm', 'Chemical wave or curl perm service', 120, 100.00, 150.00, 'Chemical Service', '["chemical_service_perm_1_rnlr9v"]', 8, 'active'),
+('chem_003', 'Grey Coverage', 'Full grey coverage color application', 90, 75.00, 110.00, 'Chemical Service', '["chemical_service_grey_coverage_1_cohkb6"]', 9, 'active'),
+('chem_004', 'Root Touchup', 'Color refresh and root touch-up application', 90, 60.00, 95.00, 'Chemical Service', '["chemical_service_root_touchup_1_xsarcu"]', 10, 'active'),
+('chem_005', 'Single Process Color', 'One all-over color application', 120, 85.00, 130.00, 'Chemical Service', '["chemical_service_single_process_color_1_evfe0a"]', 11, 'active'),
+('chem_006', 'Double Process Color', 'Two-step color process — lift and tone', 180, 130.00, 190.00, 'Chemical Service', '["chemical_service_double_process_color_1_ajdrdo"]', 12, 'active'),
+('chem_007', 'Partial / Full Highlight', 'Partial or full foil highlights for dimension and brightness', 120, 100.00, 160.00, 'Chemical Service', '["chemical_service_partial_full_highlight_1_ecr66p"]', 13, 'active'),
+-- Hair Treatment
+('treat_001', 'Deep Conditioning Treatment', 'Intensive moisture replenishment for dry or damaged hair', 30, 35.00, 55.00, 'Hair Treatment', '["hair_treatment_deep_conditioning_treatment_1_atanzx"]', 14, 'active'),
+('treat_002', 'Protein Treatment', 'Strengthening protein treatment to restore hair integrity', 30, 35.00, 60.00, 'Hair Treatment', '["hair_treatment_protein_treatment_1_gdc8d2"]', 15, 'active'),
+('treat_003', 'Oil Treatment', 'Nourishing hot oil treatment for shine and softness', 30, 30.00, 50.00, 'Hair Treatment', '["hair_treatment_oil_treatment_1_gnraef"]', 16, 'active'),
+('treat_004', 'Scalp Treatment', 'Therapeutic scalp treatment targeting dryness or buildup', 45, 40.00, 65.00, 'Hair Treatment', '["hair_treatment_scalp_treatment_1_dcwosx"]', 17, 'active'),
+('treat_005', 'Olaplex / Bond Repair Treatment', 'Bond-building treatment to repair chemically or heat-damaged hair', 45, 50.00, 85.00, 'Hair Treatment', '["hair_treatment_olaplex_bond_repair_treatment_1_x3zi81"]', 18, 'active'),
+('treat_006', 'Dr C Tuna Hair Treatment', 'Farmasi Dr C Tuna restorative hair and scalp care treatment', 45, 50.00, 80.00, 'Hair Treatment', '["hair_treatment_dr_c_tuna_hair_treatment_1_g9g6n5"]', 19, 'active'),
+-- Extensions
+('ext_001', 'Sew-In', 'Full sew-in weave installation with natural hair braided down', 180, 175.00, 260.00, 'Extensions', '["extensions_sew_in_1_ykde9i"]', 20, 'active'),
+('ext_002', 'Microlinks', 'Individual microlink / I-tip extension installation', 240, 200.00, 350.00, 'Extensions', '["extensions_microlinks_1_dwz3mw"]', 21, 'active'),
+('ext_003', 'Tape In', 'Tape-in weft extension application', 180, 150.00, 250.00, 'Extensions', '["extensions_tape_in_1_xey1u0"]', 22, 'active'),
+('ext_004', 'Wig Installation', 'Custom wig fitting, glueless or adhesive installation', 180, 80.00, 150.00, 'Extensions', '["extensions_wig_installation_1_odifga"]', 23, 'active'),
+('ext_005', 'Up Do', 'Elegant pinned or swept-up style with extensions', 120, 75.00, 130.00, 'Extensions', '["extensions_up_do_1_ydegfi"]', 24, 'active'),
+('ext_006', 'Pixie Natural Hair / Sew-In', 'Pixie cut style achieved with natural hair or sew-in technique', 180, 150.00, 220.00, 'Extensions', '["extensions_pixie_natural_hair_sew_in_1_kifoul"]', 25, 'active'),
+('ext_007', 'Weave Maintenance', 'Upkeep, tightening, and care for existing weave installation', 60, 60.00, 100.00, 'Extensions', '["extensions_weave_maintenance_1_gl8ooj"]', 26, 'active'),
+('ext_008', 'Weave Take Down', 'Safe removal of weave and gentle detangle of natural hair', 45, 40.00, 75.00, 'Extensions', '["extensions_weave_take_down_1_lqlx1c"]', 27, 'active'),
+-- Braids
+('braid_001', 'Feeding / Fulani / Lemonade Braids', 'Feed-in, Fulani, or lemonade braid styles with extensions', 180, 150.00, 260.00, 'Braids', '["braids_feeding_fulani_lemonade_braids_1_pv28jy"]', 28, 'active'),
+('braid_002', 'Senegalese Twist', 'Rope twist style using Kanekalon or Marley hair', 180, 150.00, 230.00, 'Braids', '["braids_senegalese_twist_1_cpe6w3"]', 29, 'active'),
+('braid_003', 'Crochet', 'Crochet braid installation with various hair textures', 120, 100.00, 180.00, 'Braids', '["braids_crochet_1_xblgtb"]', 30, 'active'),
+('braid_004', 'Braids Maintenance', 'Re-do edges, moisturize, and maintain existing braid style', 120, 75.00, 130.00, 'Braids', '["braids_braids_maintenance_1_jpt93t"]', 31, 'active'),
+('braid_005', 'Braids Take Down', 'Careful removal of braids with detangle and wash option', 60, 50.00, 80.00, 'Braids', '["braids_braids_take_down_1_sfd3qz"]', 32, 'active'),
+-- Locs
+('locs_001', 'Starter Locs', 'Begin your loc journey — two-strand, interloc, or comb coils', 120, 100.00, 180.00, 'Locs', '["locs_starter_locs_1_kke1gs"]', 33, 'active'),
+('locs_002', 'Retwist / Interloc / Styles', 'Professional retwist, interlocking, or styled loc maintenance', 120, 80.00, 160.00, 'Locs', '["locs_retwist_interloc_styles_1_dbyb9v"]', 34, 'active'),
+('locs_003', 'Loc Maintenance', 'General loc upkeep including cleansing, conditioning, and re-palmrolling', 120, 65.00, 130.00, 'Locs', '["locs_loc_maintenance_1_eqzlwq"]', 35, 'active'),
+-- Natural Hair Styles
+('nat_001', 'Silk Press', 'Relaxer-free silk press for smooth, sleek, heat-styled natural hair', 180, 75.00, 130.00, 'Natural Hair Styles', '["natural_hair_styles_silk_press_1_ym0dka"]', 36, 'active'),
+('nat_002', 'Two Strands Twist', 'Two-strand twists on natural hair with or without extensions', 120, 80.00, 140.00, 'Natural Hair Styles', '["natural_hair_styles_two_strands_twist_1_wiqcpp"]', 37, 'active'),
+('nat_003', 'Flat Twist', 'Flat twists styled close to the scalp for a sleek natural look', 90, 65.00, 110.00, 'Natural Hair Styles', '["natural_hair_styles_flat_twist_1_oj0cxg"]', 38, 'active'),
+('nat_004', 'Wash and Go', 'Cleanse, condition, and define natural curl pattern — no heat', 120, 60.00, 100.00, 'Natural Hair Styles', '["natural_hair_styles_wash_and_go_1_jw8k0m"]', 39, 'active'),
+('nat_005', 'Wash and Set', 'Shampoo, condition, and roller or wrap set for a smooth finish', 120, 65.00, 110.00, 'Natural Hair Styles', '["natural_hair_styles_wash_and_set_1_zc0jzk"]', 40, 'active'),
+-- Bridal
+('bridal_001', 'Bridal Trial', 'Pre-wedding style rehearsal to perfect your wedding day look', 90, 100.00, 200.00, 'Bridal', '["bridal_bridal_trial_1_jsdnlo"]', 41, 'active'),
+('bridal_002', 'Wedding Day Style', 'Full bridal styling service on your wedding day', 120, 150.00, 300.00, 'Bridal', '["bridal_wedding_day_style_1_uyueqg"]', 42, 'active'),
+-- Add On
+('addon_001', 'Shampoo / Hydrate and Trim', 'Cleansing shampoo, deep hydration, and light trim add-on', 120, 30.00, 55.00, 'Add On', '["add_on_shampoo_hydrate_and_trim_1_f1une7"]', 43, 'active'),
+('addon_002', 'Scalp Stimulator', 'Invigorating scalp massage and stimulating serum application', 30, 25.00, 45.00, 'Add On', '["add_on_scalp_stimulator_1_evcbvb"]', 44, 'active')
 ON CONFLICT (service_id) DO NOTHING;
 
 -- ============================================================================
@@ -414,7 +445,7 @@ DO $$
 BEGIN
     RAISE NOTICE '✅ Frontend database seeded successfully!';
     RAISE NOTICE 'Data inserted:';
-    RAISE NOTICE '  - 22 services';
+    RAISE NOTICE '  - 44 services (Hair Cut, Chemical, Treatment, Extensions, Braids, Locs, Natural Hair, Bridal, Add On)';
     RAISE NOTICE '  - 1 staff member (Egwono Okpako)';
     RAISE NOTICE '  - Business settings (info, contact, social, hours, booking, payment)';
     RAISE NOTICE '  - App settings (branding, features, SEO, notifications)';

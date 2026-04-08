@@ -14,6 +14,7 @@ import AdminApplications from './tabs/AdminApplications';
 import AdminReviews from './tabs/AdminReviews';
 import AdminGallery from './tabs/AdminGallery';
 import AdminContacts from './tabs/AdminContacts';
+import AdminPolicies from './tabs/AdminPolicies';
 import staticConfig from '../../config/admin.json';
 import { colors, button, sidebar, fonts } from './AdminThemeProvider';
 
@@ -68,6 +69,7 @@ const TAB_COMPONENTS = {
   AdminReviews,
   AdminGallery,
   AdminContacts,
+  AdminPolicies,
 };
 
 export default function AdminLayout() {

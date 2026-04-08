@@ -1,8 +1,21 @@
+import { useState, useEffect } from 'react';
 import config from '../../../config/admin.json';
 
 export default function AdminDashboard({ onNavigate }) {
   const adminConfig = config.admin.dashboard;
   const tabs = config.admin.tabs.filter(tab => tab.id !== 'dashboard');
+  const [stats, setStats] = useState([]);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return;
+    fetch('/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.stats) setStats(data.stats); })
+      .catch(() => {})
+      .finally(() => setStatsLoading(false));
+  }, []);
   
   return (
     <div className="dashboard">
@@ -12,26 +25,16 @@ export default function AdminDashboard({ onNavigate }) {
       </div>
 
       <div className="stats">
-        <div className="statCard">
-          <div className="statIcon">{adminConfig.stats[0].icon}</div>
-          <h3>{adminConfig.stats[0].title}</h3>
-          <p className="statNumber">{Object.keys(config.database?.tables || {}).length}</p>
-          <p className="statDesc">{adminConfig.stats[0].description}</p>
-        </div>
-        
-        <div className="statCard">
-          <div className="statIcon">{adminConfig.stats[1].icon}</div>
-          <h3>{adminConfig.stats[1].title}</h3>
-          <p className="statNumber">{config.admin.tabs.length}</p>
-          <p className="statDesc">{adminConfig.stats[1].description}</p>
-        </div>
-        
-        <div className="statCard">
-          <div className="statIcon">{adminConfig.stats[2].icon}</div>
-          <h3>{adminConfig.stats[2].title}</h3>
-          <p className="statNumber">Loaded</p>
-          <p className="statDesc">{adminConfig.stats[2].description}</p>
-        </div>
+        {statsLoading ? (
+          <p style={{ color: '#666', padding: '20px' }}>Loading stats...</p>
+        ) : stats.map(({ key, label, icon, count }) => (
+          <div key={key} className="statCard" onClick={() => onNavigate && onNavigate(key)} style={{ cursor: 'pointer' }}>
+            <div className="statIcon">{icon}</div>
+            <h3>{label}</h3>
+            <p className="statNumber">{count === null ? '—' : count}</p>
+            <p className="statDesc">Total records</p>
+          </div>
+        ))}
       </div>
 
       {/* Dynamic Tab Navigation Cards */}

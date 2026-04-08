@@ -1,11 +1,8 @@
 import appConfig from '../../app.json'
-import services from '../../data/services.json'
 
 export const getAppConfig = () => appConfig
 
 export const getBusinessInfo = () => appConfig.business
-
-export const getServices = () => services
 
 /**
  * Build a Cloudinary URL from a public ID.

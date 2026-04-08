@@ -1,6 +1,6 @@
 'use client'
 
-import { getAppConfig, getContent, getGallery, getCareers, getServices } from '@/lib/config'
+import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { FiInstagram, FiCopy, FiMap, FiShare2 } from 'react-icons/fi'
@@ -9,11 +9,13 @@ import Gallery from '@/components/Gallery'
 
 export default function Home() {
   const appConfig = getAppConfig()
-  const services = getServices()
   const business = appConfig.business
   const content = getContent()
   const gallery = getGallery()
   const careers = getCareers()
+  // DB-backed data — fall back to app.json values until the fetch resolves
+  const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number; price_max: number; category: string; images: string[] }[]>([])
+  const [reviews, setReviews] = useState(content.reviews_section.reviews)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [navBackground, setNavBackground] = useState('dark')
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -67,6 +69,7 @@ export default function Home() {
   const [appAvailMonth, setAppAvailMonth] = useState(new Date().getMonth())
   const [appAvailYear, setAppAvailYear] = useState(new Date().getFullYear())
   const [policyAccepted, setPolicyAccepted] = useState(false)
+  const [showFullPolicy, setShowFullPolicy] = useState(false)
   const [copiedZelle, setCopiedZelle] = useState(false)
   const [copiedCashapp, setCopiedCashapp] = useState(false)
   const [copiedRef, setCopiedRef] = useState(false)
@@ -125,10 +128,22 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Fetch services and reviews from DB on mount
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => setServices(data))
+      .catch(err => console.error('Failed to load services from DB:', err))
+
+    fetch('/api/reviews')
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => { if (data.length > 0) setReviews(data) })
+      .catch(err => console.error('Failed to load reviews from DB:', err))
+  }, [])
+
   // Typewriter effect for active review
   useEffect(() => {
-    const reviews = content.reviews_section.reviews
-    const fullText = reviews[activeReviewIndex].text
+    const fullText = reviews[activeReviewIndex]?.text ?? ''
     let i = 0
     setTypedReviewText('')
     setIsTypingReview(true)
@@ -147,7 +162,6 @@ export default function Home() {
 
   // Auto-rotate reviews
   useEffect(() => {
-    const reviews = content.reviews_section.reviews
     const interval = setInterval(() => {
       setActiveReviewIndex(prev => (prev + 1) % reviews.length)
     }, 6000)
@@ -564,7 +578,7 @@ export default function Home() {
 
           {/* Reviews Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-8">
-            {content.reviews_section.reviews.map((review, index) => {
+            {reviews.map((review, index) => {
               const isActive = index === activeReviewIndex
               return (
                 <div
@@ -612,7 +626,7 @@ export default function Home() {
 
           {/* Dot indicators */}
           <div className="flex justify-center gap-2 mt-8">
-            {content.reviews_section.reviews.map((_, index) => (
+            {reviews.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setActiveReviewIndex(index)}
@@ -1174,6 +1188,53 @@ export default function Home() {
               <p className="text-sm font-semibold leading-snug">{bookingToast}</p>
             </div>
           )}
+
+          {/* Full Policy Modal */}
+          {showFullPolicy && (
+            <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowFullPolicy(false)}>
+              <div
+                className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto animate-fade-in-down"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Policy Modal Header */}
+                <div className="sticky top-0 flex items-center justify-between p-5 border-b bg-primary text-secondary border-amber-300 rounded-t-xl">
+                  <h3 className="text-lg font-bold">{content.salon_policies.title}</h3>
+                  <button
+                    onClick={() => setShowFullPolicy(false)}
+                    className="text-2xl font-bold transition-colors text-secondary/70 hover:text-secondary leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+                {/* Policy Modal Body */}
+                <div className="p-5 space-y-5 text-sm text-gray-800">
+                  <p className="text-xs text-gray-500 italic">{content.salon_policies.intro}</p>
+                  {(['booking','confirmation','cancellation','deposits','late_arrival','payment','salon_experience','service_guarantee','promise'] as const).map((key) => {
+                    const section = content.salon_policies[key] as { title: string; intro?: string; points?: string[]; text?: string }
+                    return (
+                      <div key={key} className="space-y-1">
+                        <p className="font-bold text-amber-800">{section.title}</p>
+                        {section.intro && <p className="text-xs text-gray-600 italic">{section.intro}</p>}
+                        {section.points?.map((pt, i) => (
+                          <p key={i} className="text-xs text-gray-700">• {pt}</p>
+                        ))}
+                        {section.text && <p className="text-xs text-gray-700">{section.text}</p>}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="sticky bottom-0 p-4 border-t bg-amber-50 border-amber-200 rounded-b-xl">
+                  <button
+                    onClick={() => setShowFullPolicy(false)}
+                    className="w-full py-2.5 rounded-lg bg-primary text-secondary font-bold text-sm hover:bg-primary/90 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-down">
             {/* Modal Header */}
             <div className="sticky top-0 flex items-center justify-between p-6 border-b bg-primary text-secondary border-accent/20">
@@ -1401,6 +1462,17 @@ export default function Home() {
                 <p>• {content.booking_disclaimer.deposit_note}</p>
                 <p>• {content.booking_disclaimer.cancellation_note}</p>
                 <p>• {content.booking_disclaimer.late_policy}</p>
+                <p>• {content.salon_policies.confirmation.points[2]}</p>
+                <p>• {content.salon_policies.payment.points[2]}</p>
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowFullPolicy(true)}
+                    className="w-full py-2 mt-1 rounded-lg border-2 border-amber-400 bg-amber-100 text-amber-800 text-sm font-bold hover:bg-amber-200 hover:border-amber-600 transition-all duration-200 active:scale-95"
+                  >
+                    📄 Read Full Salon Policies →
+                  </button>
+                </div>
                 <label className={`flex items-center gap-3 mt-3 cursor-pointer select-none rounded-lg p-3 transition-all duration-200 ${policyAccepted ? 'bg-green-100 border border-green-400' : 'bg-white border-2 border-dashed border-amber-400 hover:border-amber-600'}`}>
                   <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-200 ${policyAccepted ? 'bg-green-500 border-green-500' : 'bg-white border-amber-500'}`}>
                     {policyAccepted && (

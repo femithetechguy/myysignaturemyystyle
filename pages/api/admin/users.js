@@ -52,6 +52,8 @@ export default async function handler(req, res) {
     return handleGet(req, res, tableKey);
   } else if (req.method === 'PUT') {
     return handleUpdate(req, res, tableKey, id);
+  } else if (req.method === 'POST') {
+    return handleCreate(req, res, tableKey);
   } else if (req.method === 'DELETE') {
     return handleDelete(req, res, tableKey, id);
   } else {
@@ -61,8 +63,6 @@ export default async function handler(req, res) {
 
 async function handleGet(req, res, tableKey) {
   try {
-    const { table: tableKey } = req.query;
-
     // Get table mapping from config
     const { allowed, mapping } = await getTableMapping();
     
@@ -168,16 +168,21 @@ async function handleUpdate(req, res, tableKey, id) {
     delete updateData.created_at;
     delete updateData.updated_at;
     Object.keys(updateData).forEach(key => {
-      if (key.endsWith('_id') && key !== 'service_id') delete updateData[key];
+      if (key.endsWith('_id')) delete updateData[key];
     });
     
     // Build UPDATE query dynamically
     const fields = Object.keys(updateData);
     const setClause = fields.map((field, idx) => `${field} = $${idx + 1}`).join(', ');
-    const values = fields.map(field => updateData[field]);
+    // Serialize arrays/objects for JSONB columns (pg doesn't auto-convert JS arrays to JSON)
+    const values = fields.map(field => {
+      const val = updateData[field];
+      if (val !== null && val !== undefined && typeof val === 'object') return JSON.stringify(val);
+      return val;
+    });
     
     // Find the ID column
-    const idColumn = Object.keys(data).find(k => k.endsWith('_id') || k === 'id') || 'id';
+    const idColumn = Object.keys(data).find(k => k === 'id' || k.endsWith('_id')) || 'id';
     values.push(id);
     
     const query = `UPDATE ${table} SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE ${idColumn} = $${values.length} RETURNING *`;
@@ -239,6 +244,51 @@ async function handleDelete(req, res, tableKey, id) {
     console.error('Delete error:', error.message);
     return res.status(500).json({ 
       error: 'Failed to delete item',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+}
+
+async function handleCreate(req, res, tableKey) {
+  try {
+    const { allowed, mapping } = await getTableMapping();
+
+    if (!tableKey || !allowed.includes(tableKey)) {
+      return res.status(400).json({ error: `Invalid table: ${tableKey}` });
+    }
+
+    const table = mapping[tableKey];
+    const insertData = { ...req.body };
+
+    // Strip auto-generated fields
+    delete insertData.id;
+    delete insertData.created_at;
+    delete insertData.updated_at;
+    delete insertData.date_created;
+    delete insertData.date_updated;
+
+    const fields = Object.keys(insertData).filter(k => insertData[k] !== undefined && insertData[k] !== '');
+    if (fields.length === 0) {
+      return res.status(400).json({ error: 'No data provided' });
+    }
+
+    const cols = fields.join(', ');
+    const placeholders = fields.map((_, i) => `$${i + 1}`).join(', ');
+    // Serialize arrays/objects for JSONB columns
+    const values = fields.map(f => {
+      const val = insertData[f];
+      if (val !== null && val !== undefined && typeof val === 'object') return JSON.stringify(val);
+      return val;
+    });
+
+    const query = `INSERT INTO ${table} (${cols}) VALUES (${placeholders}) RETURNING *`;
+    const result = await pool.query(query, values);
+
+    return res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Create error:', error.message);
+    return res.status(500).json({
+      error: 'Failed to create item',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
