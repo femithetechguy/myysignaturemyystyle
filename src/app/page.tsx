@@ -3,7 +3,7 @@
 import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram, FiCopy, FiMap, FiShare2 } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
@@ -16,6 +16,7 @@ export default function Home() {
   // DB-backed data — fall back to app.json values until the fetch resolves
   const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number; price_max: number; category: string; images: string[] }[]>([])
   const [reviews, setReviews] = useState(content.reviews_section.reviews)
+  const [stylists, setStylists] = useState<{ id: number; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[] }[]>([])
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [navBackground, setNavBackground] = useState('dark')
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -139,6 +140,11 @@ export default function Home() {
       .then(r => r.ok ? r.json() : Promise.reject(r))
       .then(data => { if (data.length > 0) setReviews(data) })
       .catch(err => console.error('Failed to load reviews from DB:', err))
+
+    fetch('/api/staff')
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => { if (data.length > 0) setStylists(data) })
+      .catch(err => console.error('Failed to load stylists from DB:', err))
   }, [])
 
   // Typewriter effect for active review
@@ -324,7 +330,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Navigation */}
-      <header className={`fixed top-0 w-full px-4 md:px-16 py-5 md:py-6 flex justify-between md:justify-center items-center z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 w-full px-4 md:px-16 py-3 md:py-6 flex justify-between md:justify-center items-center z-50 transition-all duration-300 ${
         showMobileMenu
           ? 'bg-transparent backdrop-blur-0'
           : navBackground === 'dark' 
@@ -350,7 +356,7 @@ export default function Home() {
           }}
           className="md:hidden hover:opacity-80 transition-opacity flex-shrink-0"
         >
-          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-20" />
+          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-16" />
         </button>
 
         {/* Brand Logo - Desktop (absolute, left) */}
@@ -374,10 +380,13 @@ export default function Home() {
         </button>
 
         {/* Mobile Center Branding */}
-        <div className="absolute left-0 right-0 flex flex-col items-center pointer-events-none md:hidden">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="absolute left-16 right-12 flex flex-col items-center md:hidden hover:opacity-80 transition-opacity"
+        >
           <p className="text-xs font-bold tracking-widest uppercase text-white/90" style={{textShadow:'0 2px 4px rgba(0,0,0,0.8)'}}>{content.navigation.brand}</p>
           <p className="text-[10px] font-light tracking-widest text-white/50">— Hair Salon —</p>
-        </div>
+        </button>
 
         {/* Desktop Navigation - Centered */}
         <nav className="justify-center hidden gap-8 md:flex lg:gap-20">
@@ -422,7 +431,7 @@ export default function Home() {
 
       {/* Mobile Navigation Dropdown */}
       {showMobileMenu && (
-        <div className="fixed top-0 left-0 right-0 z-40 pt-28 bg-black/80 md:hidden animate-fade-in-down">
+        <div className="fixed top-0 left-0 right-0 z-40 pt-[88px] bg-black/80 md:hidden animate-fade-in-down">
           <nav className="flex flex-col gap-0 py-0">
             {content.navigation.links.map((link) => (
               <a 
@@ -550,6 +559,89 @@ export default function Home() {
       <div className="py-4 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
+
+      {/* Section Divider */}
+      <div className="py-4 container-custom">
+        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
+      </div>
+
+      {/* Stylists Section */}
+      <section id="stylists" className="py-16 bg-white sm:py-20">
+        <div className="container-custom">
+          <h2 className="mb-2 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">Meet Our Stylists</h2>
+          <p className="mb-12 text-center text-sm text-primary/60">Talented professionals ready to bring your vision to life</p>
+
+          {stylists.length === 0 ? (
+            <p className="text-center text-sm text-primary/40 py-12">Stylists coming soon — check back shortly.</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {stylists.map((stylist) => (
+                <div key={stylist.id} className="flex flex-col rounded-2xl overflow-hidden shadow-md border border-amber-100 bg-white hover:shadow-xl transition-shadow duration-300">
+                  {/* Photo */}
+                  <div className="relative w-full aspect-[3/4] bg-amber-50 overflow-hidden">
+                    {stylist.photo ? (
+                      <img
+                        src={stylist.photo}
+                        alt={stylist.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200">
+                        <span className="text-6xl font-bold text-amber-600/50">{stylist.name.charAt(0)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex flex-col flex-1 p-5 gap-3">
+                    <div>
+                      <h3 className="text-xl font-bold uppercase text-primary tracking-wide">{stylist.name}</h3>
+                      {stylist.title && <p className="text-xs font-semibold text-accent uppercase tracking-widest mt-0.5">{stylist.title}</p>}
+                    </div>
+
+                    <p className="text-sm text-primary/70 leading-relaxed flex-1">{stylist.bio}</p>
+
+                    {/* Specialties */}
+                    {stylist.specialties?.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {stylist.specialties.map((s, i) => (
+                          <span key={i} className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">{s}</span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Contact row */}
+                    <div className="flex flex-col gap-1.5 pt-1 border-t border-amber-100">
+                      {stylist.phone && (
+                        <a href={`tel:${stylist.phone.replace(/[^0-9]/g, '')}`} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                          <FiPhone className="w-4 h-4 flex-shrink-0" />
+                          {stylist.phone}
+                        </a>
+                      )}
+                      {stylist.instagram_handle && (
+                        <a href={`https://instagram.com/${stylist.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                          <FiInstagram className="w-4 h-4 flex-shrink-0" />
+                          @{stylist.instagram_handle}
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Book Now */}
+                    {stylist.booking_slug && (
+                      <a
+                        href={`/book_${stylist.booking_slug}`}
+                        className="mt-1 w-full py-2.5 rounded-xl bg-primary text-secondary text-sm font-bold text-center hover:bg-primary/90 active:scale-95 transition-all duration-200"
+                      >
+                        Book Now
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Gallery Section */}
       <section id="gallery" className="bg-white">
@@ -906,6 +998,78 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Connect With Us Section */}
+      <section id="connect" className="py-16 sm:py-20 bg-primary">
+        <div className="container-custom">
+          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-center md:gap-16">
+
+            {/* Phone mockup image */}
+            <div className="flex-shrink-0 w-48 sm:w-56 md:w-64 drop-shadow-2xl">
+              <Image
+                src="/assets/images/others/msms_ig_image.png"
+                alt="Myy Signature Myy Style on Instagram"
+                width={400}
+                height={700}
+                className="w-full h-auto rounded-3xl"
+                unoptimized
+              />
+            </div>
+
+            {/* Text + links */}
+            <div className="text-center md:text-left">
+              <p className="mb-1 text-xs font-bold tracking-[0.3em] uppercase text-secondary/50">Follow & Reach Us</p>
+              <h2 className="mb-8 text-3xl font-extrabold tracking-widest uppercase sm:text-4xl text-secondary" style={{letterSpacing:'0.12em'}}>
+                Connect With Us<br className="hidden sm:block" /> On Social Media
+              </h2>
+
+              <div className="flex flex-col gap-5">
+                {/* Instagram */}
+                <a
+                  href={business.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                    <FiInstagram className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                    @myysignaturemyystyle
+                  </span>
+                </a>
+
+                {/* Email */}
+                <a
+                  href={`mailto:${business.contact.email}`}
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent/80 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                    <FiMail className="w-6 h-6 text-primary" />
+                  </div>
+                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                    {business.contact.email}
+                  </span>
+                </a>
+
+                {/* Phone */}
+                <a
+                  href={`tel:${business.contact.phone.replace(/[^0-9]/g, '')}`}
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-secondary/20 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                    <FiPhone className="w-6 h-6 text-secondary" />
+                  </div>
+                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                    {business.contact.phone}
+                  </span>
+                </a>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

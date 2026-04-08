@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 8, 2026 (session 2)
+Last updated: April 8, 2026 (session 3)
 
 ---
 
@@ -240,6 +240,33 @@ Last updated: April 8, 2026 (session 2)
   - Sticky header + sticky Close button at bottom
   - Click-outside to dismiss
 
+### Mobile Header — Height & Hamburger Fixes (session 3)
+- [x] Mobile header padding reduced: `py-5` → `py-3` (desktop `md:py-6` unchanged)
+- [x] Mobile logo height reduced: `h-20` → `h-16` (desktop `h-28` unchanged)
+- [x] Mobile menu dropdown top offset updated: `pt-28` → `pt-[88px]` to match new header height
+- [x] Center branding (`div.pointer-events-none`) converted to a `button` that scrolls to top on tap
+- [x] Hamburger menu restored — center branding button constrained to `left-16 right-12` so it no longer covers the hamburger tap target
+
+### Connect With Us Section (session 3)
+- [x] New section (`id="connect"`) added between Contact and Footer on the landing page
+  - Left: phone mockup image (`msms_ig_image.png`) — actual IG profile screenshot
+  - Right: Instagram (gradient icon), Email (amber icon), Phone (muted icon) — all tappable links
+  - Uses `business.contact.email` and `business.contact.phone` from `app.json` (not `business.email`)
+- [x] "Connect With Us" link added to Footer Quick Links in `app.json` → `#connect`
+
+### Stylists Section (session 3)
+- [x] "Stylists" nav item added to `app.json` between Services and Gallery → `#stylists`
+- [x] `scripts/create-frontend-tables.sql` — `instagram_handle VARCHAR(100)` and `booking_slug VARCHAR(100)` columns added to `staff` table definition
+- [x] `dbquries/staff.sql` **new** — `ALTER TABLE … ADD COLUMN IF NOT EXISTS` (safe re-run) + seeds 3 sample stylists (`staff_001` Jairo, `staff_002` Andrea, `staff_003` Char) with `ON CONFLICT DO UPDATE`
+- [x] `pages/api/staff.js` **new** — public GET endpoint: `SELECT … FROM staff WHERE status = 'active' ORDER BY display_order ASC, id ASC`
+- [x] Full Stylists section (`id="stylists"`) built in `page.tsx` between Services and Gallery:
+  - `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` card grid
+  - Card: `aspect-[3/4]` portrait photo with `onError` initials fallback
+  - Name, title, bio, specialties pills (`bg-amber-100 text-amber-800`)
+  - Phone (`FiPhone` + `tel:`) and Instagram (`FiInstagram` + `instagram.com/`) contact links
+  - **Book Now** button → `/book_${booking_slug}` (per-stylist booking page)
+  - Empty state: "Stylists coming soon" message
+
 ### Admin Panel — Full DB Integration
 - [x] `pages/api/admin/login.js` rewritten — now queries `admins` table + `bcryptjs.compare()` (was plain-text ENV var comparison)
 - [x] `pages/api/admin/users.js` bugs fixed:
@@ -263,6 +290,7 @@ Last updated: April 8, 2026 (session 2)
   5. `dbquries/products.sql` — products-specific setup
   6. `dbquries/reviews.sql` — creates reviews table + seeds 3 reviews from `app.json`
   7. `dbquries/business_settings.sql` — creates business_settings table + seeds `salon_policies` + `booking_disclaimer`
+  8. `dbquries/staff.sql` — adds `instagram_handle`/`booking_slug` columns + seeds 3 sample stylists
 
 ---
 
@@ -294,6 +322,8 @@ Last updated: April 8, 2026 (session 2)
 - [x] Send confirmation email on booking — nodemailer wired, `POST /api/booking` sends customer + admin emails
 - [x] Contact form email — `POST /api/contact` sends visitor confirmation + admin notification
 - [x] Application form email — `POST /api/application` sends applicant confirmation + admin notification
+- [ ] Build individual `/book_[slug]` pages (e.g. `/book_jairo`) — Stylists section Book Now buttons link to these; pages don't exist yet
+- [ ] Add real Cloudinary photo URLs to the 3 seeded staff records (currently empty strings — update via admin Staff tab once DB is seeded)
 - [ ] Integrate payment processor for the 25% deposit (Stripe recommended)
   - Stripe setup: create `pages/api/payments/create-checkout.js`, add `STRIPE_SECRET_KEY` to `.env.local`
 - [ ] Build available-dates logic (block already-booked slots on the booking calendar)

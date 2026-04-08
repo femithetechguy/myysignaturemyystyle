@@ -37,7 +37,9 @@ CREATE TABLE IF NOT EXISTS staff (
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(50),
     bio TEXT,
-    photo TEXT, -- path to staff photo
+    photo TEXT, -- URL to staff photo (Cloudinary or local path)
+    instagram_handle VARCHAR(100), -- e.g. jmenendezcolour (no @)
+    booking_slug VARCHAR(100), -- e.g. jairo → links to /book_jairo
     specialties JSONB DEFAULT '[]', -- array of specialty services
     availability JSONB DEFAULT '{}', -- weekly schedule
     is_bookable BOOLEAN DEFAULT true,

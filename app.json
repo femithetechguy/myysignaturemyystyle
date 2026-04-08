@@ -1012,6 +1012,10 @@
           "href": "#services"
         },
         {
+          "label": "Stylists",
+          "href": "#stylists"
+        },
+        {
           "label": "Gallery",
           "href": "#gallery"
         },
@@ -1104,6 +1108,10 @@
             {
               "label": "Contact",
               "href": "#contact"
+            },
+            {
+              "label": "Connect With Us",
+              "href": "#connect"
             }
           ]
         },
