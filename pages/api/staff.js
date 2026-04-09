@@ -1,4 +1,5 @@
 import { pool } from '../../lib/dbQueries';
+import stylistsJson from '../../data/stylists.json';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -18,14 +19,18 @@ export default async function handler(req, res) {
         instagram_handle,
         booking_slug,
         specialties,
+        availability,
         display_order
        FROM staff
        WHERE status = 'active'
        ORDER BY display_order ASC, id ASC`
     );
-    return res.status(200).json(result.rows);
+    // If DB returns rows use them, otherwise fall back to JSON file
+    const data = result.rows.length > 0 ? result.rows : stylistsJson;
+    return res.status(200).json(data);
   } catch (err) {
-    console.error('GET /api/staff error:', err);
-    return res.status(500).json({ message: 'Failed to load stylists' });
+    // DB not yet seeded — serve from local JSON file
+    console.warn('GET /api/staff: DB unavailable, serving from stylists.json');
+    return res.status(200).json(stylistsJson);
   }
 }

@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "staff_id": "staff_001",
+    "name": "Jairo",
+    "title": "Color Specialist",
+    "phone": "(678) 663-5999",
+    "bio": "Originally from New York, Jairo brings 7 years of experience as a colorist to the team. Jairo specializes in lived-in blondes, brunettes, fantasy colors, and vivid reds! Beyond the chair you can find him practicing yoga, cooking, or spending time with his two puppies.",
+    "photo": "",
+    "instagram_handle": "jmenendezcolour",
+    "booking_slug": "jairo",
+    "specialties": ["Color", "Blondes", "Fantasy Color", "Vivid Reds", "Brunettes"],
+    "display_order": 1
+  },
+  {
+    "id": 2,
+    "staff_id": "staff_002",
+    "name": "Andrea",
+    "title": "Senior Colorist",
+    "phone": "(443) 570-7274",
+    "bio": "Originally from London, England, color is Andrea's specialty! With over 15 years of experience as a L'Oreal Professional colorist, her work includes freelancing for magazine and TV. Andrea's passion for art and painting can be seen through her work as she is truly a master of her craft.",
+    "photo": "",
+    "instagram_handle": "andreamitchelluk",
+    "booking_slug": "andrea",
+    "specialties": ["Color", "L'Oreal Color", "Magazine Work", "TV Styling"],
+    "display_order": 2
+  },
+  {
+    "id": 3,
+    "staff_id": "staff_003",
+    "name": "Char",
+    "title": "Licensed Stylist",
+    "phone": "(770) 744-3095",
+    "bio": "Originally from New York, Char brings a Trinidadian flare and spunky vibe to the salon! Char has been a licensed stylist for 15 years and specializes in blowouts, silk press, color, pixie cuts, and haircutting. Char loves sneakers, nature documentaries, trying new foods and hiking in her spare time.",
+    "photo": "",
+    "instagram_handle": "chardryce",
+    "booking_slug": "char",
+    "specialties": ["Blowouts", "Silk Press", "Color", "Pixie Cuts", "Haircutting"],
+    "display_order": 3
+  }
+]

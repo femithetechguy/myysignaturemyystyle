@@ -65,19 +65,7 @@
         "sort": true,
         "description": "Manage customer accounts"
       },
-      {
-        "id": "orders",
-        "label": "Orders",
-        "icon": "📦",
-        "component": "AdminOrders",
-        "table": "orders",
-        "editable": true,
-        "showRefresh": true,
-        "refreshBtn": "🔄 Refresh",
-        "loadingBtn": "🔄 Loading...",
-        "sort": true,
-        "description": "Manage customer orders"
-      },
+
       {
         "id": "services",
         "label": "Services",
@@ -110,7 +98,7 @@
         "icon": "👨‍💼",
         "component": "AdminStaff",
         "table": "staff",
-        "editable": false,
+        "editable": true,
         "showRefresh": true,
         "refreshBtn": "🔄 Refresh",
         "loadingBtn": "🔄 Loading...",
@@ -214,6 +202,15 @@
         { "icon": "🗄️", "title": "Database Tables", "description": "Configure table names in database.tables" },
         { "icon": "🔐", "title": "Authentication", "description": "JWT tokens secure all admin routes" }
       ]
+    },
+    "staff": {
+      "title": "Manage Staff",
+      "description": "View and manage stylists and staff members",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
+      "messages": {
+        "loading": "Loading staff...",
+        "empty": "No staff found"
+      }
     },
     "products": {
       "title": "Manage Products",

@@ -56,14 +56,14 @@
                                 <p style="margin:4px 0 0;font-size:14px;color:#3D2B1F;font-weight:bold;">{{service_name}}</p>
                               </td>
                               <td width="50%" style="padding:4px 0;vertical-align:top;">
-                                <p style="margin:0;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Category</p>
-                                <p style="margin:4px 0 0;font-size:14px;color:#3D2B1F;font-weight:bold;">{{service_category}}</p>
+                                <p style="margin:0;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Stylist</p>
+                                <p style="margin:4px 0 0;font-size:14px;color:#3D2B1F;font-weight:bold;">{{stylist_name}}</p>
                               </td>
                             </tr>
                             <tr>
                               <td width="50%" style="padding:12px 0 4px;vertical-align:top;">
                                 <p style="margin:0;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Date &amp; Time</p>
-                                <p style="margin:4px 0 0;font-size:14px;color:#3D2B1F;font-weight:bold;">{{appointment_date}}</p>
+                                <p style="margin:4px 0 0;font-size:14px;color:#3D2B1F;font-weight:bold;">{{appointment_date}}{{#if appointment_time}} &mdash; {{appointment_time}}{{/if}}</p>
                               </td>
                               <td width="50%" style="padding:12px 0 4px;vertical-align:top;">
                                 <p style="margin:0;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#6B4226;">Duration</p>
@@ -107,16 +107,16 @@
                 </tr>
                 <tr>
                   <td style="padding:16px 20px;">
-                    <p style="margin:0 0 8px;font-size:13px;color:#3D2B1F;line-height:1.7;">• A <strong>25% non-refundable deposit</strong> is required to secure your appointment. Payment options will be provided.</p>
-                    <p style="margin:0 0 8px;font-size:13px;color:#3D2B1F;line-height:1.7;">• Cancellations must be made at least <strong>24 hours in advance</strong> to avoid forfeiture of your deposit.</p>
-                    <p style="margin:0;font-size:13px;color:#3D2B1F;line-height:1.7;">• Clients arriving more than <strong>15 minutes late</strong> may need to reschedule and will forfeit their deposit.</p>
+                    <p style="margin:0 0 8px;font-size:13px;color:#3D2B1F;line-height:1.7;">• {{disclaimer_deposit}}</p>
+                    <p style="margin:0 0 8px;font-size:13px;color:#3D2B1F;line-height:1.7;">• {{disclaimer_cancellation}}</p>
+                    <p style="margin:0;font-size:13px;color:#3D2B1F;line-height:1.7;">• {{disclaimer_late}}</p>
                   </td>
                 </tr>
               </table>
 
               <!-- Reminder note -->
               <p style="margin:0 0 28px;font-size:14px;color:#A08060;line-height:1.7;border-left:3px solid #C8A882;padding-left:16px;">
-                Please arrive 5–10 minutes early. If you need to reschedule or cancel, contact us at least 24 hours in advance.
+                {{disclaimer_confirmation}}
               </p>
 
               <!-- CTA -->

@@ -9,6 +9,24 @@ ALTER TABLE staff ADD COLUMN IF NOT EXISTS instagram_handle VARCHAR(100);
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS booking_slug VARCHAR(100);
 
 -- ============================================================================
+-- SERVICES TABLE: Add staff_ids column
+-- staff_ids: JSONB array of staff_id strings (e.g. ["staff_001","staff_003"])
+-- An empty array means the service is offered by all/any staff member.
+-- Run this once to add the column to your existing services table.
+-- ============================================================================
+
+ALTER TABLE services ADD COLUMN IF NOT EXISTS staff_ids JSONB DEFAULT '[]';
+
+-- Example: assign Jairo (staff_001) to specific services
+-- UPDATE services SET staff_ids = '["staff_001"]'::jsonb WHERE service_id = 'service_001';
+
+-- Example: assign multiple stylists to a service
+-- UPDATE services SET staff_ids = '["staff_001","staff_002"]'::jsonb WHERE service_id = 'service_005';
+
+-- Example: reset a service back to available for all staff
+-- UPDATE services SET staff_ids = '[]'::jsonb WHERE service_id = 'service_010';
+
+-- ============================================================================
 -- Seed: Sample Stylists (replace with real staff before go-live)
 -- ============================================================================
 
@@ -100,3 +118,40 @@ DO $$
 BEGIN
     RAISE NOTICE 'staff: columns added (if needed), 3 sample stylists seeded';
 END $$;
+
+-- ============================================================================
+-- UPDATE: Modify an existing staff member
+-- Replace 'staff_001' and field values as needed.
+-- ============================================================================
+
+UPDATE staff
+SET
+    name             = 'Jairo',
+    title            = 'Color Specialist',
+    phone            = '(678) 663-5999',
+    bio              = 'Originally from New York, Jairo brings 7 years of experience as a colorist to the team.',
+    photo            = '',
+    instagram_handle = 'jmenendezcolour',
+    booking_slug     = 'jairo',
+    specialties      = '["Color", "Blondes", "Fantasy Color", "Vivid Reds", "Brunettes"]'::jsonb,
+    is_bookable      = true,
+    status           = 'active',
+    display_order    = 1,
+    updated_at       = CURRENT_TIMESTAMP
+WHERE staff_id = 'staff_001';
+
+-- To update availability (weekly schedule JSON):
+-- UPDATE staff
+-- SET availability = '{"Mon":["9:00","17:00"],"Tue":["9:00","17:00"]}'::jsonb,
+--     updated_at   = CURRENT_TIMESTAMP
+-- WHERE staff_id = 'staff_001';
+
+-- To deactivate a staff member:
+-- UPDATE staff SET status = 'inactive', updated_at = CURRENT_TIMESTAMP WHERE staff_id = 'staff_001';
+
+-- To change display order for all active staff at once:
+-- UPDATE staff SET display_order = CASE staff_id
+--     WHEN 'staff_001' THEN 1
+--     WHEN 'staff_002' THEN 2
+--     WHEN 'staff_003' THEN 3
+-- END WHERE staff_id IN ('staff_001','staff_002','staff_003');

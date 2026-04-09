@@ -3,6 +3,90 @@ import staticConfig from '../../../config/admin.json';
 
 const AUTO_GENERATED_FIELDS = ['id', 'created_at', 'updated_at', 'staff_id'];
 
+const AVAIL_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+const AVAIL_DAY_LABELS = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
+
+function formatTime12(time24) {
+  if (!time24) return '';
+  const [h, m] = time24.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return `${h12}:${(m || 0).toString().padStart(2, '0')} ${ampm}`;
+}
+
+const TIME_OPTIONS = [];
+for (let h = 6; h <= 22; h++) {
+  for (let m = 0; m < 60; m += 30) {
+    TIME_OPTIONS.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+  }
+}
+
+function parseDay(dayVal) {
+  if (!dayVal || dayVal === 'closed') return { open: false, start: '09:00', end: '18:00' };
+  const [start, end] = dayVal.split('-');
+  return { open: true, start: start || '09:00', end: end || '18:00' };
+}
+
+function AvailabilityEditor({ value, onChange }) {
+  const schedule = (value && typeof value === 'object') ? value : {};
+
+  const updateDay = (day, changes) => {
+    const current = parseDay(schedule[day]);
+    const updated = { ...current, ...changes };
+    const newSchedule = { ...schedule };
+    newSchedule[day] = updated.open ? `${updated.start}-${updated.end}` : 'closed';
+    onChange(newSchedule);
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {AVAIL_DAYS.map(day => {
+        const { open, start, end } = parseDay(schedule[day]);
+        return (
+          <div key={day} style={{
+            display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px',
+            background: open ? '#f0f7f0' : '#f5f5f5',
+            borderRadius: '6px', border: `1px solid ${open ? '#a8d5a2' : '#e0e0e0'}`
+          }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '70px', cursor: 'pointer', flexShrink: 0 }}>
+              <input
+                type="checkbox"
+                checked={open}
+                onChange={(e) => updateDay(day, { open: e.target.checked })}
+                style={{ width: '15px', height: '15px', cursor: 'pointer', accentColor: '#2d6a2d' }}
+              />
+              <span style={{ fontWeight: open ? '700' : '400', color: open ? '#2d6a2d' : '#999', fontSize: '0.82rem', textTransform: 'capitalize' }}>
+                {AVAIL_DAY_LABELS[day]}
+              </span>
+            </label>
+            {open ? (
+              <>
+                <select
+                  value={start}
+                  onChange={(e) => updateDay(day, { start: e.target.value })}
+                  style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid #ccc', color: '#1B1B1B', fontSize: '0.82rem', flex: 1 }}
+                >
+                  {TIME_OPTIONS.map(t => <option key={t} value={t}>{formatTime12(t)}</option>)}
+                </select>
+                <span style={{ color: '#666', fontSize: '0.8rem', flexShrink: 0 }}>to</span>
+                <select
+                  value={end}
+                  onChange={(e) => updateDay(day, { end: e.target.value })}
+                  style={{ padding: '4px 6px', borderRadius: '4px', border: '1px solid #ccc', color: '#1B1B1B', fontSize: '0.82rem', flex: 1 }}
+                >
+                  {TIME_OPTIONS.map(t => <option key={t} value={t}>{formatTime12(t)}</option>)}
+                </select>
+              </>
+            ) : (
+              <span style={{ color: '#aaa', fontSize: '0.78rem', fontStyle: 'italic' }}>Closed</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function AdminStaff() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +173,16 @@ export default function AdminStaff() {
 
   
   const handleEdit = (item) => {
-    setEditingItem({ ...item });
+    // Stringify any JSONB object/array values so they're editable as text,
+    // but keep `availability` as a plain object for the structured editor
+    const normalized = { ...item };
+    Object.keys(normalized).forEach(k => {
+      if (k === 'availability') return;
+      if (normalized[k] !== null && typeof normalized[k] === 'object') {
+        normalized[k] = JSON.stringify(normalized[k], null, 2);
+      }
+    });
+    setEditingItem(normalized);
     setShowModal(true);
   };
 
@@ -99,6 +192,17 @@ export default function AdminStaff() {
       const token = localStorage.getItem('adminToken');
       const idField = Object.keys(editingItem).find(k => k.endsWith('_id') || k === 'id');
       const itemId = editingItem[idField];
+
+      // Parse any JSONB fields that were edited as JSON strings
+      const payload = { ...editingItem };
+      Object.keys(payload).forEach(k => {
+        if (typeof payload[k] === 'string') {
+          const trimmed = payload[k].trim();
+          if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+            try { payload[k] = JSON.parse(trimmed); } catch (_) {}
+          }
+        }
+      });
       
       const response = await fetch(`/api/admin/users?table=${tableName}&id=${itemId}`, {
         method: 'PUT',
@@ -106,7 +210,7 @@ export default function AdminStaff() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(editingItem)
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
@@ -335,8 +439,12 @@ export default function AdminStaff() {
               {sortedData.map((item, idx) => (
                 <tr key={item.staff_id || idx} style={{ borderBottom: '1px solid #eee' }}>
                   {columns.map(col => (
-                    <td key={col} style={{ padding: '12px', color: '#666' }}>
-                      {item[col] != null ? String(item[col]) : '-'}
+                    <td key={col} style={{ padding: '12px', color: '#666', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item[col] == null
+                        ? '-'
+                        : typeof item[col] === 'object'
+                          ? JSON.stringify(item[col])
+                          : String(item[col])}
                     </td>
                   ))}
                   {isEditable && (
@@ -436,9 +544,11 @@ export default function AdminStaff() {
                 .filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()))
                 .map(col => {
                   const isTextArea = col === 'description' || col === 'notes' || col === 'comments' || col === 'message' || col === 'bio';
+                  const isJsonb = col === 'specialties' || col === 'availability' || col === 'metadata' || col === 'staff_ids' ||
+                    (typeof editingItem[col] === 'string' && (editingItem[col].trim().startsWith('[') || editingItem[col].trim().startsWith('{')));
                   const isEmail = col.includes('email');
-                  const isNumber = col.includes('price') || col.includes('amount') || col.includes('duration') || col.includes('rating') || col.includes('quantity');
-                  const isBoolean = col.includes('is_') || col.includes('active') || col.includes('featured');
+                  const isNumber = col.includes('price') || col.includes('amount') || col.includes('duration') || col.includes('rating') || col.includes('quantity') || col.includes('order');
+                  const isBoolean = col.includes('is_') || col === 'active' || col === 'featured' || col === 'is_bookable';
                   
                   return (
                     <div key={col}>
@@ -454,13 +564,21 @@ export default function AdminStaff() {
                           <option value="true">Yes</option>
                           <option value="false">No</option>
                         </select>
-                      ) : isTextArea ? (
-                        <textarea
-                          value={editingItem[col] || ''}
-                          onChange={(e) => handleInputChange(col, e.target.value)}
-                          rows={3}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }}
+                      ) : col === 'availability' ? (
+                        <AvailabilityEditor
+                          value={editingItem[col] || {}}
+                          onChange={(val) => handleInputChange(col, val)}
                         />
+                      ) : isJsonb || isTextArea ? (
+                        <>
+                          <textarea
+                            value={editingItem[col] || ''}
+                            onChange={(e) => handleInputChange(col, e.target.value)}
+                            rows={isJsonb ? 4 : 3}
+                            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B', fontFamily: isJsonb ? 'monospace' : 'inherit', fontSize: isJsonb ? '0.85rem' : 'inherit' }}
+                          />
+                          {isJsonb && <p style={{ margin: '3px 0 0', fontSize: '0.75rem', color: '#999' }}>JSON array or object</p>}
+                        </>
                       ) : (
                         <input
                           type={isEmail ? 'email' : isNumber ? 'number' : 'text'}

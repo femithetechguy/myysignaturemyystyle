@@ -6,7 +6,6 @@ import AdminSettings from './tabs/AdminSettings';
 import AdminUsers from './tabs/AdminUsers';
 import AdminProducts from './tabs/AdminProducts';
 import AdminCustomers from './tabs/AdminCustomers';
-import AdminOrders from './tabs/AdminOrders';
 import AdminServices from './tabs/AdminServices';
 import AdminAppointments from './tabs/AdminAppointments';
 import AdminStaff from './tabs/AdminStaff';
@@ -61,7 +60,6 @@ const TAB_COMPONENTS = {
   AdminUsers,
   AdminProducts,
   AdminCustomers,
-  AdminOrders,
   AdminServices,
   AdminAppointments,
   AdminStaff,

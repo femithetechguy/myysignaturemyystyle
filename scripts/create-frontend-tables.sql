@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS services (
     price_min DECIMAL(10, 2) NOT NULL, -- minimum / starting price
     price_max DECIMAL(10, 2) NOT NULL, -- maximum price (same as min for fixed pricing)
     images JSONB DEFAULT '[]', -- array of Cloudinary public IDs
+    staff_ids JSONB DEFAULT '[]', -- array of staff_id strings that offer this service, e.g. ["staff_001","staff_003"]; empty = all staff
     status VARCHAR(20) DEFAULT 'active', -- active, inactive, archived
     display_order INTEGER DEFAULT 0,
     metadata JSONB DEFAULT '{}', -- additional flexible data
