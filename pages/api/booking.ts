@@ -65,6 +65,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     disclaimer_confirmation,
   }
 
+  // Save booking to DB first (non-fatal — runs regardless of email outcome)
+  try {
+    const parseTimeTo24 = (t: string): string => {
+      if (!t) return '00:00:00'
+      const parts = t.trim().split(' ')
+      const ampm = parts[1] ?? ''
+      let [h, m] = parts[0].split(':').map(Number)
+      if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12
+      if (ampm.toUpperCase() === 'AM' && h === 12) h = 0
+      return `${h.toString().padStart(2, '0')}:${(m || 0).toString().padStart(2, '0')}:00`
+    }
+
+    const isoDate = appointment_date_iso ?? new Date().toISOString().split('T')[0]
+    const pgTime  = parseTimeTo24(appointment_time ?? '')
+
+    await pool.query(
+      `INSERT INTO appointments
+        (appointment_id, appointment_date, appointment_time, duration, total_amount, status, notes, metadata)
+       VALUES ($1, $2, $3, $4, $5, 'pending', $6, $7)
+       ON CONFLICT (appointment_id) DO NOTHING`,
+      [
+        booking_reference,
+        isoDate,
+        pgTime,
+        Number(service_duration) || 60,
+        Number(service_price_min) || 0,
+        `${customer_name} | ${service_name} | ${stylist_name ?? 'Any Available Stylist'}`,
+        JSON.stringify({
+          customer_name,
+          customer_email,
+          customer_phone,
+          service_name,
+          service_category,
+          stylist_name,
+          appointment_date,
+          appointment_time,
+        }),
+      ]
+    )
+  } catch (dbErr) {
+    console.error('[/api/booking] DB insert failed (non-fatal):', dbErr)
+  }
+
   try {
     await Promise.all([
       sendMail({
@@ -80,49 +123,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         vars,
       }),
     ])
-
-    // Save booking to DB (non-fatal — emails already sent)
-    try {
-      const parseTimeTo24 = (t: string): string => {
-        if (!t) return '00:00:00'
-        const parts = t.trim().split(' ')
-        const ampm = parts[1] ?? ''
-        let [h, m] = parts[0].split(':').map(Number)
-        if (ampm.toUpperCase() === 'PM' && h !== 12) h += 12
-        if (ampm.toUpperCase() === 'AM' && h === 12) h = 0
-        return `${h.toString().padStart(2, '0')}:${(m || 0).toString().padStart(2, '0')}:00`
-      }
-
-      const isoDate = appointment_date_iso ?? new Date().toISOString().split('T')[0]
-      const pgTime  = parseTimeTo24(appointment_time ?? '')
-
-      await pool.query(
-        `INSERT INTO appointments
-          (appointment_id, appointment_date, appointment_time, duration, total_amount, status, notes, metadata)
-         VALUES ($1, $2, $3, $4, $5, 'pending', $6, $7)
-         ON CONFLICT (appointment_id) DO NOTHING`,
-        [
-          booking_reference,
-          isoDate,
-          pgTime,
-          Number(service_duration) || 60,
-          Number(service_price_min) || 0,
-          `${customer_name} | ${service_name} | ${stylist_name ?? 'Any Available Stylist'}`,
-          JSON.stringify({
-            customer_name,
-            customer_email,
-            customer_phone,
-            service_name,
-            service_category,
-            stylist_name,
-            appointment_date,
-            appointment_time,
-          }),
-        ]
-      )
-    } catch (dbErr) {
-      console.error('[/api/booking] DB insert failed (non-fatal):', dbErr)
-    }
 
     return res.status(200).json({ ok: true })
   } catch (err) {
