@@ -18,15 +18,13 @@ CREATE INDEX IF NOT EXISTS idx_admins_username ON admins(username);
 -- Default: username = "dev", password = "dev" (bcrypted)
 -- Hash: $2b$10$nOUIs5kJ7naTuTFkBy1i.OPST9/jWAyS79zQRkFkGxDGGA.wSThga
 INSERT INTO admins (username, password_hash, email) 
-VALUES ('dev', '$2b$10$nOUIs5kJ7naTuTFkBy1i.OPST9/jWAyS79zQRkFkGxDGGA.wSThga', 'fttgsolution@gmail.com')
-ON CONFLICT (username) DO NOTHING;
+VALUES ('dev', '$2b$10$nOUIs5kJ7naTuTFkBy1i.OPST9/jWAyS79zQRkFkGxDGGA.wSThga', 'fttgsolutions@gmail.com')
+ON CONFLICT (username) DO UPDATE SET email = EXCLUDED.email, updated_at = CURRENT_TIMESTAMP;
 
--- Insert admin user
--- Default: username = "admin", password = "admin1$" (bcrypted)
--- Hash: $2b$10$M9YRVzy03z.NVxkJ5K8K6eS1Z7Q8P5R6S7T8U9V0W1X2Y3Z4A5B6C
+-- Insert admin user\n-- Default: username = "admin", password = "admin1$" (bcrypted)
 INSERT INTO admins (username, password_hash, email) 
-VALUES ('admin', '$2b$10$M9YRVzy03z.NVxkJ5K8K6eS1Z7Q8P5R6S7T8U9V0W1X2Y3Z4A5B6C', 'admin@allloveinabasket.com')
-ON CONFLICT (username) DO NOTHING;
+VALUES ('admin', '$2b$10$ha2UuXQZyBx0tmxasOLGUu5uhMdnxXpXukk7H7Ge2XhNl/hGnkrbO', 'egwonookpako559@gmail.com')
+ON CONFLICT (username) DO UPDATE SET email = EXCLUDED.email, updated_at = CURRENT_TIMESTAMP;
 
 -- View all admins
 SELECT id, username, email, is_active, created_at FROM admins;

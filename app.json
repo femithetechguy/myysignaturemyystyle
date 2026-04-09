@@ -426,7 +426,7 @@
       "type": "custom",
       "multi_staff": true,
       "buffer_time": 15,
-      "cancellation_policy": "24_hours_notice",
+      "cancellation_policy": "12_hours_notice",
       "rescheduling": true,
       "waitlist": true
     },
@@ -438,7 +438,9 @@
         "paypal"
       ],
       "deposit_required": true,
-      "deposit_percentage": 50,
+      "deposit_percentage": null,
+      "deposit_note": "Deposit amount depends on service selected.",
+      "deposit_non_refundable": true,
       "full_payment_option": true,
       "accepted_cards": [
         "visa",
@@ -1010,6 +1012,10 @@
           "href": "#services"
         },
         {
+          "label": "Stylists",
+          "href": "#stylists"
+        },
+        {
           "label": "Gallery",
           "href": "#gallery"
         },
@@ -1102,6 +1108,10 @@
             {
               "label": "Contact",
               "href": "#contact"
+            },
+            {
+              "label": "Connect With Us",
+              "href": "#connect"
             }
           ]
         },
@@ -1121,10 +1131,78 @@
       }
     },
     "booking_disclaimer": {
-      "deposit_note": "A 25% non-refundable deposit is required to secure your appointment. Payment options are listed below.",
-      "cancellation_note": "Cancellations must be made at least 24 hours in advance to avoid forfeiture of your deposit.",
-      "late_policy": "Clients arriving more than 15 minutes late may need to reschedule and will forfeit their deposit.",
-      "confirmation_note": "By completing this booking you agree to our deposit and cancellation policy."
+      "deposit_note": "A deposit is required to secure your appointment (amount depends on the service). Payment options are listed below.",
+      "cancellation_note": "Cancellations made less than 12 hours in advance will incur your deposit service charge. No-shows receive no refund.",
+      "late_policy": "A grace period of 10–20 minutes may be allowed. Late arrivals may result in a shortened service or cancellation with applicable fees.",
+      "confirmation_note": "By completing this booking you agree to our deposit, cancellation, and late-arrival policies."
+    },
+    "salon_policies": {
+      "title": "Salon Policies & Guest Guidelines",
+      "intro": "At Myy Signature Myy Style Salon, we are committed to delivering exceptional beauty services in a comfortable, professional, and luxurious environment. To ensure a seamless experience for all clients, please review our policies below.",
+      "booking": {
+        "title": "Booking Policy",
+        "points": [
+          "All appointments must be scheduled through our official booking system.",
+          "A deposit is required to secure your booking — amount depends on the service.",
+          "Please ensure you book the correct service to allow proper timing.",
+          "For questions or service clarification, contact us directly before booking."
+        ]
+      },
+      "confirmation": {
+        "title": "Appointment Confirmation",
+        "points": [
+          "A confirmation reminder will be sent 24–48 hours prior to your appointment.",
+          "Clients are required to confirm their appointment via the provided link.",
+          "Failure to confirm may result in automatic cancellation and loss of your reserved time."
+        ]
+      },
+      "cancellation": {
+        "title": "Cancellation Policy",
+        "intro": "We understand that schedules may change; however, we kindly request:",
+        "points": [
+          "A call or text to notify us of any changes as early as possible.",
+          "Cancellations made less than 12 hours in advance will incur your deposit service charge.",
+          "No-shows receive no refund."
+        ]
+      },
+      "deposits": {
+        "title": "Deposits",
+        "points": [
+          "All deposits are non-refundable."
+        ]
+      },
+      "late_arrival": {
+        "title": "Late Policy",
+        "points": [
+          "Please arrive on time to ensure full service.",
+          "A grace period of 10–20 minutes may be allowed.",
+          "Late arrivals may result in a shortened service or cancellation, with applicable fees."
+        ]
+      },
+      "payment": {
+        "title": "Payment Policy",
+        "points": [
+          "All payments must be made through approved salon payment methods only.",
+          "We accept: card, Cash App, Zelle, and other approved options.",
+          "No personal payments to stylists are permitted."
+        ]
+      },
+      "salon_experience": {
+        "title": "Salon Experience",
+        "points": [
+          "We strive to provide a peaceful and relaxing atmosphere.",
+          "Please respect all staff and guests at all times.",
+          "Only serviced kids allowed; additional children must remain seated and supervised."
+        ]
+      },
+      "service_guarantee": {
+        "title": "Service Guarantee",
+        "text": "Your satisfaction is important to us. If you experience any concerns, please notify us within 48 hours of your service so we can address it promptly."
+      },
+      "promise": {
+        "title": "Our Promise",
+        "text": "At Myy Signature Myy Style Salon, our goal is simple: To enhance your beauty while ensuring your comfort, every visit."
+      }
     },
     "message_modal": {
       "title": "Send us a Message",

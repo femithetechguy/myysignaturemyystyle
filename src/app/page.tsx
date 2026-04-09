@@ -1,19 +1,23 @@
 'use client'
 
-import { getAppConfig, getContent, getGallery, getCareers, getServices } from '@/lib/config'
+import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram, FiCopy, FiMap, FiShare2 } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
 export default function Home() {
   const appConfig = getAppConfig()
-  const services = getServices()
   const business = appConfig.business
   const content = getContent()
   const gallery = getGallery()
   const careers = getCareers()
+  // DB-backed data — fall back to app.json values until the fetch resolves
+  const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number; price_max: number; category: string; images: string[]; staff_ids: string[] }[]>([])
+  const [reviews, setReviews] = useState(content.reviews_section.reviews)
+  const [stylists, setStylists] = useState<{ id: number; staff_id: string; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[]; availability: Record<string, string> }[]>([])
+  const [stylistsLoading, setStylistsLoading] = useState(true)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [navBackground, setNavBackground] = useState('dark')
   const [showMobileMenu, setShowMobileMenu] = useState(false)
@@ -31,7 +35,9 @@ export default function Home() {
   const [contactSending, setContactSending] = useState(false)
   const [contactError, setContactError] = useState('')
   const [showBookingModal, setShowBookingModal] = useState(false)
+  const [selectedBookingStylist, setSelectedBookingStylist] = useState<{ id: number; staff_id: string; name: string; title: string; photo: string; booking_slug: string; specialties: string[]; availability: Record<string, string> | null } | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedCategory, setSelectedCategory] = useState('Hair Cut')
@@ -67,6 +73,7 @@ export default function Home() {
   const [appAvailMonth, setAppAvailMonth] = useState(new Date().getMonth())
   const [appAvailYear, setAppAvailYear] = useState(new Date().getFullYear())
   const [policyAccepted, setPolicyAccepted] = useState(false)
+  const [showFullPolicy, setShowFullPolicy] = useState(false)
   const [copiedZelle, setCopiedZelle] = useState(false)
   const [copiedCashapp, setCopiedCashapp] = useState(false)
   const [copiedRef, setCopiedRef] = useState(false)
@@ -125,10 +132,28 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Fetch services and reviews from DB on mount
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => setServices(data))
+      .catch(err => console.error('Failed to load services from DB:', err))
+
+    fetch('/api/reviews')
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => { if (data.length > 0) setReviews(data) })
+      .catch(err => console.error('Failed to load reviews from DB:', err))
+
+    fetch('/api/staff')
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => { if (data.length > 0) setStylists(data) })
+      .catch(err => console.error('Failed to load stylists from DB:', err))
+      .finally(() => setStylistsLoading(false))
+  }, [])
+
   // Typewriter effect for active review
   useEffect(() => {
-    const reviews = content.reviews_section.reviews
-    const fullText = reviews[activeReviewIndex].text
+    const fullText = reviews[activeReviewIndex]?.text ?? ''
     let i = 0
     setTypedReviewText('')
     setIsTypingReview(true)
@@ -147,7 +172,6 @@ export default function Home() {
 
   // Auto-rotate reviews
   useEffect(() => {
-    const reviews = content.reviews_section.reviews
     const interval = setInterval(() => {
       setActiveReviewIndex(prev => (prev + 1) % reviews.length)
     }, 6000)
@@ -211,7 +235,22 @@ export default function Home() {
   const handleScheduleClick = () => {
     setShowBookingModal(true)
     setSelectedDate(new Date())
+    setSelectedTime(null)
     setSelectedBookingCategory('')
+    setSelectedBookingStylist(null)
+    setFormErrors({})
+    setBookingName('')
+    setBookingContact('')
+    setBookingEmail('')
+  }
+
+  const handleStylistBookClick = (stylist: typeof stylists[number]) => {
+    setSelectedBookingStylist({ id: stylist.id, staff_id: stylist.staff_id, name: stylist.name, title: stylist.title, photo: stylist.photo, booking_slug: stylist.booking_slug, specialties: stylist.specialties, availability: stylist.availability ?? null })
+    setShowBookingModal(true)
+    setSelectedDate(new Date())
+    setSelectedTime(null)
+    setSelectedBookingCategory('')
+    setSelectedBookingService(null)
     setFormErrors({})
     setBookingName('')
     setBookingContact('')
@@ -304,13 +343,61 @@ export default function Home() {
   }
 
   const getServicesByCategory = (category: string) => {
-    return services.filter(s => s.category === category)
+    const inCategory = services.filter(s => s.category === category)
+    if (!selectedBookingStylist) return inCategory
+    // If staff_ids is populated, filter to only services this stylist offers.
+    // If a service has no staff_ids set (empty), treat it as available to everyone.
+    return inCategory.filter(s => !s.staff_ids?.length || s.staff_ids.includes(selectedBookingStylist.staff_id))
+  }
+
+  const getBookingCategories = () => {
+    if (!selectedBookingStylist) return getCategories()
+    // Only show categories that have at least one service available for this stylist
+    return getCategories().filter(c => getServicesByCategory(c).length > 0)
+  }
+
+  // ── Availability helpers ──────────────────────────────────────────────────
+  const BUSINESS_HOURS: Record<string, string> = {
+    sunday: 'closed',
+    monday: '09:00-18:00',
+    tuesday: '09:00-18:00',
+    wednesday: '09:00-18:00',
+    thursday: '09:00-18:00',
+    friday: '09:00-18:00',
+    saturday: '10:00-16:00',
+  }
+
+  const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+
+  const getDaySchedule = (date: Date): string => {
+    const key = DAY_NAMES[date.getDay()]
+    const schedule = selectedBookingStylist?.availability ?? BUSINESS_HOURS
+    return (schedule as Record<string, string>)[key] ?? 'closed'
+  }
+
+  const generateTimeSlots = (schedule: string, durationMin: number): string[] => {
+    if (!schedule || schedule === 'closed' || !schedule.includes('-')) return []
+    const [openStr, closeStr] = schedule.split('-')
+    const [oh, om] = openStr.split(':').map(Number)
+    const [ch, cm] = closeStr.split(':').map(Number)
+    const startMin = oh * 60 + (om || 0)
+    const endMin = ch * 60 + (cm || 0)
+    const dur = durationMin > 0 ? durationMin : 30
+    const slots: string[] = []
+    for (let t = startMin; t + dur <= endMin; t += dur) {
+      const h = Math.floor(t / 60)
+      const m = t % 60
+      const ampm = h >= 12 ? 'PM' : 'AM'
+      const h12 = h > 12 ? h - 12 : h === 0 ? 12 : h
+      slots.push(`${h12}:${m.toString().padStart(2, '0')} ${ampm}`)
+    }
+    return slots
   }
 
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Navigation */}
-      <header className={`fixed top-0 w-full px-4 md:px-16 py-5 md:py-6 flex justify-between md:justify-center items-center z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 w-full px-4 md:px-16 py-3 md:py-6 flex justify-between md:justify-center items-center z-50 transition-all duration-300 ${
         showMobileMenu
           ? 'bg-transparent backdrop-blur-0'
           : navBackground === 'dark' 
@@ -328,7 +415,9 @@ export default function Home() {
               setBookingEmail('')
               setBookingContact('')
               setSelectedBookingService(null)
+              setSelectedBookingStylist(null)
               setSelectedDate(null)
+              setSelectedTime(null)
               setFormErrors({})
               setPolicyAccepted(false)
             }
@@ -336,7 +425,7 @@ export default function Home() {
           }}
           className="md:hidden hover:opacity-80 transition-opacity flex-shrink-0"
         >
-          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-20" />
+          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-16" />
         </button>
 
         {/* Brand Logo - Desktop (absolute, left) */}
@@ -348,7 +437,9 @@ export default function Home() {
               setBookingEmail('')
               setBookingContact('')
               setSelectedBookingService(null)
+              setSelectedBookingStylist(null)
               setSelectedDate(null)
+              setSelectedTime(null)
               setFormErrors({})
               setPolicyAccepted(false)
             }
@@ -360,10 +451,13 @@ export default function Home() {
         </button>
 
         {/* Mobile Center Branding */}
-        <div className="absolute left-0 right-0 flex flex-col items-center pointer-events-none md:hidden">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="absolute left-16 right-12 flex flex-col items-center md:hidden hover:opacity-80 transition-opacity"
+        >
           <p className="text-xs font-bold tracking-widest uppercase text-white/90" style={{textShadow:'0 2px 4px rgba(0,0,0,0.8)'}}>{content.navigation.brand}</p>
           <p className="text-[10px] font-light tracking-widest text-white/50">— Hair Salon —</p>
-        </div>
+        </button>
 
         {/* Desktop Navigation - Centered */}
         <nav className="justify-center hidden gap-8 md:flex lg:gap-20">
@@ -408,7 +502,7 @@ export default function Home() {
 
       {/* Mobile Navigation Dropdown */}
       {showMobileMenu && (
-        <div className="fixed top-0 left-0 right-0 z-40 pt-28 bg-black/80 md:hidden animate-fade-in-down">
+        <div className="fixed top-0 left-0 right-0 z-40 pt-[88px] bg-black/80 md:hidden animate-fade-in-down">
           <nav className="flex flex-col gap-0 py-0">
             {content.navigation.links.map((link) => (
               <a 
@@ -467,7 +561,7 @@ export default function Home() {
             </button>
             <a 
               href="#careers"
-              className="inline-block px-10 py-3 text-sm font-light tracking-widest text-white uppercase transition-all duration-300 bg-transparent border-2 rounded shadow-lg hover:bg-secondary hover:text-primary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+              className="inline-block px-10 py-3 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               JOIN OUR STYLISTS
             </a>
@@ -537,6 +631,145 @@ export default function Home() {
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
+      {/* Section Divider */}
+      <div className="py-4 container-custom">
+        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
+      </div>
+
+      {/* Stylists Section */}
+      <section id="stylists" className="py-16 bg-white sm:py-20">
+        <div className="container-custom">
+          <h2 className="mb-2 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">Meet Our Stylists</h2>
+          <p className="mb-6 text-center text-sm text-primary/60 animate-fade-in-up" style={{ animationDelay: '100ms' }}>Talented professionals ready to bring your vision to life</p>
+
+          {/* Join Our Stylists — slim recruiting strip */}
+          <div className="mb-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl bg-primary px-6 py-4 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+            <div className="text-center sm:text-left">
+              <p className="text-xs font-semibold uppercase tracking-widest text-secondary/60">We're growing</p>
+              <p className="text-sm font-medium text-secondary mt-0.5">Passionate about hair? <span className="text-secondary/60 font-normal">We'd love to have you on the team.</span></p>
+            </div>
+            <a
+              href="#careers"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById('careers');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="flex-shrink-0 inline-block px-7 py-2.5 text-xs font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 border-secondary rounded shadow hover:bg-transparent hover:text-secondary hover:scale-105 active:scale-95"
+            >
+              Join Our Stylists
+            </a>
+          </div>
+
+          {stylistsLoading ? (
+            <div className={`grid gap-8 ${[1,2].includes(stylists.length) ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+              {[0, 1, 2].map(i => (
+                <div key={i} className="flex flex-col rounded-2xl overflow-hidden border border-amber-100 bg-white shadow-md animate-pulse">
+                  <div className="w-full h-64 sm:h-72 bg-amber-100" />
+                  <div className="p-5 flex flex-col gap-3">
+                    <div className="h-5 w-2/5 rounded bg-amber-100" />
+                    <div className="h-3 w-1/3 rounded bg-amber-50" />
+                    <div className="space-y-2 mt-1">
+                      <div className="h-3 rounded bg-gray-100" />
+                      <div className="h-3 rounded bg-gray-100" />
+                      <div className="h-3 w-4/5 rounded bg-gray-100" />
+                    </div>
+                    <div className="flex gap-1.5 mt-1">
+                      {[0,1,2].map(j => <div key={j} className="h-5 w-16 rounded-full bg-amber-100" />)}
+                    </div>
+                    <div className="mt-2 h-10 rounded-xl bg-gray-100" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : stylists.length === 0 ? (
+            <p className="text-center text-sm text-primary/40 py-12">Stylists coming soon — check back shortly.</p>
+          ) : (
+            <div className={`grid gap-8 ${
+              stylists.length === 1
+                ? 'grid-cols-1 max-w-sm mx-auto'
+                : stylists.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+            }`}>
+              {stylists.map((stylist, index) => (
+                <div
+                  key={stylist.id}
+                  className="group stylist-card-enter flex flex-col rounded-2xl overflow-hidden shadow-md border border-amber-100 bg-white hover:-translate-y-2 hover:shadow-2xl hover:border-amber-300 transition-all duration-300"
+                  style={{ animationDelay: `${index * 75}ms` }}
+                >
+                  {/* Photo */}
+                  <div className="relative w-full h-64 sm:h-72 bg-amber-50 overflow-hidden">
+                    {stylist.photo ? (
+                      <img
+                        src={stylist.photo}
+                        alt={stylist.name}
+                        className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500 ease-out"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 group-hover:scale-110 transition-transform duration-500 ease-out">
+                        <span className="text-6xl font-bold text-amber-600/50">{stylist.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    {/* Hover name overlay */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/80 to-transparent pt-10 pb-4 px-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                      <p className="text-white text-sm font-bold uppercase tracking-wide leading-tight">{stylist.name}</p>
+                      {stylist.title && <p className="text-secondary text-[11px] mt-0.5">{stylist.title}</p>}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex flex-col flex-1 p-5 gap-3">
+                    <div>
+                      <h3 className="text-xl font-bold uppercase text-primary tracking-wide">{stylist.name}</h3>
+                      {stylist.title && <p className="text-xs font-semibold text-accent uppercase tracking-widest mt-0.5">{stylist.title}</p>}
+                    </div>
+
+                    <p className="text-sm text-primary/70 leading-relaxed flex-1">{stylist.bio}</p>
+
+                    {/* Specialties */}
+                    {stylist.specialties?.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {stylist.specialties.map((s, i) => (
+                          <span key={i} className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-200 transition-colors duration-150 cursor-default">{s}</span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Contact row */}
+                    <div className="flex flex-col gap-1.5 pt-1 border-t border-amber-100">
+                      {stylist.phone && (
+                        <a href={`tel:${stylist.phone.replace(/[^0-9]/g, '')}`} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                          <FiPhone className="w-4 h-4 flex-shrink-0" />
+                          {stylist.phone}
+                        </a>
+                      )}
+                      {stylist.instagram_handle && (
+                        <a href={`https://instagram.com/${stylist.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                          <FiInstagram className="w-4 h-4 flex-shrink-0" />
+                          @{stylist.instagram_handle}
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Book Now */}
+                    {stylist.booking_slug && (
+                      <button
+                        onClick={() => handleStylistBookClick(stylist)}
+                        className="mt-1 w-full py-2.5 rounded-xl bg-primary text-secondary text-sm font-bold text-center hover:bg-accent hover:text-white hover:scale-[1.02] active:scale-95 transition-all duration-200"
+                      >
+                        Book Now
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+        </div>
+      </section>
+
       {/* Gallery Section */}
       <section id="gallery" className="bg-white">
         <Gallery services={services} instagramUrl={business.social.instagram} />
@@ -564,7 +797,7 @@ export default function Home() {
 
           {/* Reviews Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-8">
-            {content.reviews_section.reviews.map((review, index) => {
+            {reviews.map((review, index) => {
               const isActive = index === activeReviewIndex
               return (
                 <div
@@ -612,7 +845,7 @@ export default function Home() {
 
           {/* Dot indicators */}
           <div className="flex justify-center gap-2 mt-8">
-            {content.reviews_section.reviews.map((_, index) => (
+            {reviews.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setActiveReviewIndex(index)}
@@ -896,6 +1129,78 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Connect With Us Section */}
+      <section id="connect" className="py-16 sm:py-20 bg-primary">
+        <div className="container-custom">
+          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-center md:gap-16">
+
+            {/* Phone mockup image */}
+            <div className="flex-shrink-0 w-48 sm:w-56 md:w-64 drop-shadow-2xl">
+              <Image
+                src="/assets/images/others/msms_ig_image.png"
+                alt="Myy Signature Myy Style on Instagram"
+                width={400}
+                height={700}
+                className="w-full h-auto rounded-3xl"
+                unoptimized
+              />
+            </div>
+
+            {/* Text + links */}
+            <div className="text-center md:text-left">
+              <p className="mb-1 text-xs font-bold tracking-[0.3em] uppercase text-secondary/50">Follow & Reach Us</p>
+              <h2 className="mb-8 text-3xl font-extrabold tracking-widest uppercase sm:text-4xl text-secondary" style={{letterSpacing:'0.12em'}}>
+                Connect With Us<br className="hidden sm:block" /> On Social Media
+              </h2>
+
+              <div className="flex flex-col gap-5">
+                {/* Instagram */}
+                <a
+                  href={business.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                    <FiInstagram className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                    @myysignaturemyystyle
+                  </span>
+                </a>
+
+                {/* Email */}
+                <a
+                  href={`mailto:${business.contact.email}`}
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent/80 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                    <FiMail className="w-6 h-6 text-primary" />
+                  </div>
+                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                    {business.contact.email}
+                  </span>
+                </a>
+
+                {/* Phone */}
+                <a
+                  href={`tel:${business.contact.phone.replace(/[^0-9]/g, '')}`}
+                  className="flex items-center gap-4 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-secondary/20 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
+                    <FiPhone className="w-6 h-6 text-secondary" />
+                  </div>
+                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                    {business.contact.phone}
+                  </span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 bg-primary text-secondary sm:py-16">
         <div className="container-custom">
@@ -1174,7 +1479,54 @@ export default function Home() {
               <p className="text-sm font-semibold leading-snug">{bookingToast}</p>
             </div>
           )}
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto animate-fade-in-down">
+
+          {/* Full Policy Modal */}
+          {showFullPolicy && (
+            <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowFullPolicy(false)}>
+              <div
+                className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto animate-fade-in-down"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Policy Modal Header */}
+                <div className="sticky top-0 flex items-center justify-between p-5 border-b bg-primary text-secondary border-amber-300 rounded-t-xl">
+                  <h3 className="text-lg font-bold">{content.salon_policies.title}</h3>
+                  <button
+                    onClick={() => setShowFullPolicy(false)}
+                    className="text-2xl font-bold transition-colors text-secondary/70 hover:text-secondary leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+                {/* Policy Modal Body */}
+                <div className="p-5 space-y-5 text-sm text-gray-800">
+                  <p className="text-xs text-gray-500 italic">{content.salon_policies.intro}</p>
+                  {(['booking','confirmation','cancellation','deposits','late_arrival','payment','salon_experience','service_guarantee','promise'] as const).map((key) => {
+                    const section = content.salon_policies[key] as { title: string; intro?: string; points?: string[]; text?: string }
+                    return (
+                      <div key={key} className="space-y-1">
+                        <p className="font-bold text-amber-800">{section.title}</p>
+                        {section.intro && <p className="text-xs text-gray-600 italic">{section.intro}</p>}
+                        {section.points?.map((pt, i) => (
+                          <p key={i} className="text-xs text-gray-700">• {pt}</p>
+                        ))}
+                        {section.text && <p className="text-xs text-gray-700">{section.text}</p>}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="sticky bottom-0 p-4 border-t bg-amber-50 border-amber-200 rounded-b-xl">
+                  <button
+                    onClick={() => setShowFullPolicy(false)}
+                    className="w-full py-2.5 rounded-lg bg-primary text-secondary font-bold text-sm hover:bg-primary/90 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md md:max-w-3xl max-h-[90vh] overflow-y-auto animate-fade-in-down">
             {/* Modal Header */}
             <div className="sticky top-0 flex items-center justify-between p-6 border-b bg-primary text-secondary border-accent/20">
               <h2 className="text-2xl font-bold">{content.reviews_section.cta_button}</h2>
@@ -1185,7 +1537,9 @@ export default function Home() {
                   setBookingEmail('')
                   setBookingContact('')
                   setSelectedBookingService(null)
+                  setSelectedBookingStylist(null)
                   setSelectedDate(null)
+                  setSelectedTime(null)
                   setFormErrors({})
                   setPolicyAccepted(false)
                   // Scroll to home
@@ -1197,266 +1551,382 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-6">
-              {/* Month Navigation */}
-              <div className="flex items-center justify-between mb-6">
-                <button
-                  onClick={handlePrevMonth}
-                  className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
-                >
-                  ←
-                </button>
-                <h3 className="text-xl font-bold text-primary">
-                  {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
-                </h3>
-                <button
-                  onClick={handleNextMonth}
-                  className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
-                >
-                  →
-                </button>
-              </div>
+            {/* Modal Body — two columns on desktop */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 md:items-start">
 
-              {/* Calendar Grid */}
-              <div className="space-y-4">
-                {/* Day headers */}
-                <div className="grid grid-cols-7 gap-1 mb-4 sm:gap-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                    <div key={day} className="text-sm font-bold text-center text-primary/60">
-                      {day}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Calendar days */}
-                <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                  {generateCalendarDays().map((dayObj, idx) => {
-                    const isCurrentMonth = dayObj.isCurrentMonth
-                    const isTodayDate = isToday(dayObj.date)
-                    const isPast = isPastDate(dayObj.date)
-                    const isSelected = selectedDate && dayObj.date.toDateString() === selectedDate.toDateString()
-
-                    return (
+                {/* ── LEFT: Calendar ── */}
+                <div className="space-y-4">
+                  {/* Pre-selected Stylist Banner */}
+                  {selectedBookingStylist && (
+                    <div className="flex items-center gap-3 p-3 border rounded-lg bg-accent/10 border-accent/30">
+                      {selectedBookingStylist.photo ? (
+                        <img src={selectedBookingStylist.photo} alt={selectedBookingStylist.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-accent/40" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 border-2 border-accent/40">
+                          <span className="text-accent font-bold text-sm">{selectedBookingStylist.name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-primary/60 font-medium">Booking with</p>
+                        <p className="font-bold text-primary truncate">{selectedBookingStylist.name}</p>
+                        {selectedBookingStylist.title && <p className="text-xs text-primary/50 truncate">{selectedBookingStylist.title}</p>}
+                      </div>
                       <button
-                        key={idx}
-                        onClick={() => !isPast && setSelectedDate(new Date(dayObj.date))}
-                        disabled={isPast}
-                        className={`
-                          aspect-square rounded-lg font-semibold text-sm transition-all duration-200
-                          ${!isCurrentMonth ? 'text-primary/30 bg-transparent cursor-default' : ''}
-                          ${isTodayDate ? 'bg-accent text-white ring-2 ring-accent ring-offset-1' : ''}
-                          ${isSelected && !isTodayDate ? 'bg-primary text-white ring-2 ring-primary ring-offset-1' : ''}
-                          ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer' : ''}
-                          ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'hover:shadow-md' : ''}
-                          ${isPast && isCurrentMonth ? 'text-primary/40 bg-secondary/10 cursor-not-allowed' : ''}
-                        `}
+                        onClick={() => { setSelectedBookingStylist(null); setSelectedBookingService(null) }}
+                        className="text-primary/40 hover:text-primary/70 transition-colors text-lg leading-none flex-shrink-0"
+                        title="Remove stylist filter"
                       >
-                        {dayObj.date.getDate()}
+                        ×
                       </button>
-                    )
-                  })}
-                </div>
-              </div>
+                    </div>
+                  )}
 
-              {/* Selected Date Display */}
-              {selectedDate && (
-                <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30">
-                  <p className="mb-1 text-sm text-primary/70">Selected Date:</p>
-                  <p className="text-lg font-bold text-primary">
-                    {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </p>
-                </div>
-              )}
+                  {/* Month Navigation */}
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={handlePrevMonth}
+                      className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
+                    >
+                      ←
+                    </button>
+                    <h3 className="text-xl font-bold text-primary">
+                      {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                    </h3>
+                    <button
+                      onClick={handleNextMonth}
+                      className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
+                    >
+                      →
+                    </button>
+                  </div>
 
-              {/* Customer Information */}
-              <div className="pb-6 space-y-4 border-b border-secondary/20">
-                <h3 className="text-lg font-bold text-primary">Your Information</h3>
-                
-                {/* Name Input */}
-                <div>
-                  <label className="block mb-2 text-sm font-semibold text-primary">Full Name</label>
-                  <input
-                    type="text"
-                    value={bookingName}
-                    onChange={(e) => setBookingName(e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
-                      formErrors.bookingName
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
-                    }`}
-                    placeholder="John Doe"
-                  />
-                  {formErrors.bookingName && <p className="mt-1 text-xs text-red-500">{formErrors.bookingName}</p>}
-                </div>
+                  {/* Calendar Grid */}
+                  <div className="space-y-4">
+                    {/* Day headers */}
+                    <div className="grid grid-cols-7 gap-1 mb-4 sm:gap-2">
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                        <div key={day} className="text-sm font-bold text-center text-primary/60">
+                          {day}
+                        </div>
+                      ))}
+                    </div>
 
-                {/* Email Input */}
-                <div>
-                  <label className="block mb-2 text-sm font-semibold text-primary">Email</label>
-                  <input
-                    type="email"
-                    value={bookingEmail}
-                    onChange={(e) => setBookingEmail(e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
-                      formErrors.bookingEmail
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
-                    }`}
-                    placeholder="john@example.com"
-                  />
-                  {formErrors.bookingEmail && <p className="mt-1 text-xs text-red-500">{formErrors.bookingEmail}</p>}
-                </div>
+                    {/* Calendar days */}
+                    <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                      {generateCalendarDays().map((dayObj, idx) => {
+                        const isCurrentMonth = dayObj.isCurrentMonth
+                        const isTodayDate = isToday(dayObj.date)
+                        const isPast = isPastDate(dayObj.date)
+                        const isSelected = selectedDate && dayObj.date.toDateString() === selectedDate.toDateString()
 
-                {/* Phone Input */}
-                <div>
-                  <label className="block mb-2 text-sm font-semibold text-primary">Phone Number</label>
-                  <input
-                    type="tel"
-                    value={bookingContact}
-                    onChange={(e) => setBookingContact(e.target.value)}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
-                      formErrors.bookingContact
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
-                    }`}
-                    placeholder="(123) 456-7890"
-                  />
-                  {formErrors.bookingContact && <p className="mt-1 text-xs text-red-500">{formErrors.bookingContact}</p>}
-                </div>
-              </div>
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => { if (!isPast) { setSelectedDate(new Date(dayObj.date)); setSelectedTime(null) } }}
+                            disabled={isPast}
+                            className={`
+                              aspect-square rounded-lg font-semibold text-sm transition-all duration-200
+                              ${!isCurrentMonth ? 'text-primary/30 bg-transparent cursor-default' : ''}
+                              ${isTodayDate ? 'bg-accent text-white ring-2 ring-accent ring-offset-1' : ''}
+                              ${isSelected && !isTodayDate ? 'bg-primary text-white ring-2 ring-primary ring-offset-1' : ''}
+                              ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer' : ''}
+                              ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'hover:shadow-md' : ''}
+                              ${isPast && isCurrentMonth ? 'text-primary/40 bg-secondary/10 cursor-not-allowed' : ''}
+                            `}
+                          >
+                            {dayObj.date.getDate()}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
 
-              {/* Service Category Dropdown */}
-              <div className="space-y-2">
-                <label className="block text-sm font-bold text-primary">Select Service Category:</label>
-                <select
-                  value={selectedBookingCategory}
-                  onChange={(e) => setSelectedBookingCategory(e.target.value)}
-                  className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
-                >
-                  <option value="" disabled>— Choose a Hair Service —</option>
-                  {getCategories().map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  {/* Selected Date Display */}
+                  {selectedDate && (
+                    <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30">
+                      <p className="mb-1 text-sm text-primary/70">Selected Date:</p>
+                      <p className="text-lg font-bold text-primary">
+                        {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                      </p>
+                    </div>
+                  )}
 
-              {/* Services in Selected Category */}
-              {selectedBookingCategory && (
-                <div className="p-4 border rounded-lg bg-secondary/5 border-secondary/20">
-                  <p className="mb-3 text-sm font-bold text-primary">Services in {selectedBookingCategory}:</p>
-                  <div className="space-y-2">
-                    {getServicesByCategory(selectedBookingCategory).map((service) => {
-                      const isSelected = selectedBookingService?.id === service.id
+                  {/* ── Time Slot Picker ── */}
+                  {selectedDate && selectedBookingService && (() => {
+                    const schedule = getDaySchedule(selectedDate)
+                    const slots = generateTimeSlots(schedule, selectedBookingService.duration)
+                    const dayLabel = selectedDate.toLocaleDateString('en-US', { weekday: 'long' })
+
+                    if (schedule === 'closed' || slots.length === 0) {
                       return (
-                        <div
-                          key={service.id}
-                          onClick={() => setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })}
-                          className={`flex items-center justify-between px-3 py-3 text-xs rounded-lg cursor-pointer transition-all duration-200 sm:text-sm ${
-                            isSelected
-                              ? 'bg-accent text-white shadow-md scale-[1.02] border-2 border-accent'
-                              : 'hover:bg-secondary/10 border-2 border-transparent'
-                          }`}
-                        >
-                          <div className="flex-1">
-                            <p className={`font-semibold ${isSelected ? 'text-white' : 'text-primary'}`}>{service.name}</p>
-                            <p className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-white/80' : 'text-accent'}`}>${service.price_min} – ${service.price_max}</p>
-                            <p className={`text-[10px] mt-0.5 ${isSelected ? 'text-white/60' : 'text-primary/50'}`}>⏱ {service.duration} min</p>
-                          </div>
-                          <div className={`ml-3 flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 ${
-                            isSelected
-                              ? 'bg-white text-accent'
-                              : 'bg-secondary/20 text-primary'
-                          }`}>
-                            {isSelected && <span className="text-sm">✓</span>}
-                            {isSelected ? 'Selected' : 'Select'}
-                          </div>
+                        <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30 text-center">
+                          <p className="text-sm font-semibold text-primary/70">
+                            {selectedBookingStylist
+                              ? `${selectedBookingStylist.name} is not available on ${dayLabel}s.`
+                              : `The salon is closed on ${dayLabel}s.`}
+                          </p>
+                          <p className="mt-1 text-xs text-primary/50">Please select a different date or contact us directly.</p>
                         </div>
                       )
-                    })}
-                  </div>
-                </div>
-              )}
+                    }
 
-              {/* Selected Service Display */}
-              {selectedBookingService && (
-                <div className="flex items-center gap-3 p-4 border-2 border-accent rounded-xl bg-accent/10 animate-fade-in-up shadow-sm">
-                  <div className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white text-base font-bold flex-shrink-0">✓</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-primary/60 uppercase tracking-wide">Selected Service</p>
-                    <p className="text-base font-bold text-accent truncate">{selectedBookingService.name}</p>
-                    <p className="text-[10px] text-primary/50 font-medium -mt-0.5">{selectedBookingService.category}</p>
-                    <div className="flex items-center gap-3 mt-0.5">
-                      <p className="text-xs font-semibold text-primary/70">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
-                      <p className="text-[10px] text-primary/50">⏱ {selectedBookingService.duration} min</p>
+                    return (
+                      <div>
+                        <p className="mb-2 text-sm font-semibold text-primary/70">Select a Time</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {slots.map((slot) => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => setSelectedTime(slot === selectedTime ? null : slot)}
+                              className={`py-2 px-1 text-xs font-semibold rounded-lg border transition-all duration-200 ${
+                                selectedTime === slot
+                                  ? 'bg-accent text-white border-accent shadow-md scale-105'
+                                  : 'bg-secondary/10 text-primary border-secondary/30 hover:bg-secondary/30 hover:border-secondary/50'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                        {selectedTime && (
+                          <p className="mt-2 text-xs text-accent font-semibold">⏰ Selected: {selectedTime}</p>
+                        )}
+                      </div>
+                    )
+                  })()}
+
+                  {selectedDate && !selectedBookingService && (
+                    <div className="p-3 border border-dashed rounded-lg border-secondary/30">
+                      <p className="text-xs text-center text-primary/40">Select a service to see available times</p>
+                    </div>
+                  )}
+
+                  {/* Selected Service Summary */}
+                  {selectedBookingService ? (
+                    <div className="p-4 border rounded-lg bg-accent/10 border-accent/30">
+                      <p className="mb-2 text-sm text-primary/70">Selected Service:</p>
+                      <p className="text-base font-bold text-primary">{selectedBookingService.name}</p>
+                      <p className="mt-1 text-sm text-primary/70">
+                        ${Number(selectedBookingService.price_min).toFixed(2)}&nbsp;&ndash;&nbsp;${Number(selectedBookingService.price_max).toFixed(2)}
+                      </p>
+                      <p className="mt-1 text-xs text-primary/50">
+                        &#128337; {selectedBookingService.duration} min
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-4 border border-dashed rounded-lg border-secondary/30">
+                      <p className="text-sm text-center text-primary/40">No service selected yet</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── RIGHT: Form Fields ── */}
+                <div className="mt-8 md:mt-0 space-y-5">
+                  {/* Customer Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-primary">Your Information</h3>
+
+                    {/* Name Input */}
+                    <div>
+                      <label className="block mb-2 text-sm font-semibold text-primary">Full Name</label>
+                      <input
+                        type="text"
+                        value={bookingName}
+                        onChange={(e) => setBookingName(e.target.value)}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
+                          formErrors.bookingName
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                            : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
+                        }`}
+                        placeholder="John Doe"
+                      />
+                      {formErrors.bookingName && <p className="mt-1 text-xs text-red-500">{formErrors.bookingName}</p>}
+                    </div>
+
+                    {/* Email Input */}
+                    <div>
+                      <label className="block mb-2 text-sm font-semibold text-primary">Email</label>
+                      <input
+                        type="email"
+                        value={bookingEmail}
+                        onChange={(e) => setBookingEmail(e.target.value)}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
+                          formErrors.bookingEmail
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                            : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
+                        }`}
+                        placeholder="john@example.com"
+                      />
+                      {formErrors.bookingEmail && <p className="mt-1 text-xs text-red-500">{formErrors.bookingEmail}</p>}
+                    </div>
+
+                    {/* Phone Input */}
+                    <div>
+                      <label className="block mb-2 text-sm font-semibold text-primary">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={bookingContact}
+                        onChange={(e) => setBookingContact(e.target.value)}
+                        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
+                          formErrors.bookingContact
+                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                            : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
+                        }`}
+                        placeholder="(123) 456-7890"
+                      />
+                      {formErrors.bookingContact && <p className="mt-1 text-xs text-red-500">{formErrors.bookingContact}</p>}
+                    </div>
+                  </div>
+
+                  {/* Service Category Dropdown */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-bold text-primary">Select Service Category:</label>
+                    <select
+                      value={selectedBookingCategory}
+                      onChange={(e) => setSelectedBookingCategory(e.target.value)}
+                      className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
+                    >
+                      <option value="" disabled>— Choose a Hair Service —</option>
+                      {getBookingCategories().map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Services in Selected Category */}
+                  {selectedBookingCategory && (
+                    <div className="p-4 border rounded-lg bg-secondary/5 border-secondary/20">
+                      <p className="mb-3 text-sm font-bold text-primary">Services in {selectedBookingCategory}:</p>
+                      <div className="space-y-2">
+                        {getServicesByCategory(selectedBookingCategory).map((service) => {
+                          const isSelected = selectedBookingService?.id === service.id
+                          return (
+                            <div
+                              key={service.id}
+                              onClick={() => setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })}
+                              className={`flex items-center justify-between px-3 py-3 text-xs rounded-lg cursor-pointer transition-all duration-200 sm:text-sm ${
+                                isSelected
+                                  ? 'bg-accent text-white shadow-md scale-[1.02] border-2 border-accent'
+                                  : 'hover:bg-secondary/10 border-2 border-transparent'
+                              }`}
+                            >
+                              <div className="flex-1">
+                                <p className={`font-semibold ${isSelected ? 'text-white' : 'text-primary'}`}>{service.name}</p>
+                                <p className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-white/80' : 'text-accent'}`}>${service.price_min} – ${service.price_max}</p>
+                                <p className={`text-[10px] mt-0.5 ${isSelected ? 'text-white/60' : 'text-primary/50'}`}>⏱ {service.duration} min</p>
+                              </div>
+                              <div className={`ml-3 flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 ${
+                                isSelected
+                                  ? 'bg-white text-accent'
+                                  : 'bg-secondary/20 text-primary'
+                              }`}>
+                                {isSelected && <span className="text-sm">✓</span>}
+                                {isSelected ? 'Selected' : 'Select'}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selected Service Display */}
+                  {selectedBookingService && (
+                    <div className="flex items-center gap-3 p-4 border-2 border-accent rounded-xl bg-accent/10 animate-fade-in-up shadow-sm">
+                      <div className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white text-base font-bold flex-shrink-0">✓</div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-primary/60 uppercase tracking-wide">Selected Service</p>
+                        <p className="text-base font-bold text-accent truncate">{selectedBookingService.name}</p>
+                        <p className="text-[10px] text-primary/50 font-medium -mt-0.5">{selectedBookingService.category}</p>
+                        <div className="flex items-center gap-3 mt-0.5">
+                          <p className="text-xs font-semibold text-primary/70">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
+                          <p className="text-[10px] text-primary/50">⏱ {selectedBookingService.duration} min</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* ── FULL WIDTH BELOW: Policy + Payment + Submit ── */}
+              <div className="mt-6 space-y-5 border-t border-secondary/20 pt-6">
+                {/* Booking Disclaimer */}
+                <div className={`p-4 space-y-1 text-xs border-2 rounded-lg bg-amber-50 text-amber-900 transition-all duration-300 ${formErrors.policyAccepted ? 'border-red-400 bg-red-50' : 'border-amber-300'}`}>
+                  <p className="text-sm font-bold">📋 Booking Policy</p>
+                  <p>• {content.booking_disclaimer.deposit_note}</p>
+                  <p>• {content.booking_disclaimer.cancellation_note}</p>
+                  <p>• {content.booking_disclaimer.late_policy}</p>
+                  <p>• {content.salon_policies.confirmation.points[2]}</p>
+                  <p>• {content.salon_policies.payment.points[2]}</p>
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowFullPolicy(true)}
+                      className="w-full py-2 mt-1 rounded-lg border-2 border-amber-400 bg-amber-100 text-amber-800 text-sm font-bold hover:bg-amber-200 hover:border-amber-600 transition-all duration-200 active:scale-95"
+                    >
+                      📄 Read Full Salon Policies →
+                    </button>
+                  </div>
+                  <label className={`flex items-center gap-3 mt-3 cursor-pointer select-none rounded-lg p-3 transition-all duration-200 ${policyAccepted ? 'bg-green-100 border border-green-400' : 'bg-white border-2 border-dashed border-amber-400 hover:border-amber-600'}`}>
+                    <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-200 ${policyAccepted ? 'bg-green-500 border-green-500' : 'bg-white border-amber-500'}`}>
+                      {policyAccepted && (
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={policyAccepted}
+                      onChange={(e) => { setPolicyAccepted(e.target.checked); if (e.target.checked) setFormErrors(prev => ({ ...prev, policyAccepted: '' })) }}
+                      className="sr-only"
+                    />
+                    <span className={`font-bold text-sm ${policyAccepted ? 'text-green-800' : 'text-amber-900'}`}>
+                      {policyAccepted ? '✓ Policy accepted' : 'I have read and agree to the booking policy above'}
+                    </span>
+                  </label>
+                </div>
+
+                {/* Payment Options */}
+                <div className="p-4 space-y-3 border rounded-lg bg-green-50 border-green-200">
+                  <p className="text-sm font-bold text-green-900">💳 Payment Options</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="group flex flex-col items-center p-4 bg-white border-2 border-purple-200 rounded-xl shadow-sm transition-all duration-300 hover:border-purple-400 hover:shadow-purple-100 hover:shadow-md hover:-translate-y-1">
+                      <SiZelle className="text-4xl mb-2 text-purple-600 transition-transform duration-300 group-hover:scale-110" />
+                      <p className="text-xs font-bold text-purple-700 mb-1">Zelle</p>
+                      <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
+                      <button
+                        onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.zelle.zelle_id, 'zelle')}
+                        className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                          copiedZelle
+                            ? 'bg-purple-600 text-white scale-95'
+                            : 'bg-purple-50 text-purple-700 border border-purple-300 hover:bg-purple-100'
+                        }`}
+                      >
+                        {copiedZelle ? '✓ Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                    <div className="group flex flex-col items-center p-4 bg-white border-2 border-green-200 rounded-xl shadow-sm transition-all duration-300 hover:border-green-400 hover:shadow-green-100 hover:shadow-md hover:-translate-y-1">
+                      <SiCashapp className="text-4xl mb-2 text-green-600 transition-transform duration-300 group-hover:scale-110" />
+                      <p className="text-xs font-bold text-green-700 mb-1">Cash App</p>
+                      <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
+                      <button
+                        onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.cashapp.cashapp_id, 'cashapp')}
+                        className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                          copiedCashapp
+                            ? 'bg-green-600 text-white scale-95'
+                            : 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
+                        }`}
+                      >
+                        {copiedCashapp ? '✓ Copied!' : 'Copy'}
+                      </button>
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Booking Disclaimer */}
-              <div className={`p-4 space-y-1 text-xs border-2 rounded-lg bg-amber-50 text-amber-900 transition-all duration-300 ${formErrors.policyAccepted ? 'border-red-400 bg-red-50' : 'border-amber-300'}`}>
-                <p className="text-sm font-bold">📋 Booking Policy</p>
-                <p>• {content.booking_disclaimer.deposit_note}</p>
-                <p>• {content.booking_disclaimer.cancellation_note}</p>
-                <p>• {content.booking_disclaimer.late_policy}</p>
-                <label className={`flex items-center gap-3 mt-3 cursor-pointer select-none rounded-lg p-3 transition-all duration-200 ${policyAccepted ? 'bg-green-100 border border-green-400' : 'bg-white border-2 border-dashed border-amber-400 hover:border-amber-600'}`}>
-                  <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-200 ${policyAccepted ? 'bg-green-500 border-green-500' : 'bg-white border-amber-500'}`}>
-                    {policyAccepted && (
-                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={policyAccepted}
-                    onChange={(e) => { setPolicyAccepted(e.target.checked); if (e.target.checked) setFormErrors(prev => ({ ...prev, policyAccepted: '' })) }}
-                    className="sr-only"
-                  />
-                  <span className={`font-bold text-sm ${policyAccepted ? 'text-green-800' : 'text-amber-900'}`}>
-                    {policyAccepted ? '✓ Policy accepted' : 'I have read and agree to the booking policy above'}
-                  </span>
-                </label>
-              </div>
-
-              {/* Payment Options */}
-              <div className="p-4 space-y-3 border rounded-lg bg-green-50 border-green-200">
-                <p className="text-sm font-bold text-green-900">💳 Payment Options</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="group flex flex-col items-center p-4 bg-white border-2 border-purple-200 rounded-xl shadow-sm transition-all duration-300 hover:border-purple-400 hover:shadow-purple-100 hover:shadow-md hover:-translate-y-1">
-                    <SiZelle className="text-4xl mb-2 text-purple-600 transition-transform duration-300 group-hover:scale-110" />
-                    <p className="text-xs font-bold text-purple-700 mb-1">Zelle</p>
-                    <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.zelle.zelle_id}</p>
-                    <button
-                      onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.zelle.zelle_id, 'zelle')}
-                      className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
-                        copiedZelle
-                          ? 'bg-purple-600 text-white scale-95'
-                          : 'bg-purple-50 text-purple-700 border border-purple-300 hover:bg-purple-100'
-                      }`}
-                    >
-                      {copiedZelle ? '✓ Copied!' : 'Copy'}
-                    </button>
-                  </div>
-                  <div className="group flex flex-col items-center p-4 bg-white border-2 border-green-200 rounded-xl shadow-sm transition-all duration-300 hover:border-green-400 hover:shadow-green-100 hover:shadow-md hover:-translate-y-1">
-                    <SiCashapp className="text-4xl mb-2 text-green-600 transition-transform duration-300 group-hover:scale-110" />
-                    <p className="text-xs font-bold text-green-700 mb-1">Cash App</p>
-                    <p className="text-xs font-semibold text-gray-800 break-all text-center mb-3">{appConfig.integrations.payment_gateway.cashapp.cashapp_id}</p>
-                    <button
-                      onClick={() => copyToClipboard(appConfig.integrations.payment_gateway.cashapp.cashapp_id, 'cashapp')}
-                      className={`w-full py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
-                        copiedCashapp
-                          ? 'bg-green-600 text-white scale-95'
-                          : 'bg-green-50 text-green-700 border border-green-300 hover:bg-green-100'
-                      }`}
-                    >
-                      {copiedCashapp ? '✓ Copied!' : 'Copy'}
-                    </button>
-                  </div>
-                </div>
-              </div>
 
               {/* Continue Button */}
               <button
@@ -1466,6 +1936,7 @@ export default function Home() {
 
                   if (!selectedBookingService) missing.push('a service')
                   if (!selectedDate) missing.push('an appointment date')
+                  if (!selectedTime) missing.push('an appointment time')
 
                   if (!bookingName.trim()) {
                     errors.bookingName = 'Name is required'
@@ -1505,6 +1976,7 @@ export default function Home() {
                   const steps = [
                     !!selectedBookingService,
                     !!selectedDate,
+                    !!selectedTime,
                     bookingName.trim().length > 0,
                     /^\S+@\S+\.\S+$/.test(bookingEmail),
                     /^[\d\s()\-+]+$/.test(bookingContact) && bookingContact.trim().length > 0,
@@ -1522,6 +1994,7 @@ export default function Home() {
                   const steps = [
                     !!selectedBookingService,
                     !!selectedDate,
+                    !!selectedTime,
                     bookingName.trim().length > 0,
                     /^\S+@\S+\.\S+$/.test(bookingEmail),
                     /^[\d\s()\-+]+$/.test(bookingContact) && bookingContact.trim().length > 0,
@@ -1533,6 +2006,7 @@ export default function Home() {
                   return `${done} / ${total} steps complete — tap to see what's missing`
                 })()}
               </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1582,7 +2056,7 @@ export default function Home() {
                     setShowBookingModal(false)
                     setConfirmationStep('review')
                     setBookingName(''); setBookingEmail(''); setBookingContact('')
-                    setSelectedBookingService(null); setSelectedDate(null); setPolicyAccepted(false)
+                    setSelectedBookingService(null); setSelectedBookingStylist(null); setSelectedDate(null); setSelectedTime(null); setPolicyAccepted(false)
                     window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
                   className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
@@ -1609,6 +2083,7 @@ export default function Home() {
                   <p className="text-base font-bold text-primary">
                     {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
+                  {selectedTime && <p className="text-sm font-semibold text-accent mt-1">⏰ {selectedTime}</p>}
                 </div>
 
                 {/* Service */}
@@ -1738,12 +2213,15 @@ export default function Home() {
                         customer_name: bookingName,
                         customer_email: bookingEmail,
                         customer_phone: bookingContact,
+                        stylist_name: selectedBookingStylist?.name ?? 'Any Available Stylist',
                         service_name: selectedBookingService?.name,
                         service_category: selectedBookingService?.category,
                         service_duration: selectedBookingService?.duration,
                         service_price_min: selectedBookingService?.price_min,
                         service_price_max: selectedBookingService?.price_max,
                         appointment_date: selectedDate?.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+                        appointment_date_iso: selectedDate?.toISOString().split('T')[0],
+                        appointment_time: selectedTime ?? '',
                       }),
                     }).catch((err) => console.error('[booking email]', err))
                     // Auto-close after 5 seconds
@@ -1755,7 +2233,9 @@ export default function Home() {
                       setBookingEmail('')
                       setBookingContact('')
                       setSelectedBookingService(null)
+                      setSelectedBookingStylist(null)
                       setSelectedDate(null)
+                      setSelectedTime(null)
                       setPolicyAccepted(false)
                       window.scrollTo({ top: 0, behavior: 'smooth' })
                     }, 5000)

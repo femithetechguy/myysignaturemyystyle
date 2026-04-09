@@ -158,6 +158,12 @@ nav a:hover {
   animation: pulse 3s ease-in-out infinite;
 }
 
+/* Stylist section — staggered card entrance */
+.stylist-card-enter {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
 @layer components {
   .btn-primary {
     @apply px-6 py-3 bg-primary text-text-light rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-200 uppercase tracking-wider;

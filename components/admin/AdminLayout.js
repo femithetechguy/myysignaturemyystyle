@@ -6,7 +6,6 @@ import AdminSettings from './tabs/AdminSettings';
 import AdminUsers from './tabs/AdminUsers';
 import AdminProducts from './tabs/AdminProducts';
 import AdminCustomers from './tabs/AdminCustomers';
-import AdminOrders from './tabs/AdminOrders';
 import AdminServices from './tabs/AdminServices';
 import AdminAppointments from './tabs/AdminAppointments';
 import AdminStaff from './tabs/AdminStaff';
@@ -14,6 +13,7 @@ import AdminApplications from './tabs/AdminApplications';
 import AdminReviews from './tabs/AdminReviews';
 import AdminGallery from './tabs/AdminGallery';
 import AdminContacts from './tabs/AdminContacts';
+import AdminPolicies from './tabs/AdminPolicies';
 import staticConfig from '../../config/admin.json';
 import { colors, button, sidebar, fonts } from './AdminThemeProvider';
 
@@ -60,7 +60,6 @@ const TAB_COMPONENTS = {
   AdminUsers,
   AdminProducts,
   AdminCustomers,
-  AdminOrders,
   AdminServices,
   AdminAppointments,
   AdminStaff,
@@ -68,6 +67,7 @@ const TAB_COMPONENTS = {
   AdminReviews,
   AdminGallery,
   AdminContacts,
+  AdminPolicies,
 };
 
 export default function AdminLayout() {

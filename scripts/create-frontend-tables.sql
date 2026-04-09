@@ -11,9 +11,11 @@ CREATE TABLE IF NOT EXISTS services (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     duration INTEGER NOT NULL, -- duration in minutes
-    price DECIMAL(10, 2) NOT NULL,
     category VARCHAR(100) NOT NULL, -- Cuts, Color, Braids, Styling, etc.
-    image_url TEXT, -- optional service image
+    price_min DECIMAL(10, 2) NOT NULL, -- minimum / starting price
+    price_max DECIMAL(10, 2) NOT NULL, -- maximum price (same as min for fixed pricing)
+    images JSONB DEFAULT '[]', -- array of Cloudinary public IDs
+    staff_ids JSONB DEFAULT '[]', -- array of staff_id strings that offer this service, e.g. ["staff_001","staff_003"]; empty = all staff
     status VARCHAR(20) DEFAULT 'active', -- active, inactive, archived
     display_order INTEGER DEFAULT 0,
     metadata JSONB DEFAULT '{}', -- additional flexible data
@@ -36,7 +38,9 @@ CREATE TABLE IF NOT EXISTS staff (
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(50),
     bio TEXT,
-    photo TEXT, -- path to staff photo
+    photo TEXT, -- URL to staff photo (Cloudinary or local path)
+    instagram_handle VARCHAR(100), -- e.g. jmenendezcolour (no @)
+    booking_slug VARCHAR(100), -- e.g. jairo → links to /book_jairo
     specialties JSONB DEFAULT '[]', -- array of specialty services
     availability JSONB DEFAULT '{}', -- weekly schedule
     is_bookable BOOLEAN DEFAULT true,
@@ -366,7 +370,8 @@ CREATE TABLE IF NOT EXISTS staff_availability (
     effective_date DATE, -- when this schedule starts (for future changes)
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (staff_id, day_of_week)
 );
 
 CREATE INDEX idx_staff_availability_staff_id ON staff_availability(staff_id);
@@ -411,48 +416,63 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Apply triggers to all tables
+DROP TRIGGER IF EXISTS update_services_updated_at ON services;
 CREATE TRIGGER update_services_updated_at BEFORE UPDATE ON services
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_staff_updated_at ON staff;
 CREATE TRIGGER update_staff_updated_at BEFORE UPDATE ON staff
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_customers_updated_at ON customers;
 CREATE TRIGGER update_customers_updated_at BEFORE UPDATE ON customers
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_appointments_updated_at ON appointments;
 CREATE TRIGGER update_appointments_updated_at BEFORE UPDATE ON appointments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_payments_updated_at ON payments;
 CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON payments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_reviews_updated_at ON reviews;
 CREATE TRIGGER update_reviews_updated_at BEFORE UPDATE ON reviews
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_gallery_updated_at ON gallery;
 CREATE TRIGGER update_gallery_updated_at BEFORE UPDATE ON gallery
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_contact_submissions_updated_at ON contact_submissions;
 CREATE TRIGGER update_contact_submissions_updated_at BEFORE UPDATE ON contact_submissions
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_newsletter_subscribers_updated_at ON newsletter_subscribers;
 CREATE TRIGGER update_newsletter_subscribers_updated_at BEFORE UPDATE ON newsletter_subscribers
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_career_applications_updated_at ON career_applications;
 CREATE TRIGGER update_career_applications_updated_at BEFORE UPDATE ON career_applications
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_business_settings_updated_at ON business_settings;
 CREATE TRIGGER update_business_settings_updated_at BEFORE UPDATE ON business_settings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_app_settings_updated_at ON app_settings;
 CREATE TRIGGER update_app_settings_updated_at BEFORE UPDATE ON app_settings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_service_packages_updated_at ON service_packages;
 CREATE TRIGGER update_service_packages_updated_at BEFORE UPDATE ON service_packages
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_staff_availability_updated_at ON staff_availability;
 CREATE TRIGGER update_staff_availability_updated_at BEFORE UPDATE ON staff_availability
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_promotional_codes_updated_at ON promotional_codes;
 CREATE TRIGGER update_promotional_codes_updated_at BEFORE UPDATE ON promotional_codes
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

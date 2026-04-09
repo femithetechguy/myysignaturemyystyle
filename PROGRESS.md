@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 5, 2026
+Last updated: April 9, 2026 (session 5)
 
 ---
 
@@ -192,25 +192,165 @@ Last updated: April 5, 2026
 - [x] **Mobile menu top padding** increased to `pt-28` to fully clear the actual header height
 - [x] **Business name always visible in mobile header** — `absolute` centered div shows `{content.navigation.brand}` + "— Hair Salon —" subtext at all times; `pointer-events-none` prevents tap-through interference
 
+### Database — Neon PostgreSQL
+- [x] `DATABASE_URL` added to `.env.local` — Neon pooler endpoint (`ep-little-block-a4d8gzbg-pooler.us-east-1.aws.neon.tech`)
+- [x] `scripts/create-frontend-tables.sql` fixed and ready to run:
+  - `services` table schema corrected: `price_min`/`price_max`/`images JSONB` (was `price`/`image_url`)
+  - `UNIQUE(staff_id, day_of_week)` constraint added to `staff_availability`
+  - All triggers wrapped with `DROP TRIGGER IF EXISTS` (safe to re-run)
+- [x] `scripts/seed-frontend-data.sql` fixed: replaced 22 generic placeholder services with all 44 real services from `data/services.json`
+- [x] `dbquries/admins.sql` updated:
+  - `dev` user → `fttgsolutions@gmail.com`; `admin` user → `egwonookpako559@gmail.com`
+  - `ON CONFLICT DO UPDATE SET email` (was `DO NOTHING`)
+  - Real bcrypt hashes generated via `bcryptjs`: `dev`/`dev` and `admin`/`admin1$`
+- [x] `dbquries/reviews.sql` created — standalone create + seed for reviews table (3 reviews from `app.json`)
+- [x] Redundant SQL files deleted: `scripts/fix-career-table.sql`, `dbquries/customers.sql`, `dbquries/general_queries.sql`
+- [x] `lib/dbQueries.js` updated — `getActiveServices()` now returns `price_min`, `price_max`, `images`
+
+### Frontend — DB-Driven Data (replaces JSON files)
+- [x] `pages/api/reviews.js` **new** — public endpoint: `SELECT … FROM reviews WHERE status = 'approved'` ordered by featured first
+- [x] `src/lib/config.ts` — `getServices()` and `import services from 'data/services.json'` removed; services now always come from DB
+- [x] `src/app/page.tsx` — services + reviews fetched from `/api/services` and `/api/reviews` on mount
+  - `useState([])` for services; `useState(content.reviews_section.reviews)` as fallback for reviews until DB resolves
+  - All `content.reviews_section.reviews.map()` references replaced with `reviews.map()`
+  - Typewriter effect and auto-rotate use `reviews` state
+
+### Salon Policies — Content & DB
+- [x] Full salon policies document captured in `app.json → content.salon_policies` (9 sections: booking, confirmation, cancellation, deposits, late_arrival, payment, salon_experience, service_guarantee, promise)
+- [x] `booking_disclaimer` updated in `app.json`: `cancellation_policy` → 12 hours (was 24); `deposit_percentage` → null with `deposit_note`; `deposit_non_refundable: true`
+- [x] `dbquries/business_settings.sql` **new** — creates `business_settings` table + seeds `salon_policies` and `booking_disclaimer` as JSONB rows (`ON CONFLICT DO UPDATE`)
+- [x] `pages/api/admin/policies.js` **new** — GET returns both settings; PUT updates either by `setting_key` with allowed-key validation
+- [x] `components/admin/tabs/AdminPolicies.js` **new** — full admin edit UI:
+  - Section 1: Booking Modal Disclaimer (4 textarea fields) — own Save button
+  - Section 2: Full Salon Policies (page title, intro, 9 sections with editable bullet arrays and text) — own Save button
+  - Success toast on save, graceful empty state pointing to seed SQL if table not yet populated
+- [x] `config/admin.json` — `policies` tab added (13 tabs total); `admin.policies` config block added
+- [x] `components/admin/AdminLayout.js` — `AdminPolicies` imported and registered in `TAB_COMPONENTS`
+
+### Booking Modal — Policy UX Enhancement
+- [x] Booking policy box expanded from 3 bullets to 5:
+  - Deposit required
+  - Cancellation < 12 hours = deposit charged + no-show no refund
+  - Late arrival grace period
+  - *New*: Failure to confirm = auto cancellation (from `salon_policies.confirmation`)
+  - *New*: No personal payments to stylists (from `salon_policies.payment`)
+- [x] **"📄 Read Full Salon Policies →"** full-width amber button added below bullets
+- [x] Full-policy modal (`z-70`) opens on button click, layered above booking modal:
+  - All 9 policy sections rendered with headings, bullets, and text paragraphs
+  - Sticky header + sticky Close button at bottom
+  - Click-outside to dismiss
+
+### Mobile Header — Height & Hamburger Fixes (session 3)
+- [x] Mobile header padding reduced: `py-5` → `py-3` (desktop `md:py-6` unchanged)
+- [x] Mobile logo height reduced: `h-20` → `h-16` (desktop `h-28` unchanged)
+- [x] Mobile menu dropdown top offset updated: `pt-28` → `pt-[88px]` to match new header height
+- [x] Center branding (`div.pointer-events-none`) converted to a `button` that scrolls to top on tap
+- [x] Hamburger menu restored — center branding button constrained to `left-16 right-12` so it no longer covers the hamburger tap target
+
+### Connect With Us Section (session 3)
+- [x] New section (`id="connect"`) added between Contact and Footer on the landing page
+  - Left: phone mockup image (`msms_ig_image.png`) — actual IG profile screenshot
+  - Right: Instagram (gradient icon), Email (amber icon), Phone (muted icon) — all tappable links
+  - Uses `business.contact.email` and `business.contact.phone` from `app.json` (not `business.email`)
+- [x] "Connect With Us" link added to Footer Quick Links in `app.json` → `#connect`
+
+### Stylists Section (session 3)
+- [x] "Stylists" nav item added to `app.json` between Services and Gallery → `#stylists`
+- [x] `scripts/create-frontend-tables.sql` — `instagram_handle VARCHAR(100)` and `booking_slug VARCHAR(100)` columns added to `staff` table definition
+- [x] `dbquries/staff.sql` **new** — `ALTER TABLE … ADD COLUMN IF NOT EXISTS` (safe re-run) + seeds 3 sample stylists (`staff_001` Jairo, `staff_002` Andrea, `staff_003` Char) with `ON CONFLICT DO UPDATE`
+- [x] `pages/api/staff.js` **new** — public GET endpoint: `SELECT … FROM staff WHERE status = 'active' ORDER BY display_order ASC, id ASC`
+- [x] Full Stylists section (`id="stylists"`) built in `page.tsx` between Services and Gallery:
+  - `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` card grid
+  - Card: `aspect-[3/4]` portrait photo with `onError` initials fallback
+  - Name, title, bio, specialties pills (`bg-amber-100 text-amber-800`)
+  - Phone (`FiPhone` + `tel:`) and Instagram (`FiInstagram` + `instagram.com/`) contact links
+  - **Book Now** button → `/book_${booking_slug}` (per-stylist booking page)
+  - Empty state: "Stylists coming soon" message
+
+### Booking Modal — Stylist-First Flow (session 4)
+- [x] `selectedBookingStylist` state added to `page.tsx` — typed with `id`, `staff_id`, `name`, `title`, `photo`, `booking_slug`, `specialties`
+- [x] **Book Now** button on stylist cards changed from `<a href="/book_slug">` to a `<button>` that calls `handleStylistBookClick(stylist)` — opens the booking modal with stylist pre-pinned
+- [x] **Stylist banner card** shown in booking modal left panel when stylist is pre-selected:
+  - Photo (or initials fallback) + "Booking with [Name]" + title
+  - ✕ dismiss button — clears stylist and resets service filter
+- [x] `staff_ids JSONB DEFAULT '[]'` column added to `services` table schema (`scripts/create-frontend-tables.sql`) and SELECT in `lib/dbQueries.js` (`COALESCE(staff_ids, '[]'::jsonb)`)
+- [x] `ALTER TABLE services ADD COLUMN IF NOT EXISTS staff_ids` added to `dbquries/staff.sql`
+- [x] `getServicesByCategory()` now filters by `staff_ids` when a stylist is selected — empty array = all staff
+- [x] `getBookingCategories()` helper added — only returns categories with ≥1 service for the selected stylist
+- [x] Category dropdown uses `getBookingCategories()` so irrelevant categories are hidden
+- [x] **Selected service summary card** added to booking modal left panel — shows name, price range, duration; dashed placeholder when nothing selected
+- [x] `price_min.toFixed is not a function` bug fixed — DB returns DECIMAL as string; wrapped with `Number()` before `.toFixed(2)`
+- [x] `stylist_name` added to booking API POST body, `pages/api/booking.ts` destructuring + `vars` object, and both email templates
+- [x] Default stylist value when none selected: `"Any Available Stylist"` — clear to customer, flags admin to assign
+- [x] All 5 modal close paths call `setSelectedBookingStylist(null)` and `setSelectedBookingService(null)`
+- [x] UPDATE template + commented helpers (availability, deactivation, reorder, staff→service assignment) added to `dbquries/staff.sql`
+
+### Email System — Dynamic Disclaimer (session 4)
+- [x] `pages/api/booking.ts` now fetches `booking_disclaimer` from `business_settings` DB before sending emails
+  - Falls back to hardcoded safe defaults if DB query fails
+- [x] Both appointment email templates updated — hardcoded policy bullets replaced with `{{disclaimer_deposit}}`, `{{disclaimer_cancellation}}`, `{{disclaimer_late}}`, `{{disclaimer_confirmation}}` tokens
+- [x] Admin edits to policies via the Policies tab now automatically reflect in all future appointment emails
+
+### Database — Consolidated Setup Script (session 4)
+- [x] `dbquries/setup_all.sql` **new** — single file to run all SQL at once:
+  - Section 1: All 15 core tables + indexes + triggers (services, staff, customers, appointments, payments, reviews, gallery, contact_submissions, newsletter_subscribers, career_applications, business_settings, app_settings, service_packages, staff_availability, promotional_codes)
+  - Section 2: admins, orders (with sequence), products tables
+  - Section 3: Column migrations (`instagram_handle`, `booking_slug` on staff; `staff_ids` on services) — all `IF NOT EXISTS`
+  - Section 4: All seed data (2 admins, 44 services, 3 stylists, 3 reviews, full business_settings + booking_disclaimer, 5 sample orders)
+  - Section 5: UPDATE templates (commented out — edit before running)
+  - All statements idempotent: `CREATE IF NOT EXISTS` + `ON CONFLICT` guards throughout
+- [x] All individual SQL scripts successfully run against Neon DB via `setup_all.sql`
+
+### Admin Panel — Full DB Integration
+- [x] `pages/api/admin/login.js` rewritten — now queries `admins` table + `bcryptjs.compare()` (was plain-text ENV var comparison)
+- [x] `pages/api/admin/users.js` bugs fixed:
+  - Parameter shadow in `handleGet` removed
+  - `service_id` special-case exception removed from UPDATE field filter
+  - POST method + `handleCreate()` function added
+  - JSONB serialization fix: arrays/objects now `JSON.stringify()`'d before passing to `pg` (fixes 500 on save)
+- [x] `pages/api/admin/stats.js` **new file** — returns live row counts for 9 tables via parallel `COUNT(*)` queries
+- [x] `components/admin/tabs/AdminDashboard.js` — fetches `/api/admin/stats` on mount, displays real DB counts as clickable nav cards
+
+### Booking System — DB Persistence (session 5)
+- [x] **`pages/api/booking.ts`** now writes to the `appointments` table after sending emails:
+  - `booking_reference` → `appointment_id` (PK, unique)
+  - `appointment_date_iso` (YYYY-MM-DD sent from `page.tsx`) → `appointment_date DATE`
+  - `appointment_time` ("10:30 AM") parsed to 24h `"HH:MM:00"` via `parseTimeTo24()` → `appointment_time TIME`
+  - `service_duration` → `duration` (fallback 60 min)
+  - `service_price_min` → `total_amount` (fallback 0)
+  - Human-readable summary → `notes` (e.g. "Jane | Highlights | Jairo")
+  - Full JSON blob → `metadata` (customer_name, email, phone, service, stylist, raw date/time strings)
+  - `ON CONFLICT (appointment_id) DO NOTHING` — idempotent, prevents duplicate rows on retry
+  - DB write wrapped in its own `try/catch` — failure is non-fatal (email already sent, error logged, 200 still returned)
+- [x] `src/app/page.tsx` booking POST body now includes `appointment_date_iso` (ISO YYYY-MM-DD from `selectedDate`)
+- [x] Appointments tab in Admin is now populated by real booking submissions
+
+### Admin Panel — Orders Tab Removed (session 5)
+- [x] **Orders tab removed** from admin — not in use for this salon business
+  - `import AdminOrders` removed from `AdminLayout.js`
+  - `AdminOrders` removed from `TAB_COMPONENTS` map
+  - `"orders"` tab entry removed from `config/admin.json`
+  - `AdminOrders.js` component and `pages/api/admin/orders.js` kept on disk (not deleted)
+
+### Stylists Section — Responsive Grid & Performance (session 5)
+- [x] **Stylist grid is now count-responsive**:
+  - 1 stylist → single centered card (`max-w-sm mx-auto`)
+  - 2 stylists → 2-col grid, centered (`max-w-2xl mx-auto`)
+  - 3+ stylists → `sm:grid-cols-2 lg:grid-cols-3` (unchanged behaviour)
+- [x] **Skeleton loader added** — 3 pulsing amber skeleton cards display immediately on mount while `/api/staff` fetch is in-flight; replaced the blank/empty-state flash
+  - `stylistsLoading` state (`true` by default, set to `false` in `.finally()`)
+  - Skeleton shape matches real card: photo area + name bar + bio lines + specialties pills + button
+- [x] **Animation speed improved**:
+  - `fadeInUp` duration: `0.7s` → `0.4s`
+  - Per-card stagger delay: `150ms` → `75ms`
+
 ---
 
 ## 🔄 In Progress / Needs Attention
 
-### Database
-- [ ] PostgreSQL is **not connected** — all admin data tabs return `ECONNREFUSED 127.0.0.1:5432`
-  - Need to provision a local or remote Postgres instance and run migrations
-  - Schema SQL files exist in `scripts/` — run `scripts/create-frontend-tables.sql` and `scripts/seed-frontend-data.sql` to bootstrap
-
-### Admin API Coverage
-- [ ] API routes only exist for: `customers`, `orders`, `products`, `users`, `login`
-- [ ] **Missing API routes** for tabs that exist in the UI:
-  - `pages/api/admin/appointments.js`
-  - `pages/api/admin/services.js`
-  - `pages/api/admin/staff.js`
-  - `pages/api/admin/applications.js`
-  - `pages/api/admin/reviews.js`
-  - `pages/api/admin/gallery.js`
-  - `pages/api/admin/contacts.js`
+### Database — SQL Scripts
+- [x] All SQL consolidated into `dbquries/setup_all.sql` — run once with `psql $DATABASE_URL -f dbquries/setup_all.sql`
+- [x] Script successfully executed against Neon DB — all tables, migrations, and seed data live
 
 ---
 
@@ -240,27 +380,34 @@ Last updated: April 5, 2026
 - [ ] Wire booking form submissions to a backend endpoint (`pages/api/bookings.js` or similar)
   - Currently no API route handles `POST` booking data — form submissions go nowhere
 - [x] Send confirmation email on booking — nodemailer wired, `POST /api/booking` sends customer + admin emails
+- [x] Booking submissions now saved to `appointments` table in DB (`POST /api/booking` — session 5)
 - [x] Contact form email — `POST /api/contact` sends visitor confirmation + admin notification
 - [x] Application form email — `POST /api/application` sends applicant confirmation + admin notification
+- [x] Stylist **Book Now** now opens the booking modal with stylist pre-selected — no separate `/book_[slug]` pages needed
+- [ ] Add real Cloudinary photo URLs to the 3 seeded staff records (currently empty strings — update via admin Staff tab once DB is seeded)
 - [ ] Integrate payment processor for the 25% deposit (Stripe recommended)
   - Stripe setup: create `pages/api/payments/create-checkout.js`, add `STRIPE_SECRET_KEY` to `.env.local`
 - [ ] Build available-dates logic (block already-booked slots on the booking calendar)
 - [ ] Admin: allow staff to confirm / reject / reschedule appointments from the Appointments tab
 
 ### Admin Panel
-- [ ] Create the 7 missing API routes listed above
+- [x] All 7 previously missing API routes now handled by `users.js` generic API (Services, Staff, Appointments, Applications, Reviews, Gallery, Contacts all route through `/api/admin/users?table=X`)
+- [x] Admin auth secured with bcrypt + DB (no longer uses plain-text ENV vars)
+- [x] **Policies tab** fully implemented — reads/writes `business_settings` table via `/api/admin/policies`
 - [ ] Admin Settings tab — connect font/colour customisation to live CSS variables
 - [ ] Admin Gallery tab — support image upload to cloud storage (e.g. Cloudinary / S3)
 - [ ] Admin Reviews tab — add approve/reject moderation workflow
-- [ ] Secure admin credentials for production (switch from plain-text env vars to hashed passwords with bcrypt)
+- [ ] `AdminSettings` and `AdminPages` — currently read from `config/admin.json` only; decide if settings should persist to `business_settings` DB table
+- [x] Booking modal disclaimer is now fully dynamic — fetched from `business_settings` DB; admin edits reflect in emails immediately
 
 ### Contact & Careers
-- [ ] Wire contact form to a backend endpoint and send email notification
-- [ ] Wire careers application form submissions to `career_applications` DB table / send email alert
+- [x] Contact form wired to `POST /api/contact` — sends visitor + admin emails
+- [x] Application form wired to `POST /api/application` — sends applicant + admin emails
 - [ ] Validate `careers@myysignaturemyystyle.com` inbox is live
 
 ### Infrastructure & Deployment
-- [ ] Provision production PostgreSQL database (PlanetScale, Supabase, Railway, or self-hosted)
+- [x] Production PostgreSQL provisioned — Neon (`myysignaturemyystyle_dev` database)
+- [ ] Run all SQL scripts to create and seed tables (see In Progress above)
 - [ ] Set production environment variables on hosting platform
 - [ ] Deploy to production (Vercel recommended for Next.js)
 - [ ] Configure custom domain (`myysignaturemyystyle.com`)

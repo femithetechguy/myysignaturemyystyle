@@ -65,19 +65,7 @@
         "sort": true,
         "description": "Manage customer accounts"
       },
-      {
-        "id": "orders",
-        "label": "Orders",
-        "icon": "📦",
-        "component": "AdminOrders",
-        "table": "orders",
-        "editable": true,
-        "showRefresh": true,
-        "refreshBtn": "🔄 Refresh",
-        "loadingBtn": "🔄 Loading...",
-        "sort": true,
-        "description": "Manage customer orders"
-      },
+
       {
         "id": "services",
         "label": "Services",
@@ -110,7 +98,7 @@
         "icon": "👨‍💼",
         "component": "AdminStaff",
         "table": "staff",
-        "editable": false,
+        "editable": true,
         "showRefresh": true,
         "refreshBtn": "🔄 Refresh",
         "loadingBtn": "🔄 Loading...",
@@ -181,6 +169,19 @@
         "loadingBtn": "🔄 Loading...",
         "sort": true,
         "description": "Manage admin users"
+      },
+      {
+        "id": "policies",
+        "label": "Policies",
+        "icon": "📋",
+        "component": "AdminPolicies",
+        "table": "business_settings",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": false,
+        "description": "Manage salon policies and guest guidelines"
       }
     ],
     "dashboard": {
@@ -201,6 +202,15 @@
         { "icon": "🗄️", "title": "Database Tables", "description": "Configure table names in database.tables" },
         { "icon": "🔐", "title": "Authentication", "description": "JWT tokens secure all admin routes" }
       ]
+    },
+    "staff": {
+      "title": "Manage Staff",
+      "description": "View and manage stylists and staff members",
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
+      "messages": {
+        "loading": "Loading staff...",
+        "empty": "No staff found"
+      }
     },
     "products": {
       "title": "Manage Products",
@@ -316,6 +326,17 @@
       "title": "Manage Admin Users",
       "description": "View and manage admin user accounts",
       "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" }
+    },
+    "policies": {
+      "title": "Salon Policies & Guest Guidelines",
+      "description": "Edit the policies displayed to guests on the website and in the booking modal",
+      "save_btn": "💾 Save Changes",
+      "saving_btn": "💾 Saving...",
+      "messages": {
+        "loading": "Loading policies...",
+        "save_success": "Policies saved successfully!",
+        "save_error": "Failed to save policies. Please try again."
+      }
     },
     "header": {
       "admin_suffix": "Admin"

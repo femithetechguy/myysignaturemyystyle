@@ -72,12 +72,16 @@
                   <td width="60%" style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;border-bottom:1px solid #E8DDD0;">{{service_name}}</td>
                 </tr>
                 <tr>
+                  <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#5C3D2E;border-bottom:1px solid #E8DDD0;">Stylist</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;border-bottom:1px solid #E8DDD0;">{{stylist_name}}</td>
+                </tr>
+                <tr style="background-color:#FBF6F0;">
                   <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#5C3D2E;border-bottom:1px solid #E8DDD0;">Category</td>
                   <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;border-bottom:1px solid #E8DDD0;">{{service_category}}</td>
                 </tr>
                 <tr style="background-color:#FBF6F0;">
                   <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#5C3D2E;border-bottom:1px solid #E8DDD0;">Date &amp; Time</td>
-                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;border-bottom:1px solid #E8DDD0;">{{appointment_date}}</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#3D2B1F;font-weight:bold;border-bottom:1px solid #E8DDD0;">{{appointment_date}}{{#if appointment_time}} &mdash; {{appointment_time}}{{/if}}</td>
                 </tr>
                 <tr>
                   <td style="padding:10px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#5C3D2E;border-bottom:1px solid #E8DDD0;">Duration</td>
@@ -94,9 +98,9 @@
                 <tr>
                   <td style="padding:14px 18px;">
                     <p style="margin:0 0 6px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#5C3D2E;">Policy Acknowledged by Client</p>
-                    <p style="margin:0 0 4px;font-size:12px;color:#3D2B1F;line-height:1.6;">• 25% non-refundable deposit required to secure appointment.</p>
-                    <p style="margin:0 0 4px;font-size:12px;color:#3D2B1F;line-height:1.6;">• Cancellations must be made at least 24 hours in advance.</p>
-                    <p style="margin:0;font-size:12px;color:#3D2B1F;line-height:1.6;">• Clients arriving more than 15 minutes late may forfeit their deposit.</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#3D2B1F;line-height:1.6;">• {{disclaimer_deposit}}</p>
+                    <p style="margin:0 0 4px;font-size:12px;color:#3D2B1F;line-height:1.6;">• {{disclaimer_cancellation}}</p>
+                    <p style="margin:0;font-size:12px;color:#3D2B1F;line-height:1.6;">• {{disclaimer_late}}</p>
                   </td>
                 </tr>
               </table>
