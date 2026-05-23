@@ -3,7 +3,7 @@
 import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone, FiCode } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone, FiCode, FiMapPin, FiClock } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
@@ -23,6 +23,8 @@ export default function Home() {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [addressCopied, setAddressCopied] = useState(false)
+  const [bookingLinkShared, setBookingLinkShared] = useState(false)
+  const [showShare, setShowShare] = useState(true)
   const [activeReviewIndex, setActiveReviewIndex] = useState(1)
   const [typedReviewText, setTypedReviewText] = useState('')
   const [isTypingReview, setIsTypingReview] = useState(true)
@@ -106,6 +108,7 @@ export default function Home() {
     const handleScroll = () => {
       const nearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 300
       setShowScrollTop(window.scrollY > 300 && !nearBottom)
+      setShowShare(!nearBottom)
 
       // Detect background color based on scroll position
       const heroHeight = window.innerHeight
@@ -131,6 +134,61 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Update URL hash as user scrolls between sections
+  useEffect(() => {
+    const sectionIds = ['services', 'stylists', 'gallery', 'book', 'careers', 'about', 'contact', 'connect']
+    const visibilityMap = new Map<string, number>()
+
+    const updateHash = () => {
+      if (window.scrollY < window.innerHeight * 0.5) {
+        history.replaceState(null, '', window.location.pathname)
+        return
+      }
+      let maxId = ''
+      let maxRatio = 0
+      visibilityMap.forEach((ratio, id) => {
+        if (ratio > maxRatio) { maxRatio = ratio; maxId = id }
+      })
+      if (maxId && maxRatio > 0.1) {
+        history.replaceState(null, '', `#${maxId}`)
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(e => visibilityMap.set(e.target.id, e.intersectionRatio))
+        updateHash()
+      },
+      { threshold: Array.from({ length: 11 }, (_, i) => i * 0.1) }
+    )
+
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
+  // On load: handle hash from shared link (e.g. /#book auto-opens modal, others scroll to section)
+  useEffect(() => {
+    const hash = window.location.hash
+    if (!hash) return
+    const id = hash.slice(1)
+    if (id === 'book') {
+      // Auto-open booking modal — don't re-push state since URL already has #book
+      setTimeout(() => setShowBookingModal(true), 300)
+      return
+    }
+    const el = document.getElementById(id)
+    if (!el) return
+    const headerHeight = 80
+    setTimeout(() => {
+      const top = el.getBoundingClientRect().top + window.scrollY - headerHeight
+      window.scrollTo({ top, behavior: 'smooth' })
+    }, 150)
   }, [])
 
   // Fetch services and reviews from DB on mount
@@ -233,8 +291,28 @@ export default function Home() {
     }
   }
 
-  const handleScheduleClick = () => {
+  const handleShareBookingLink = async () => {
+    const url = `${window.location.origin}/book`
+    await navigator.clipboard.writeText(url)
+    setBookingLinkShared(true)
+    setTimeout(() => setBookingLinkShared(false), 2000)
+    if (typeof navigator.share === 'function') {
+      try { await navigator.share({ title: 'Book at Myy Signature Myy Style', text: 'Book your hair appointment online!', url }) } catch { /* cancelled */ }
+    }
+  }
+
+  const openBookingModal = () => {
+    history.pushState(null, '', '#book')
     setShowBookingModal(true)
+  }
+
+  const closeBookingModal = () => {
+    history.replaceState(null, '', window.location.pathname)
+    setShowBookingModal(false)
+  }
+
+  const handleScheduleClick = () => {
+    openBookingModal()
     setSelectedDate(new Date())
     setSelectedTime(null)
     setSelectedBookingCategory('')
@@ -247,7 +325,7 @@ export default function Home() {
 
   const handleStylistBookClick = (stylist: typeof stylists[number]) => {
     setSelectedBookingStylist({ id: stylist.id, staff_id: stylist.staff_id, name: stylist.name, title: stylist.title, photo: stylist.photo, booking_slug: stylist.booking_slug, specialties: stylist.specialties, availability: stylist.availability ?? null })
-    setShowBookingModal(true)
+    openBookingModal()
     setSelectedDate(new Date())
     setSelectedTime(null)
     setSelectedBookingCategory('')
@@ -398,23 +476,23 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-900">
       {/* Navigation */}
-      <header className={`fixed top-0 w-full px-4 md:px-16 py-3 md:py-6 flex justify-between md:justify-center items-center z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 w-full px-4 md:px-8 py-3 md:py-4 flex justify-between items-center z-50 transition-all duration-300 ${
         showMobileMenu
           ? 'bg-transparent backdrop-blur-0'
-          : navBackground === 'dark' 
-          ? 'bg-black/30 backdrop-blur-md' 
+          : navBackground === 'dark'
+          ? 'bg-black/30 backdrop-blur-md'
           : navBackground === 'secondary'
           ? 'bg-black/50 backdrop-blur-md'
-          : 'bg-white/95 backdrop-blur-sm'
+          : 'bg-primary backdrop-blur-md'
       }`}>
         {/* Spacer - Mobile left (mirrors hamburger width for symmetry) */}
         <div className="md:hidden w-9 flex-shrink-0" />
 
-        {/* Brand Logo - Desktop (absolute, left) */}
-        <button 
+        {/* Brand Logo - Desktop (in-flow, left) */}
+        <button
           onClick={() => {
             if (showBookingModal) {
-              setShowBookingModal(false)
+              closeBookingModal()
               setBookingName('')
               setBookingEmail('')
               setBookingContact('')
@@ -427,9 +505,9 @@ export default function Home() {
             }
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }}
-          className="absolute hidden md:block left-8 hover:opacity-80 transition-opacity"
+          className="hidden md:block flex-shrink-0 hover:opacity-80 transition-opacity"
         >
-          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={267} height={80} className="w-auto h-20" unoptimized />
+          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-16" unoptimized />
         </button>
 
         {/* Mobile Center Logo */}
@@ -440,8 +518,8 @@ export default function Home() {
           <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-11" unoptimized />
         </button>
 
-        {/* Desktop Navigation - Centered */}
-        <nav className="justify-center hidden gap-8 md:flex lg:gap-20">
+        {/* Desktop Navigation - Centered (flex-1 + justify-center keeps it centered between logo and spacer) */}
+        <nav className="justify-center hidden flex-1 gap-6 md:flex lg:gap-16">
           {content.navigation.links.map((link) => (
             <a 
               key={link.href} 
@@ -459,6 +537,9 @@ export default function Home() {
             </a>
           ))}
         </nav>
+
+        {/* Right spacer - Desktop only, mirrors logo width for symmetry */}
+        <div className="hidden md:block flex-shrink-0 w-[200px]" />
 
         {/* Mobile Menu Button (in-flow, right) */}
         <button
@@ -531,45 +612,49 @@ export default function Home() {
         
         {/* Content */}
         <div className="relative z-20 max-w-4xl px-4 text-center sm:px-6">
-          <h1 className="mb-2 text-4xl font-light tracking-widest text-white uppercase sm:text-5xl md:text-7xl lg:text-8xl sm:mb-3 animate-fade-in-down drop-shadow-lg">{content.hero.title}</h1>
-          <h2 className="mb-8 text-xl font-light tracking-wider uppercase sm:text-2xl md:text-3xl lg:text-4xl sm:mb-10 md:mb-12 text-secondary animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <button 
-              onClick={() => setShowBookingModal(true)}
-              className="inline-block px-10 py-3 text-sm font-light tracking-widest text-white uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+          <h1 className="mb-2 text-4xl font-light tracking-widest text-white uppercase sm:text-5xl md:text-7xl lg:text-8xl sm:mb-3 animate-fade-in-down drop-shadow-lg">
+            <span className="block">{content.hero.title.split(' ').slice(0, 2).join(' ')}</span>
+            <span className="block">{content.hero.title.split(' ').slice(2).join(' ')}</span>
+          </h1>
+          <h2 className="mb-8 text-base font-light tracking-wider uppercase sm:text-2xl md:text-3xl lg:text-4xl sm:mb-10 md:mb-12 text-secondary animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
+          <div className="flex flex-row items-center justify-center gap-3 sm:gap-6">
+            <button
+              onClick={handleScheduleClick}
+              className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button}
             </button>
-            <a 
+            <a
               href="#careers"
-              className="inline-block px-10 py-3 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+              className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
-              JOIN OUR STYLISTS
+              {content.hero.cta_button_secondary}
             </a>
           </div>
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 container-custom">
+      <div className="py-2 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Services Section */}
-      <section id="services" className="py-16 bg-white sm:py-20">
+      <section id="services" className="py-10 bg-white sm:py-14">
         <div className="container-custom">
-          <h2 className="mb-12 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">{content.services_section.title}</h2>
-          
+          <p className="text-center text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">What We Offer</p>
+          <h2 className="mb-6 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">{content.services_section.title}</h2>
+
           {/* Category Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12 sm:gap-3">
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
             {getCategories().map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
                   selectedCategory === category
-                    ? 'bg-accent text-white shadow-lg scale-105'
-                    : 'bg-secondary/20 text-primary hover:bg-secondary/30'
+                    ? 'bg-accent text-primary shadow-sm font-semibold'
+                    : 'border border-primary/20 text-primary/60 hover:border-accent/60 hover:text-primary'
                 }`}
               >
                 {category}
@@ -578,29 +663,38 @@ export default function Home() {
           </div>
 
           {/* Services Grid */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 sm:gap-5">
             {getServicesByCategory(selectedCategory).map((service, index) => (
-              <div key={service.id} className="transition-all duration-300 card hover:shadow-lg hover:scale-105 animate-fade-in-up" style={{animationDelay: `${index * 0.05}s`}}>
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="flex-1 text-lg font-bold sm:text-xl text-primary">{service.name}</h3>
-                  <span className="px-2 py-1 ml-2 text-xs font-bold rounded bg-accent/20 text-accent">{service.category}</span>
+              <div
+                key={service.id}
+                className="flex flex-col overflow-hidden bg-white border border-primary/10 rounded-2xl shadow-sm hover:shadow-md hover:border-accent/40 transition-all duration-300 animate-fade-in-up"
+                style={{animationDelay: `${index * 0.05}s`}}
+              >
+                <div className="h-1 bg-gradient-to-r from-accent/80 to-accent/30" />
+                <div className="flex flex-col flex-1 p-3 sm:p-5">
+                  <h3 className="mb-1 text-sm font-bold text-primary sm:text-lg sm:mb-1.5">{service.name}</h3>
+                  <p className="mb-3 text-xs text-primary/55 leading-relaxed flex-1 sm:text-sm sm:mb-4">{service.description}</p>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <span className="text-sm font-bold text-accent sm:text-xl">
+                      ${Number(service.price_min) % 1 === 0 ? Number(service.price_min) : Number(service.price_min).toFixed(2)} – ${Number(service.price_max) % 1 === 0 ? Number(service.price_max) : Number(service.price_max).toFixed(2)}
+                    </span>
+                    <span className="flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-primary/5 text-primary/50 sm:px-2.5 sm:py-1 sm:text-xs sm:gap-1">
+                      <FiClock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                      {service.duration}m
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })
+                      setSelectedBookingCategory(service.category)
+                      setSelectedDate(new Date())
+                      openBookingModal()
+                    }}
+                    className="w-full py-2 text-xs font-semibold text-primary rounded-xl bg-accent hover:bg-accent/80 transition-all duration-200 hover:scale-[1.02] active:scale-95 sm:py-2.5 sm:text-sm"
+                  >
+                    {content.hero.cta_button}
+                  </button>
                 </div>
-                <p className="mb-4 text-sm text-gray-600 sm:text-base">{service.description}</p>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xl font-bold sm:text-2xl text-accent">${service.price_min} – ${service.price_max}</span>
-                  <span className="text-xs text-gray-500 sm:text-sm">{service.duration} min</span>
-                </div>
-                <button
-                  onClick={() => {
-                    setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })
-                    setSelectedBookingCategory(service.category)
-                    setShowBookingModal(true)
-                    setSelectedDate(new Date())
-                  }}
-                  className="w-full py-2 text-sm font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95 sm:text-base"
-                >
-                  Schedule Appointment
-                </button>
               </div>
             ))}
           </div>
@@ -608,138 +702,141 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 container-custom">
-        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
-      </div>
-
-      {/* Section Divider */}
-      <div className="py-4 container-custom">
+      <div className="py-2 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Stylists Section */}
-      <section id="stylists" className="py-16 bg-white sm:py-20">
+      <section id="stylists" className="py-10 bg-white sm:py-14">
         <div className="container-custom">
+          <p className="text-center text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">Our Team</p>
           <h2 className="mb-2 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">Meet Our Stylists</h2>
-          <p className="mb-6 text-center text-sm text-primary/60 animate-fade-in-up" style={{ animationDelay: '100ms' }}>Talented professionals ready to bring your vision to life</p>
+          <p className="mb-4 text-center text-sm text-primary/60 animate-fade-in-up" style={{ animationDelay: '100ms' }}>Talented professionals ready to bring your vision to life</p>
 
-          {/* Join Our Stylists — slim recruiting strip */}
-          <div className="mb-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl bg-primary px-6 py-4 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+          {/* Recruiting strip */}
+          <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl bg-primary px-5 py-3.5 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
             <div className="text-center sm:text-left">
-              <p className="text-xs font-semibold uppercase tracking-widest text-secondary/60">We're growing</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-secondary/50">We're growing</p>
               <p className="text-sm font-medium text-secondary mt-0.5">Passionate about hair? <span className="text-secondary/60 font-normal">We'd love to have you on the team.</span></p>
             </div>
             <a
               href="#careers"
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById('careers');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="flex-shrink-0 inline-block px-7 py-2.5 text-xs font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 border-secondary rounded shadow hover:bg-transparent hover:text-secondary hover:scale-105 active:scale-95"
+              onClick={(e) => { e.preventDefault(); document.getElementById('careers')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+              className="flex-shrink-0 px-6 py-2 text-xs font-semibold tracking-widest text-primary uppercase rounded-lg bg-accent hover:bg-accent/80 hover:scale-105 active:scale-95 transition-all duration-200"
             >
-              Join Our Stylists
+              {content.hero.cta_button_secondary}
             </a>
           </div>
 
           {stylistsLoading ? (
-            <div className={`grid gap-8 ${[1,2].includes(stylists.length) ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[0, 1, 2].map(i => (
-                <div key={i} className="flex flex-col rounded-2xl overflow-hidden border border-amber-100 bg-white shadow-md animate-pulse">
-                  <div className="w-full h-64 sm:h-72 bg-amber-100" />
+                <div key={i} className="flex flex-col rounded-2xl overflow-hidden border border-amber-100 bg-white shadow-sm animate-pulse">
+                  <div className="w-full h-48 bg-amber-100" />
                   <div className="p-5 flex flex-col gap-3">
                     <div className="h-5 w-2/5 rounded bg-amber-100" />
                     <div className="h-3 w-1/3 rounded bg-amber-50" />
                     <div className="space-y-2 mt-1">
                       <div className="h-3 rounded bg-gray-100" />
                       <div className="h-3 rounded bg-gray-100" />
-                      <div className="h-3 w-4/5 rounded bg-gray-100" />
                     </div>
-                    <div className="flex gap-1.5 mt-1">
-                      {[0,1,2].map(j => <div key={j} className="h-5 w-16 rounded-full bg-amber-100" />)}
-                    </div>
-                    <div className="mt-2 h-10 rounded-xl bg-gray-100" />
+                    <div className="mt-2 h-9 rounded-xl bg-gray-100" />
                   </div>
                 </div>
               ))}
             </div>
           ) : stylists.length === 0 ? (
             <p className="text-center text-sm text-primary/40 py-12">Stylists coming soon — check back shortly.</p>
+          ) : stylists.length === 1 ? (
+            /* Single stylist — featured horizontal card */
+            <div className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden shadow-md border border-amber-100 bg-white hover:shadow-xl hover:border-amber-300 transition-all duration-300 max-w-3xl mx-auto">
+              <div className="relative w-full sm:w-2/5 h-56 sm:h-auto bg-amber-50 overflow-hidden flex-shrink-0">
+                {stylists[0].photo ? (
+                  <img src={stylists[0].photo} alt={stylists[0].name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200">
+                    <span className="text-8xl font-bold text-amber-600/30">{stylists[0].name.charAt(0)}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col flex-1 p-6 gap-3">
+                <div>
+                  <h3 className="text-2xl font-bold uppercase text-primary tracking-wide">{stylists[0].name}</h3>
+                  {stylists[0].title && <p className="text-xs font-semibold text-accent uppercase tracking-widest mt-0.5">{stylists[0].title}</p>}
+                </div>
+                <p className="text-sm text-primary/70 leading-relaxed flex-1">{stylists[0].bio}</p>
+                {stylists[0].specialties?.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {stylists[0].specialties.map((s, i) => (
+                      <span key={i} className="px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">{s}</span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-col gap-1.5 pt-3 border-t border-amber-100">
+                  {stylists[0].phone && (
+                    <a href={`tel:${stylists[0].phone.replace(/[^0-9]/g, '')}`} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                      <FiPhone className="w-4 h-4 flex-shrink-0" />{stylists[0].phone}
+                    </a>
+                  )}
+                  {stylists[0].instagram_handle && (
+                    <a href={`https://instagram.com/${stylists[0].instagram_handle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                      <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylists[0].instagram_handle}
+                    </a>
+                  )}
+                </div>
+                {stylists[0].booking_slug && (
+                  <button onClick={() => handleStylistBookClick(stylists[0])} className="w-full py-2.5 rounded-xl bg-accent text-primary text-sm font-bold hover:bg-accent/80 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                    {content.hero.cta_button}
+                  </button>
+                )}
+              </div>
+            </div>
           ) : (
-            <div className={`grid gap-8 ${
-              stylists.length === 1
-                ? 'grid-cols-1 max-w-sm mx-auto'
-                : stylists.length === 2
-                  ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
-                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-            }`}>
+            /* Multiple stylists — grid */
+            <div className={`grid gap-5 ${stylists.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'}`}>
               {stylists.map((stylist, index) => (
                 <div
                   key={stylist.id}
-                  className="group stylist-card-enter flex flex-col rounded-2xl overflow-hidden shadow-md border border-amber-100 bg-white hover:-translate-y-2 hover:shadow-2xl hover:border-amber-300 transition-all duration-300"
+                  className="group flex flex-col rounded-2xl overflow-hidden shadow-sm border border-amber-100 bg-white hover:-translate-y-1 hover:shadow-lg hover:border-amber-300 transition-all duration-300"
                   style={{ animationDelay: `${index * 75}ms` }}
                 >
-                  {/* Photo */}
-                  <div className="relative w-full h-64 sm:h-72 bg-amber-50 overflow-hidden">
+                  <div className="relative w-full h-48 bg-amber-50 overflow-hidden">
                     {stylist.photo ? (
-                      <img
-                        src={stylist.photo}
-                        alt={stylist.name}
-                        className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-500 ease-out"
-                      />
+                      <img src={stylist.photo} alt={stylist.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 group-hover:scale-110 transition-transform duration-500 ease-out">
-                        <span className="text-6xl font-bold text-amber-600/50">{stylist.name.charAt(0)}</span>
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200">
+                        <span className="text-6xl font-bold text-amber-600/30">{stylist.name.charAt(0)}</span>
                       </div>
                     )}
-                    {/* Hover name overlay */}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/80 to-transparent pt-10 pb-4 px-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                      <p className="text-white text-sm font-bold uppercase tracking-wide leading-tight">{stylist.name}</p>
-                      {stylist.title && <p className="text-secondary text-[11px] mt-0.5">{stylist.title}</p>}
-                    </div>
                   </div>
-
-                  {/* Info */}
                   <div className="flex flex-col flex-1 p-5 gap-3">
                     <div>
-                      <h3 className="text-xl font-bold uppercase text-primary tracking-wide">{stylist.name}</h3>
+                      <h3 className="text-lg font-bold uppercase text-primary tracking-wide">{stylist.name}</h3>
                       {stylist.title && <p className="text-xs font-semibold text-accent uppercase tracking-widest mt-0.5">{stylist.title}</p>}
                     </div>
-
                     <p className="text-sm text-primary/70 leading-relaxed flex-1">{stylist.bio}</p>
-
-                    {/* Specialties */}
                     {stylist.specialties?.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {stylist.specialties.map((s, i) => (
-                          <span key={i} className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-200 transition-colors duration-150 cursor-default">{s}</span>
+                          <span key={i} className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">{s}</span>
                         ))}
                       </div>
                     )}
-
-                    {/* Contact row */}
-                    <div className="flex flex-col gap-1.5 pt-1 border-t border-amber-100">
+                    <div className="flex flex-col gap-1.5 pt-2 border-t border-amber-100">
                       {stylist.phone && (
                         <a href={`tel:${stylist.phone.replace(/[^0-9]/g, '')}`} className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
-                          <FiPhone className="w-4 h-4 flex-shrink-0" />
-                          {stylist.phone}
+                          <FiPhone className="w-4 h-4 flex-shrink-0" />{stylist.phone}
                         </a>
                       )}
                       {stylist.instagram_handle && (
                         <a href={`https://instagram.com/${stylist.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
-                          <FiInstagram className="w-4 h-4 flex-shrink-0" />
-                          @{stylist.instagram_handle}
+                          <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylist.instagram_handle}
                         </a>
                       )}
                     </div>
-
-                    {/* Book Now */}
                     {stylist.booking_slug && (
-                      <button
-                        onClick={() => handleStylistBookClick(stylist)}
-                        className="mt-1 w-full py-2.5 rounded-xl bg-primary text-secondary text-sm font-bold text-center hover:bg-accent hover:text-white hover:scale-[1.02] active:scale-95 transition-all duration-200"
-                      >
-                        Book Now
+                      <button onClick={() => handleStylistBookClick(stylist)} className="mt-1 w-full py-2.5 rounded-xl bg-accent text-primary text-sm font-bold hover:bg-accent/80 hover:scale-[1.02] active:scale-95 transition-all duration-200">
+                        {content.hero.cta_button}
                       </button>
                     )}
                   </div>
@@ -747,7 +844,6 @@ export default function Home() {
               ))}
             </div>
           )}
-
         </div>
       </section>
 
@@ -757,224 +853,103 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 container-custom">
+      <div className="py-2 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
-      {/* Booking Section */}
-      <section id="book" className="py-16 bg-white sm:py-20">
+      {/* Book / Reviews Section */}
+      <section id="book" className="py-10 bg-white sm:py-14">
         <div className="container-custom">
-          {/* Booking CTA */}
-          <div className="p-8 mb-12 text-center border rounded-lg sm:mb-16 bg-secondary/10 border-accent/30 sm:p-10">
-            <h3 className="mb-4 text-2xl font-bold sm:text-3xl text-primary">{content.reviews_section.cta_title}</h3>
-            <p className="mb-6 text-base text-primary/80 sm:text-lg">{content.reviews_section.cta_subtitle}</p>
-            <button onClick={handleScheduleClick} className="text-sm btn-accent sm:text-base hover:scale-105 active:scale-95">{content.reviews_section.cta_button}</button>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-1">{content.reviews_section.subtitle}</p>
+              <h2 className="text-2xl font-bold sm:text-3xl text-primary">{content.reviews_section.title}</h2>
+            </div>
+            <button onClick={handleScheduleClick} className="flex-shrink-0 text-sm btn-accent hover:scale-105 active:scale-95">
+              {content.hero.cta_button}
+            </button>
           </div>
 
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold sm:text-4xl text-primary animate-fade-in-down">{content.reviews_section.title}</h2>
-            <p className="text-base sm:text-lg text-primary/80 animate-fade-in-up">{content.reviews_section.subtitle}</p>
-          </div>
-
-          {/* Reviews Grid */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 sm:gap-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {reviews.map((review, index) => {
               const isActive = index === activeReviewIndex
               return (
                 <div
                   key={index}
                   onClick={() => setActiveReviewIndex(index)}
-                  className={`p-6 rounded-lg border cursor-pointer animate-fade-in-up transition-all duration-500 ${
+                  className={`p-5 rounded-2xl border cursor-pointer transition-all duration-300 ${
                     isActive
-                      ? 'bg-secondary/20 border-accent shadow-xl shadow-accent/20 scale-105 review-active-glow'
-                      : 'bg-secondary/10 border-accent/20 hover:shadow-lg hover:border-accent/60 opacity-60 hover:opacity-90'
-                  }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                      ? 'bg-secondary/20 border-accent shadow-md'
+                      : 'bg-secondary/10 border-transparent hover:border-accent/40 opacity-70 hover:opacity-100'
+                  } ${!isActive ? 'hidden md:block' : ''}`}
                 >
-                  {/* Stars */}
-                  <div className="flex gap-1 mb-4">
+                  <div className="flex gap-0.5 mb-3">
                     {[...Array(review.rating)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`transition-all duration-300 ${
-                          isActive ? 'w-6 h-6 text-accent drop-shadow-[0_0_4px_rgba(167,138,100,0.8)]' : 'w-5 h-5 text-accent/60'
-                        }`}
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg key={i} className={`w-4 h-4 ${isActive ? 'text-accent' : 'text-accent/50'}`} fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                       </svg>
                     ))}
                   </div>
-
-                  {/* Review Text */}
-                  <p className="mb-4 text-sm italic sm:text-base text-primary/80 min-h-[4.5rem]">
+                  <p className="mb-3 text-sm italic text-primary/80">
                     &quot;{isActive ? typedReviewText : review.text}&quot;
-                    {isActive && isTypingReview && (
-                      <span className="inline-block w-0.5 h-4 ml-0.5 bg-accent align-middle animate-review-cursor" />
-                    )}
+                    {isActive && isTypingReview && <span className="inline-block w-0.5 h-4 ml-0.5 bg-accent align-middle animate-review-cursor" />}
                   </p>
-
-                  {/* Author */}
-                  <p className={`font-semibold transition-colors duration-300 ${
-                    isActive ? 'text-accent' : 'text-primary'
-                  }`}>- {review.name}</p>
+                  <p className={`text-xs font-semibold ${isActive ? 'text-accent' : 'text-primary/60'}`}>— {review.name}</p>
                 </div>
               )
             })}
           </div>
-
-          {/* Dot indicators */}
-          <div className="flex justify-center gap-2 mt-8">
-            {reviews.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveReviewIndex(index)}
-                className={`rounded-full transition-all duration-300 ${
-                  index === activeReviewIndex
-                    ? 'w-6 h-2.5 bg-accent'
-                    : 'w-2.5 h-2.5 bg-accent/30 hover:bg-accent/60'
-                }`}
-                aria-label={`Review ${index + 1}`}
-              />
-            ))}
-          </div>
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 container-custom">
+      <div className="py-2 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Careers Section */}
-      <section id="careers" className="py-16 bg-white sm:py-20">
-        <div className="container-custom">
-          <div className="mb-12 text-center animate-fade-in-up">
-            <h2 className="mb-4 text-3xl font-bold sm:text-4xl text-primary">{careers.tagline}</h2>
-            <p className="max-w-2xl mx-auto text-lg text-primary/80">{careers.introduction}</p>
+      <section id="careers" className="py-10 bg-white sm:py-14">
+        <div className="container-custom max-w-3xl">
+          <div className="mb-8 text-center">
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">Work With Us</p>
+            <h2 className="mb-2 text-3xl font-bold sm:text-4xl text-primary">{careers.tagline}</h2>
+            <p className="text-base text-primary/60">{careers.introduction}</p>
           </div>
 
-          {/* Open Positions */}
-          <div className="mb-16">
-            <h3 className="mb-8 text-2xl font-bold text-center sm:text-3xl text-primary">Open Positions</h3>
-            <div className="max-w-4xl mx-auto space-y-6">
-              {careers.open_positions.map((position) => (
-                <div
-                  key={position.id}
-                  className="p-6 transition-all duration-300 bg-white border rounded-lg border-accent/20 hover:shadow-lg hover:border-accent"
-                >
-                  <div className="flex flex-col mb-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="mb-4 sm:mb-0">
-                      <h4 className="mb-2 text-xl font-bold text-primary">{position.title}</h4>
-                      <div className="flex flex-wrap gap-2 text-xs">
-                        <span className="px-3 py-1 font-medium rounded-full bg-accent/10 text-accent">{position.type}</span>
-                        <span className="px-3 py-1 rounded-full bg-secondary/20 text-primary">📍 {position.location}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {/* Share button */}
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const url = `${window.location.origin}${window.location.pathname}#careers`
-                          const shareText = `Check out this ${position.title} position at Myy Signature Myy Style! ${url}`
-                          // Always copy to clipboard first
-                          navigator.clipboard.writeText(shareText)
-                          setSharedPosition(position.id)
-                          setTimeout(() => setSharedPosition(null), 2500)
-                          showAppToast('Link copied! Ready to share.')
-                          // Also open native share sheet if available
-                          if (navigator.share) {
-                            try { await navigator.share({ title: `${position.title} — Myy Signature`, text: shareText, url }) } catch {}
-                          }
-                        }}
-                        className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium border rounded-lg border-accent/30 text-primary/60 hover:text-accent hover:border-accent transition-colors duration-200 whitespace-nowrap"
-                        title="Share this position"
-                      >
-                        <FiShare2 className="w-3.5 h-3.5" />
-                        {sharedPosition === position.id ? 'Link Copied!' : 'Share'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedPosition(position.title)
-                          setApplicationData({ ...applicationData, position: position.title })
-                          setShowApplicationModal(true)
-                        }}
-                        className="text-sm btn-accent whitespace-nowrap"
-                      >
-                        JOIN OUR STYLISTS
-                      </button>
-                    </div>
-                  </div>
-                  <p className="mb-4 text-sm text-primary/80">{position.description}</p>
-                  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    <div>
-                      <h5 className="mb-2 text-sm font-bold text-primary">Key Requirements:</h5>
-                      <ul className="space-y-1 text-xs text-primary/80">
-                        {position.requirements.slice(0, 3).map((req, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <span className="mr-2 text-accent">•</span>
-                            <span>{req}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h5 className="mb-2 text-sm font-bold text-primary">Responsibilities:</h5>
-                      <ul className="space-y-1 text-xs text-primary/80">
-                        {position.responsibilities.slice(0, 3).map((resp, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <span className="mr-2 text-accent">•</span>
-                            <span>{resp}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+          <div className="space-y-4">
+            {careers.open_positions.map((position) => (
+              <div key={position.id} className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 rounded-2xl border border-primary/10 bg-white hover:border-accent/40 hover:shadow-sm transition-all duration-200">
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-base font-bold text-primary mb-1">{position.title}</h4>
+                  <p className="text-sm text-primary/60 mb-2">{position.description}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-accent/10 text-accent">{position.type}</span>
+                    <span className="px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-primary/5 text-primary/60">📍 {position.location}</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Benefits Grid */}
-          <div className="grid grid-cols-1 gap-6 mb-16 sm:grid-cols-2 md:grid-cols-3">
-            {careers.benefits.map((benefit, index) => (
-              <div
-                key={benefit.id}
-                className="p-6 transition-all duration-300 bg-white border rounded-lg border-accent/20 hover:shadow-lg hover:border-accent animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="mb-4 text-4xl">{benefit.icon}</div>
-                <h3 className="mb-3 text-xl font-bold text-primary">{benefit.title}</h3>
-                <p className="text-sm text-primary/80">{benefit.description}</p>
+                <button
+                  onClick={() => {
+                    setSelectedPosition(position.title)
+                    setApplicationData({ ...applicationData, position: position.title })
+                    setShowApplicationModal(true)
+                  }}
+                  className="flex-shrink-0 text-sm btn-accent whitespace-nowrap hover:scale-105 active:scale-95"
+                >
+                  {content.hero.cta_button_secondary}
+                </button>
               </div>
             ))}
-          </div>
-
-          {/* Team Culture */}
-          <div className="max-w-3xl mx-auto text-center">
-            <h3 className="mb-6 text-2xl font-bold text-primary">{careers.team_culture.title}</h3>
-            <p className="mb-8 text-primary/80">{careers.team_culture.description}</p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {careers.team_culture.values.slice(0, 4).map((value, index) => (
-                <div key={index} className="p-4 text-center transition-all duration-300 bg-white border rounded-lg border-accent/20 hover:shadow-lg">
-                  <h4 className="mb-2 text-sm font-bold text-primary">{value.title}</h4>
-                  <p className="text-xs text-primary/70">{value.description}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 container-custom">
+      <div className="py-2 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* About Section */}
-      <section id="about" className="py-16 bg-white sm:py-20">
+      <section id="about" className="py-10 bg-white sm:py-14">
         <div className="container-custom">
           <div className="grid items-center grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <div className="animate-slide-in-left">
@@ -982,14 +957,9 @@ export default function Home() {
               <p className="mb-4 text-base sm:text-lg text-primary">
                 {appConfig.app.description}
               </p>
-              <p className="mb-6 text-sm sm:text-base text-primary/80">
+              <p className="text-sm sm:text-base text-primary/80">
                 {content.about_section.location_text.replace('{ADDRESS}', business.address)}
               </p>
-              <div className="space-y-2 text-sm sm:text-base">
-                <p className="text-primary"><strong>Phone:</strong> {business.contact.phone}</p>
-                <p className="text-primary"><strong>Email:</strong> {business.contact.email}</p>
-                <p className="text-primary"><strong>Location:</strong> {business.county}, {business.state}</p>
-              </div>
             </div>
             <div className="p-6 text-center transition-all duration-300 border rounded-lg bg-secondary sm:p-8 border-accent/30 animate-slide-in-right hover:shadow-lg">
               <p className="mb-2 text-3xl font-bold sm:text-5xl text-accent">{content.about_section.stat_1_value}</p>
@@ -1003,149 +973,177 @@ export default function Home() {
       </section>
 
       {/* Section Divider */}
-      <div className="py-4 container-custom">
+      <div className="py-2 container-custom">
         <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-30"></div>
       </div>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 bg-white sm:py-20">
+      <section id="contact" className="py-10 bg-white sm:py-14">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
-            <h2 className="mb-4 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">{content.footer.sections.contact.title}</h2>
-            
-            <div className="grid grid-cols-1 gap-12 mt-12 md:grid-cols-2 sm:gap-16">
-              {/* Contact Information */}
-              <div className="flex flex-col justify-center animate-fade-in-up">
-                <div className="mb-8">
-                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Visit Us</h3>
-                  <p className="mb-3 text-sm sm:text-base text-primary/80">{business.address}</p>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(business.address)
-                        setAddressCopied(true)
-                        setTimeout(() => setAddressCopied(false), 2000)
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-md border-accent/40 text-primary/70 hover:text-accent hover:border-accent transition-colors duration-200"
-                    >
-                      <FiCopy className="w-3.5 h-3.5" />
-                      {addressCopied ? 'Copied!' : 'Copy'}
-                    </button>
-                    <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-md border-accent/40 text-primary/70 hover:text-accent hover:border-accent transition-colors duration-200"
-                    >
-                      <FiMap className="w-3.5 h-3.5" />
-                      Directions
-                    </a>
+            <p className="text-center text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">Get In Touch</p>
+            <h2 className="mb-6 text-3xl font-bold text-center sm:text-4xl text-primary animate-fade-in-up">{content.footer.sections.contact.title}</h2>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+              {/* Left: Contact info cards */}
+              <div className="flex flex-col gap-4 animate-fade-in-up">
+
+                {/* Visit Us */}
+                <div className="flex gap-4 p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                    <FiMapPin className="w-5 h-5 text-accent" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-1">Visit Us</p>
+                    <p className="text-sm sm:text-base text-primary/80 mb-3">{business.address}</p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(business.address)
+                          setAddressCopied(true)
+                          setTimeout(() => setAddressCopied(false), 2000)
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg border-accent/40 text-primary/70 hover:text-accent hover:border-accent transition-colors duration-200"
+                      >
+                        <FiCopy className="w-3.5 h-3.5" />
+                        {addressCopied ? 'Copied!' : 'Copy'}
+                      </button>
+                      <a
+                        href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded-lg border-accent/40 text-primary/70 hover:text-accent hover:border-accent transition-colors duration-200"
+                      >
+                        <FiMap className="w-3.5 h-3.5" />
+                        Directions
+                      </a>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="mb-8">
-                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Call Us</h3>
-                  <a href={`tel:${business.contact.phone}`} className="text-sm transition-colors duration-300 sm:text-base text-accent hover:text-accent/80">
-                    {business.contact.phone}
+
+                {/* Call + Email side by side */}
+                <div className="grid grid-cols-2 gap-4">
+                  <a
+                    href={`tel:${business.contact.phone}`}
+                    className="group flex flex-col p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10 hover:border-accent/40 transition-colors duration-200"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3 group-hover:bg-accent/30 transition-colors duration-200">
+                      <FiPhone className="w-5 h-5 text-accent" />
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-1">Call Us</p>
+                    <p className="text-sm font-bold text-accent">{business.contact.phone}</p>
+                  </a>
+                  <a
+                    href={`mailto:${business.contact.email}`}
+                    className="group flex flex-col p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10 hover:border-accent/40 transition-colors duration-200"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3 group-hover:bg-accent/30 transition-colors duration-200">
+                      <FiMail className="w-5 h-5 text-accent" />
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-1">Email Us</p>
+                    <p className="text-xs font-bold text-accent break-all">{business.contact.email}</p>
                   </a>
                 </div>
 
-                <div className="mb-8">
-                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">Email Us</h3>
-                  <a href={`mailto:${business.contact.email}`} className="text-sm transition-colors duration-300 sm:text-base text-accent hover:text-accent/80">
-                    {business.contact.email}
-                  </a>
-                </div>
-
-                <div>
-                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">{content.footer.sections.hours.title}</h3>
-                  <p className="mb-1 text-xs sm:text-sm text-primary/80">{content.footer.sections.hours.mon_fri}</p>
-                  <p className="mb-1 text-xs sm:text-sm text-primary/80">{content.footer.sections.hours.saturday}</p>
-                  <p className="text-xs sm:text-sm text-primary/80">{content.footer.sections.hours.sunday}</p>
-                </div>
-
-                <div className="mt-8">
-                  <h3 className="mb-3 text-lg font-bold sm:text-xl text-primary">{content.footer.sections.follow.title}</h3>
-                  <div className="flex gap-4">
+                {/* Hours + Follow Us side by side */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3">
+                      <FiClock className="w-5 h-5 text-accent" />
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.hours.title}</p>
+                    <p className="text-xs text-primary/70 mb-0.5">{content.footer.sections.hours.mon_fri}</p>
+                    <p className="text-xs text-primary/70 mb-0.5">{content.footer.sections.hours.saturday}</p>
+                    <p className="text-xs text-primary/70">{content.footer.sections.hours.sunday}</p>
+                  </div>
+                  <div className="p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-3">
+                      <FiInstagram className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.follow.title}</p>
                     {business.social.instagram && (
-                      <a 
+                      <a
                         href={business.social.instagram}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="transition-colors duration-300 text-primary/70 hover:text-accent"
-                        aria-label="Instagram"
+                        className="text-xs font-bold text-accent hover:text-accent/80 transition-colors duration-200"
                       >
-                        <FiInstagram className="w-6 h-6" />
+                        @myysignaturemyystyle
                       </a>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Contact Form */}
-              <div className="flex flex-col justify-center animate-fade-in-up">
-                <h3 className="mb-6 text-lg font-bold sm:text-xl text-primary">Send us a Message</h3>
-                <button 
-                  type="button"
-                  onClick={handleMessageClick}
-                  className="w-full text-sm font-semibold shadow-lg btn-accent sm:text-base hover:scale-105 active:scale-95"
-                >
-                  Leave A Message
-                </button>
-                <div className="w-full mt-8">
+              {/* Right: Message CTA + storefront image */}
+              <div className="flex flex-col gap-4 animate-fade-in-up">
+                <div className="p-5 sm:p-6 rounded-2xl bg-primary/[0.04] border border-primary/10">
+                  <h3 className="mb-1 text-lg font-bold sm:text-xl text-primary">Send us a Message</h3>
+                  <p className="text-sm text-primary/50 mb-4">Have a question or want to book? We&apos;ll get back to you.</p>
+                  <button
+                    type="button"
+                    onClick={handleMessageClick}
+                    className="w-full text-sm font-semibold shadow-lg btn-accent sm:text-base hover:scale-105 active:scale-95"
+                  >
+                    Leave A Message
+                  </button>
+                </div>
+                <div className="flex-1 min-h-[200px]">
                   <Image
                     src="https://res.cloudinary.com/dvkbgsaaf/image/upload/f_auto,q_auto,w_900/out_landing_vnkdxq"
                     alt="Myy Signature storefront"
                     width={800}
                     height={600}
-                    className="w-full h-auto rounded-lg"
+                    className="w-full h-full object-cover rounded-2xl"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/others/out_landing.png' }}
                   />
                 </div>
               </div>
+
             </div>
           </div>
         </div>
       </section>
 
       {/* Connect With Us Section */}
-      <section id="connect" className="py-16 sm:py-20 bg-primary">
+      <section id="connect" className="py-8 sm:py-12 bg-primary">
         <div className="container-custom">
-          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-center md:gap-16">
+          <div className="flex items-center gap-6 sm:gap-10 md:gap-16 max-w-4xl mx-auto">
 
-            {/* Phone mockup image */}
-            <div className="flex-shrink-0 w-48 sm:w-56 md:w-64 drop-shadow-2xl">
+            {/* Phone mockup image — always side-by-side, scales with screen */}
+            <div className="flex-shrink-0 w-28 sm:w-48 md:w-64 drop-shadow-2xl">
               <Image
                 src="/assets/images/others/msms_ig_image.png"
                 alt="Myy Signature Myy Style on Instagram"
                 width={400}
                 height={700}
-                className="w-full h-auto rounded-3xl"
+                className="w-full h-auto rounded-2xl md:rounded-3xl"
                 unoptimized
               />
             </div>
 
             {/* Text + links */}
-            <div className="text-center md:text-left">
-              <p className="mb-1 text-xs font-bold tracking-[0.3em] uppercase text-secondary/50">Follow & Reach Us</p>
-              <h2 className="mb-8 text-3xl font-extrabold tracking-widest uppercase sm:text-4xl text-secondary" style={{letterSpacing:'0.12em'}}>
-                Connect With Us<br className="hidden sm:block" /> On Social Media
+            <div className="flex-1 min-w-0">
+              <p className="mb-1 text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase text-secondary/50">Follow & Reach Us</p>
+              <h2 className="mb-3 sm:mb-5 text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-widest uppercase text-secondary leading-tight" style={{letterSpacing:'0.1em'}}>
+                Connect<br />With Us
               </h2>
 
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-3 sm:gap-5">
                 {/* Instagram */}
                 <a
                   href={business.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 group"
+                  className="flex items-center gap-3 sm:gap-4 group"
                 >
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                    <FiInstagram className="w-6 h-6 text-white" />
+                  <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                    <FiInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">
                     @myysignaturemyystyle
                   </span>
                 </a>
@@ -1153,12 +1151,12 @@ export default function Home() {
                 {/* Email */}
                 <a
                   href={`mailto:${business.contact.email}`}
-                  className="flex items-center gap-4 group"
+                  className="flex items-center gap-3 sm:gap-4 group"
                 >
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent/80 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                    <FiMail className="w-6 h-6 text-primary" />
+                  <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-accent/80 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                    <FiMail className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                   </div>
-                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">
                     {business.contact.email}
                   </span>
                 </a>
@@ -1166,12 +1164,12 @@ export default function Home() {
                 {/* Phone */}
                 <a
                   href={`tel:${business.contact.phone.replace(/[^0-9]/g, '')}`}
-                  className="flex items-center gap-4 group"
+                  className="flex items-center gap-3 sm:gap-4 group"
                 >
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-secondary/20 shadow-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                    <FiPhone className="w-6 h-6 text-secondary" />
+                  <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-secondary/20 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                    <FiPhone className="w-5 h-5 sm:w-6 sm:h-6 text-secondary" />
                   </div>
-                  <span className="text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200">
+                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">
                     {business.contact.phone}
                   </span>
                 </a>
@@ -1183,20 +1181,20 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-primary text-secondary sm:py-16">
+      <footer className="py-8 bg-primary text-secondary sm:py-10">
         <div className="container-custom">
-          <div className="flex justify-center mb-10">
+          <div className="flex justify-center mb-6">
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:opacity-75 transition-opacity">
               <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={240} height={72} className="w-auto h-16 opacity-90" unoptimized />
             </button>
           </div>
-          <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 md:grid-cols-4 sm:gap-8">
-            <div className="text-center animate-fade-in-up sm:text-left">
+          <div className="grid grid-cols-2 gap-6 mb-5 md:grid-cols-4 sm:gap-8">
+            <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.navigation.title}</h3>
               <ul className="space-y-2">
                 {content.footer.sections.navigation.links.map((link) => (
                   <li key={link.href}>
-                    <a 
+                    <a
                       href={link.href}
                       className="text-xs transition-colors duration-300 sm:text-sm text-secondary/80 hover:text-accent"
                     >
@@ -1206,21 +1204,21 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div className="text-center animate-fade-in-up sm:text-left">
+            <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.contact.title}</h3>
               <p className="text-xs sm:text-sm text-secondary/90">{business.address}</p>
               <p className="mt-2 text-xs sm:text-sm text-secondary/90">{business.contact.phone}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{business.contact.email}</p>
             </div>
-            <div className="text-center animate-fade-in-up sm:text-left">
+            <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.hours.title}</h3>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.mon_fri}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.saturday}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.sunday}</p>
             </div>
-            <div className="text-center animate-fade-in-up sm:text-left">
+            <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.follow.title}</h3>
-              <div className="flex justify-center gap-4 sm:justify-start">
+              <div className="flex justify-start gap-4">
                 {business.social.instagram && (
                   <a 
                     href={business.social.instagram}
@@ -1288,10 +1286,20 @@ export default function Home() {
       </footer>
 
       {/* Scroll to Top — floating, appears mid-page */}
+      {/* Floating share booking link */}
+      {showShare && <button
+        onClick={handleShareBookingLink}
+        className="fixed z-40 flex items-center justify-center w-12 h-12 transition-all duration-300 rounded-full shadow-lg bottom-8 left-6 bg-primary/60 backdrop-blur-sm text-secondary hover:bg-accent/80 hover:text-primary hover:scale-110 active:scale-95 animate-fade-in"
+        aria-label={bookingLinkShared ? 'Copied!' : 'Share booking link'}
+        title={bookingLinkShared ? 'Copied!' : 'Share booking link'}
+      >
+        {bookingLinkShared ? <span className="text-[10px] font-bold">✓</span> : <FiShare2 className="w-5 h-5" />}
+      </button>}
+
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed z-40 flex items-center justify-center w-12 h-12 text-white transition-all duration-300 rounded-full shadow-lg bottom-8 right-6 bg-accent hover:bg-accent hover:scale-110 active:scale-95 animate-fade-in"
+          className="fixed z-40 flex items-center justify-center w-12 h-12 text-primary transition-all duration-300 rounded-full shadow-lg bottom-8 right-6 bg-accent hover:bg-accent/80 hover:scale-110 active:scale-95 animate-fade-in"
           aria-label="Scroll to top"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1434,7 +1442,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={contactSending}
-                  className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
+                  className="w-full py-3 font-bold text-primary transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent/80 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:scale-100"
                 >
                   {contactSending ? (
                     <span className="flex items-center justify-center gap-2">
@@ -1528,7 +1536,7 @@ export default function Home() {
               <h2 className="text-2xl font-bold">{content.reviews_section.cta_button}</h2>
               <button
                 onClick={() => {
-                  setShowBookingModal(false)
+                  closeBookingModal()
                   setBookingName('')
                   setBookingEmail('')
                   setBookingContact('')
@@ -1624,7 +1632,7 @@ export default function Home() {
                             className={`
                               aspect-square rounded-lg font-semibold text-sm transition-all duration-200
                               ${!isCurrentMonth ? 'text-primary/30 bg-transparent cursor-default' : ''}
-                              ${isTodayDate ? 'bg-accent text-white ring-2 ring-accent ring-offset-1' : ''}
+                              ${isTodayDate ? 'bg-accent text-primary ring-2 ring-accent ring-offset-1' : ''}
                               ${isSelected && !isTodayDate ? 'bg-primary text-white ring-2 ring-primary ring-offset-1' : ''}
                               ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer' : ''}
                               ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'hover:shadow-md' : ''}
@@ -1678,7 +1686,7 @@ export default function Home() {
                               onClick={() => setSelectedTime(slot === selectedTime ? null : slot)}
                               className={`py-2 px-1 text-xs font-semibold rounded-lg border transition-all duration-200 ${
                                 selectedTime === slot
-                                  ? 'bg-accent text-white border-accent shadow-md scale-105'
+                                  ? 'bg-accent text-primary border-accent shadow-md scale-105'
                                   : 'bg-secondary/10 text-primary border-secondary/30 hover:bg-secondary/30 hover:border-secondary/50'
                               }`}
                             >
@@ -1806,7 +1814,7 @@ export default function Home() {
                               onClick={() => setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })}
                               className={`flex items-center justify-between px-3 py-3 text-xs rounded-lg cursor-pointer transition-all duration-200 sm:text-sm ${
                                 isSelected
-                                  ? 'bg-accent text-white shadow-md scale-[1.02] border-2 border-accent'
+                                  ? 'bg-accent text-primary shadow-md scale-[1.02] border-2 border-accent'
                                   : 'hover:bg-secondary/10 border-2 border-transparent'
                               }`}
                             >
@@ -1833,7 +1841,7 @@ export default function Home() {
                   {/* Selected Service Display */}
                   {selectedBookingService && (
                     <div className="flex items-center gap-3 p-4 border-2 border-accent rounded-xl bg-accent/10 animate-fade-in-up shadow-sm">
-                      <div className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white text-base font-bold flex-shrink-0">✓</div>
+                      <div className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-primary text-base font-bold flex-shrink-0">✓</div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-primary/60 uppercase tracking-wide">Selected Service</p>
                         <p className="text-base font-bold text-accent truncate">{selectedBookingService.name}</p>
@@ -2049,13 +2057,13 @@ export default function Home() {
                 <button
                   onClick={() => {
                     setShowConfirmationModal(false)
-                    setShowBookingModal(false)
+                    closeBookingModal()
                     setConfirmationStep('review')
                     setBookingName(''); setBookingEmail(''); setBookingContact('')
                     setSelectedBookingService(null); setSelectedBookingStylist(null); setSelectedDate(null); setSelectedTime(null); setPolicyAccepted(false)
                     window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
-                  className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
+                  className="w-full py-3 font-bold text-primary transition-all duration-300 rounded-lg bg-accent hover:bg-accent/80 hover:scale-105 active:scale-95"
                 >
                   Done
                 </button>
@@ -2223,7 +2231,7 @@ export default function Home() {
                     // Auto-close after 5 seconds
                     setTimeout(() => {
                       setShowConfirmationModal(false)
-                      setShowBookingModal(false)
+                      closeBookingModal()
                       setConfirmationStep('review')
                       setBookingName('')
                       setBookingEmail('')
@@ -2236,7 +2244,7 @@ export default function Home() {
                       window.scrollTo({ top: 0, behavior: 'smooth' })
                     }, 5000)
                   }}
-                  className="flex-1 py-3 font-bold text-white transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent-light hover:scale-105 active:scale-95"
+                  className="flex-1 py-3 font-bold text-primary transition-all duration-300 rounded-lg shadow-lg bg-accent hover:bg-accent/80 hover:scale-105 active:scale-95"
                 >
                   Complete Booking
                 </button>
@@ -2495,7 +2503,7 @@ export default function Home() {
                             <button key={day} type="button"
                               onClick={() => setAppAvailDays(on ? appAvailDays.filter(d => d !== day) : [...appAvailDays, day])}
                               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                                on ? 'bg-accent text-white border-accent' : 'border-accent/30 text-primary/60 hover:border-accent/60'
+                                on ? 'bg-accent text-primary border-accent' : 'border-accent/30 text-primary/60 hover:border-accent/60'
                               }`}>{day}</button>
                           )
                         })}
@@ -2545,7 +2553,7 @@ export default function Home() {
                                 <button key={d} type="button" disabled={isPast}
                                   onClick={() => setAppAvailStartDate(d)}
                                   className={`text-[11px] w-full aspect-square rounded-full transition-all duration-100 ${
-                                    isSelected ? 'bg-accent text-white font-bold' :
+                                    isSelected ? 'bg-accent text-primary font-bold' :
                                     isPast ? 'text-primary/20 cursor-not-allowed' :
                                     'text-primary/70 hover:bg-accent/10 hover:text-accent'
                                   }`}>{d}</button>

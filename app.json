@@ -853,10 +853,54 @@
     "enabled": true,
     "sitemap": true,
     "robots_txt": true,
+    "site_name": "Myy Signature Myy Style",
+    "site_url": "https://www.myysignaturemyystyle.com",
     "meta_tags": {
-      "title": "Myy Signature Myy Style Salon - Book Your Appointment Online",
+      "title": "Myy Signature Myy Style — Book Your Appointment Online",
       "description": "Premium salon services in Locust Grove, GA. Book hair styling, coloring, nails, and more. Fast, easy online booking with secure payment.",
       "keywords": "salon, hair styling, coloring, nails, booking, Locust Grove, Henry County"
+    },
+    "pages": {
+      "home": {
+        "title": "Myy Signature Myy Style — Premium Hair Salon in Locust Grove, GA",
+        "description": "Premium hair salon in Locust Grove, GA specializing in expert cuts, color, braids, locs, and styling for all hair types. Book online today.",
+        "og_description": "Expert cuts, color, braids, locs & styling in Locust Grove, GA. Book your appointment online."
+      },
+      "book": {
+        "title": "Book Your Appointment",
+        "description": "Schedule your hair appointment online at Myy Signature Myy Style. Fast, easy booking for cuts, color, braids, locs, and more.",
+        "og_description": "Schedule online — expert cuts, color, braids, locs & more."
+      },
+      "services": {
+        "title": "Hair Services & Pricing",
+        "description": "Browse our full menu of hair services — cuts, chemical treatments, extensions, braids, locs, and more. Transparent pricing and online booking.",
+        "og_description": "Full service menu with pricing — cuts, color, braids, locs, extensions & more."
+      },
+      "stylists": {
+        "title": "Our Stylists",
+        "description": "Meet our talented team of stylists at Myy Signature Myy Style. Book directly with your preferred stylist online.",
+        "og_description": "Meet our team and book directly with your preferred stylist."
+      },
+      "gallery": {
+        "title": "Gallery",
+        "description": "Browse our gallery of hair transformations — cuts, color, braids, locs, and more. See the quality of work at Myy Signature Myy Style.",
+        "og_description": "Browse our gallery of hair transformations — cuts, color, braids, locs & more."
+      },
+      "careers": {
+        "title": "Join Our Team",
+        "description": "We are looking for talented stylists to join the Myy Signature Myy Style family. Apply online today.",
+        "og_description": "Talented stylist looking for a home? Join our team."
+      },
+      "about": {
+        "title": "About Us",
+        "description": "Learn about Myy Signature Myy Style — a premium hair salon dedicated to expert styling and exceptional client experiences.",
+        "og_description": "Premium hair salon dedicated to expert styling and exceptional client experiences."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "Get in touch with Myy Signature Myy Style. Visit us or book online — we'd love to hear from you.",
+        "og_description": "Visit us or book online — we'd love to hear from you."
+      }
     }
   },
   "framework": {
@@ -1037,7 +1081,8 @@
     "hero": {
       "title": "Myy Signature Myy Style",
       "subtitle": "- Hair Salon -",
-      "cta_button": "Schedule Appointment"
+      "cta_button": "Book Now",
+      "cta_button_secondary": "Join Us"
     },
     "services_section": {
       "title": "Hair Services",
