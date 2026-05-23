@@ -1,26 +1,29 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import appConfig from '../../app.json'
+
+const { seo } = appConfig
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.myysignaturemyystyle.com'),
-  title: 'Myy Signature Myy Style Salon - Book Your Appointment Online',
-  description: 'Premium hair salon in Locust Grove, GA. Expert cuts, color, braids, locs, treatments, and more. Fast, easy online booking with secure payment.',
-  keywords: 'salon, hair salon, hair styling, hair coloring, braids, locs, booking, Locust Grove, Henry County',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || seo.site_url),
+  title: seo.pages.home.title,
+  description: seo.pages.home.description,
+  keywords: seo.meta_tags.keywords,
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: 'Myy Signature Myy Style Salon',
-    description: 'Book your premium hair appointment online',
+    title: seo.site_name,
+    description: seo.pages.home.og_description,
     type: 'website',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Myy Signature Myy Style — Book Your Appointment' }],
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: `${seo.site_name} — Book Your Appointment` }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Myy Signature Myy Style Salon',
-    description: 'Book your premium hair appointment online',
+    title: seo.site_name,
+    description: seo.pages.home.og_description,
     images: ['/opengraph-image'],
   },
 }
