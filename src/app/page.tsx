@@ -3,7 +3,7 @@
 import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone, FiCode } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
@@ -104,7 +104,8 @@ export default function Home() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300)
+      const nearBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 300
+      setShowScrollTop(window.scrollY > 300 && !nearBottom)
 
       // Detect background color based on scroll position
       const heroHeight = window.innerHeight
@@ -406,27 +407,8 @@ export default function Home() {
           ? 'bg-black/50 backdrop-blur-md'
           : 'bg-white/95 backdrop-blur-sm'
       }`}>
-        {/* Brand Logo - Mobile (in-flow, left) */}
-        <button 
-          onClick={() => {
-            if (showBookingModal) {
-              setShowBookingModal(false)
-              setBookingName('')
-              setBookingEmail('')
-              setBookingContact('')
-              setSelectedBookingService(null)
-              setSelectedBookingStylist(null)
-              setSelectedDate(null)
-              setSelectedTime(null)
-              setFormErrors({})
-              setPolicyAccepted(false)
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' })
-          }}
-          className="md:hidden hover:opacity-80 transition-opacity flex-shrink-0"
-        >
-          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={80} height={80} className="w-auto h-16" />
-        </button>
+        {/* Spacer - Mobile left (mirrors hamburger width for symmetry) */}
+        <div className="md:hidden w-9 flex-shrink-0" />
 
         {/* Brand Logo - Desktop (absolute, left) */}
         <button 
@@ -447,16 +429,15 @@ export default function Home() {
           }}
           className="absolute hidden md:block left-8 hover:opacity-80 transition-opacity"
         >
-          <Image src="/assets/images/others/logo_trans.png" alt="Logo" width={112} height={112} className="w-auto h-28" />
+          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={267} height={80} className="w-auto h-20" unoptimized />
         </button>
 
-        {/* Mobile Center Branding */}
+        {/* Mobile Center Logo */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="absolute left-16 right-12 flex flex-col items-center md:hidden hover:opacity-80 transition-opacity"
+          className="absolute left-12 right-12 flex justify-center items-center md:hidden hover:opacity-80 transition-opacity"
         >
-          <p className="text-xs font-bold tracking-widest uppercase text-white/90" style={{textShadow:'0 2px 4px rgba(0,0,0,0.8)'}}>{content.navigation.brand}</p>
-          <p className="text-[10px] font-light tracking-widest text-white/50">— Hair Salon —</p>
+          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-11" unoptimized />
         </button>
 
         {/* Desktop Navigation - Centered */}
@@ -1204,6 +1185,11 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-12 bg-primary text-secondary sm:py-16">
         <div className="container-custom">
+          <div className="flex justify-center mb-10">
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:opacity-75 transition-opacity">
+              <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={240} height={72} className="w-auto h-16 opacity-90" unoptimized />
+            </button>
+          </div>
           <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 md:grid-cols-4 sm:gap-8">
             <div className="text-center animate-fade-in-up sm:text-left">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.navigation.title}</h3>
@@ -1250,56 +1236,66 @@ export default function Home() {
             </div>
           </div>
           <hr className="mb-6 border-secondary/30" />
-          <div className="text-xs text-center text-secondary/70 sm:text-sm">
+          <div className="relative flex justify-center items-center text-xs text-secondary/70 sm:text-sm">
+            {/* Scroll to top — left badge */}
+            <button
+              onClick={scrollToTop}
+              className="absolute left-0 transition-transform duration-300 hover:scale-110"
+              aria-label="Scroll to top"
+            >
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '36px',
+                height: '36px',
+                borderRadius: '9px',
+                background: 'linear-gradient(145deg, #c4a870, #a89880, #7a6450)',
+                boxShadow: 'inset 1px 1px 1px rgba(255,225,160,0.3), inset -1px -1px 1px rgba(0,0,0,0.3), 2px 3px 6px rgba(0,0,0,0.55)',
+              }}>
+                <svg style={{ width: '18px', height: '18px', strokeWidth: 2.5 }} fill="none" stroke="#2a2420" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </span>
+            </button>
+
             <p>{content.footer.copyright.replace('{APP_NAME}', appConfig.app.name)}</p>
-            <p className="mt-2 text-xs">
-              <a 
-                href={content.footer.developed_by_link || '#'} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="transition-colors duration-300 hover:text-accent"
-              >
-                {content.footer.developed_by}
-              </a>
-            </p>
+
+            {/* FTTG dev badge — right */}
+            <a
+              href={content.footer.developed_by_link || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute right-0 transition-transform duration-300 hover:scale-110"
+              title="Built by FTTG Solutions"
+              aria-label="Built by FTTG Solutions"
+            >
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '36px',
+                height: '36px',
+                borderRadius: '9px',
+                background: 'linear-gradient(145deg, #c4a870, #a89880, #7a6450)',
+                boxShadow: 'inset 1px 1px 1px rgba(255,225,160,0.3), inset -1px -1px 1px rgba(0,0,0,0.3), 2px 3px 6px rgba(0,0,0,0.55)',
+              }}>
+                <FiCode style={{ width: '18px', height: '18px', color: '#2a2420', strokeWidth: 2.5 }} />
+              </span>
+            </a>
           </div>
         </div>
       </footer>
 
-      {/* Chat Icon Button */}
-      <button
-        onClick={handleMessageClick}
-        className="fixed z-50 flex items-center justify-center text-white transition-all duration-300 rounded-full shadow-lg bottom-12 right-6 w-14 h-14 bg-accent hover:bg-accent-light hover:scale-110 active:scale-95 animate-fade-in drop-shadow-lg"
-        aria-label="Open message"
-      >
-        <svg
-          className="w-7 h-7"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-        </svg>
-      </button>
-
-      {/* Scroll to Top Button */}
+      {/* Scroll to Top — floating, appears mid-page */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed z-40 flex items-center justify-center w-12 h-12 text-white transition-all duration-300 rounded-full shadow-lg bottom-28 right-6 bg-accent hover:bg-accent hover:scale-110 active:scale-95 animate-fade-in"
+          className="fixed z-40 flex items-center justify-center w-12 h-12 text-white transition-all duration-300 rounded-full shadow-lg bottom-8 right-6 bg-accent hover:bg-accent hover:scale-110 active:scale-95 animate-fade-in"
           aria-label="Scroll to top"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 10l7-7m0 0l7 7m-7-7v18"
-            />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
         </button>
       )}

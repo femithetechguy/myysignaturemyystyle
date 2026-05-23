@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 90">
+  <defs>
+    <filter id="shadow" x="-5%" y="-20%" width="115%" height="145%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- M monogram -->
+    <text x="36" y="65" font-family="Georgia, 'Book Antiqua', serif" font-size="52" font-weight="bold" fill="#a89880" text-anchor="middle">M</text>
+
+    <!-- Vertical divider -->
+    <line x1="72" y1="16" x2="72" y2="74" stroke="#a89880" stroke-width="0.75" opacity="0.5"/>
+
+    <!-- MYY SIGNATURE -->
+    <text x="84" y="34" font-family="Georgia, 'Book Antiqua', serif" font-size="18" font-weight="bold" fill="#a89880" letter-spacing="2">MYY SIGNATURE</text>
+
+    <!-- Separator line -->
+    <line x1="84" y1="42" x2="282" y2="42" stroke="#a89880" stroke-width="0.5" opacity="0.4"/>
+
+    <!-- MYY STYLE -->
+    <text x="84" y="57" font-family="Georgia, 'Book Antiqua', serif" font-size="15" font-weight="bold" fill="#e8d8d0" letter-spacing="5">MYY STYLE</text>
+
+    <!-- HAIR SALON -->
+    <text x="86" y="72" font-family="'Trebuchet MS', Arial, sans-serif" font-size="8.5" fill="#a89880" letter-spacing="4" opacity="0.85">· HAIR SALON ·</text>
+  </g>
+</svg>
