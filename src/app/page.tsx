@@ -191,6 +191,14 @@ export default function Home() {
     }, 150)
   }, [])
 
+  // Auto-select the only stylist when modal opens (clears when more stylists are added)
+  useEffect(() => {
+    if (showBookingModal && stylists.length === 1 && !selectedBookingStylist) {
+      const s = stylists[0]
+      setSelectedBookingStylist({ id: s.id, staff_id: s.staff_id, name: s.name, title: s.title, photo: s.photo, booking_slug: s.booking_slug, specialties: s.specialties, availability: s.availability ?? null })
+    }
+  }, [showBookingModal, stylists])
+
   // Fetch services and reviews from DB on mount
   useEffect(() => {
     fetch('/api/services')
@@ -316,7 +324,7 @@ export default function Home() {
     setSelectedDate(new Date())
     setSelectedTime(null)
     setSelectedBookingCategory('')
-    setSelectedBookingStylist(null)
+    if (stylists.length !== 1) setSelectedBookingStylist(null)
     setFormErrors({})
     setBookingName('')
     setBookingContact('')
@@ -1559,10 +1567,45 @@ export default function Home() {
             <div className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-8 md:items-start">
 
-                {/* ── LEFT: Calendar ── */}
+                {/* ── LEFT: Calendar → Service → Time ── */}
                 <div className="space-y-4">
-                  {/* Pre-selected Stylist Banner */}
-                  {selectedBookingStylist && (
+                  {/* Stylist selector — banner when only one, picker chips when multiple */}
+                  {stylists.length > 1 ? (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-primary/40 mb-2">Choose Your Stylist</p>
+                      <div className="flex flex-wrap gap-2">
+                        {stylists.map((s) => {
+                          const isActive = selectedBookingStylist?.id === s.id
+                          return (
+                            <button
+                              key={s.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedBookingStylist({ id: s.id, staff_id: s.staff_id, name: s.name, title: s.title, photo: s.photo, booking_slug: s.booking_slug, specialties: s.specialties, availability: s.availability ?? null })
+                                setSelectedBookingService(null)
+                                setSelectedTime(null)
+                              }}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 text-sm font-semibold transition-all duration-200 ${
+                                isActive ? 'border-accent bg-accent/15 text-primary' : 'border-secondary/30 bg-white text-primary/70 hover:border-accent/50'
+                              }`}
+                            >
+                              {s.photo ? (
+                                <img src={s.photo} alt={s.name} className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                              ) : (
+                                <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 text-xs font-bold text-accent">{s.name.charAt(0)}</div>
+                              )}
+                              {s.name.split(' ')[0]}
+                              {isActive && (
+                                <svg className="w-3.5 h-3.5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ) : selectedBookingStylist && (
                     <div className="flex items-center gap-3 p-3 border rounded-lg bg-accent/10 border-accent/30">
                       {selectedBookingStylist.photo ? (
                         <img src={selectedBookingStylist.photo} alt={selectedBookingStylist.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-accent/40" />
@@ -1576,54 +1619,31 @@ export default function Home() {
                         <p className="font-bold text-primary truncate">{selectedBookingStylist.name}</p>
                         {selectedBookingStylist.title && <p className="text-xs text-primary/50 truncate">{selectedBookingStylist.title}</p>}
                       </div>
-                      <button
-                        onClick={() => { setSelectedBookingStylist(null); setSelectedBookingService(null) }}
-                        className="text-primary/40 hover:text-primary/70 transition-colors text-lg leading-none flex-shrink-0"
-                        title="Remove stylist filter"
-                      >
-                        ×
-                      </button>
                     </div>
                   )}
 
                   {/* Month Navigation */}
                   <div className="flex items-center justify-between">
-                    <button
-                      onClick={handlePrevMonth}
-                      className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
-                    >
-                      ←
-                    </button>
+                    <button onClick={handlePrevMonth} className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary">←</button>
                     <h3 className="text-xl font-bold text-primary">
                       {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
                     </h3>
-                    <button
-                      onClick={handleNextMonth}
-                      className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary"
-                    >
-                      →
-                    </button>
+                    <button onClick={handleNextMonth} className="px-4 py-2 transition-colors rounded bg-secondary/20 hover:bg-secondary/30 text-primary">→</button>
                   </div>
 
                   {/* Calendar Grid */}
                   <div className="space-y-4">
-                    {/* Day headers */}
                     <div className="grid grid-cols-7 gap-1 mb-4 sm:gap-2">
                       {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                        <div key={day} className="text-sm font-bold text-center text-primary/60">
-                          {day}
-                        </div>
+                        <div key={day} className="text-sm font-bold text-center text-primary/60">{day}</div>
                       ))}
                     </div>
-
-                    {/* Calendar days */}
                     <div className="grid grid-cols-7 gap-1 sm:gap-2">
                       {generateCalendarDays().map((dayObj, idx) => {
                         const isCurrentMonth = dayObj.isCurrentMonth
                         const isTodayDate = isToday(dayObj.date)
                         const isPast = isPastDate(dayObj.date)
                         const isSelected = selectedDate && dayObj.date.toDateString() === selectedDate.toDateString()
-
                         return (
                           <button
                             key={idx}
@@ -1634,8 +1654,7 @@ export default function Home() {
                               ${!isCurrentMonth ? 'text-primary/30 bg-transparent cursor-default' : ''}
                               ${isTodayDate ? 'bg-accent text-primary ring-2 ring-accent ring-offset-1' : ''}
                               ${isSelected && !isTodayDate ? 'bg-primary text-white ring-2 ring-primary ring-offset-1' : ''}
-                              ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer' : ''}
-                              ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'hover:shadow-md' : ''}
+                              ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer hover:shadow-md' : ''}
                               ${isPast && isCurrentMonth ? 'text-primary/40 bg-secondary/10 cursor-not-allowed' : ''}
                             `}
                           >
@@ -1648,36 +1667,85 @@ export default function Home() {
 
                   {/* Selected Date Display */}
                   {selectedDate && (
-                    <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30">
-                      <p className="mb-1 text-sm text-primary/70">Selected Date:</p>
-                      <p className="text-lg font-bold text-primary">
-                        {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    <div className="p-3 border rounded-lg bg-secondary/10 border-secondary/30">
+                      <p className="text-xs text-primary/60 mb-0.5">Selected Date</p>
+                      <p className="text-base font-bold text-primary">
+                        {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                       </p>
                     </div>
                   )}
 
-                  {/* ── Time Slot Picker ── */}
+                  {/* Service Category Dropdown */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-bold text-primary">Service Category</label>
+                    <select
+                      value={selectedBookingCategory}
+                      onChange={(e) => { setSelectedBookingCategory(e.target.value); setSelectedBookingService(null); setSelectedTime(null) }}
+                      className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
+                    >
+                      <option value="" disabled>— Choose a category —</option>
+                      {getBookingCategories().map((category) => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Services in Selected Category */}
+                  {selectedBookingCategory && (
+                    <div className="border rounded-lg bg-secondary/5 border-secondary/20 overflow-hidden">
+                      <p className="px-4 py-2 text-xs font-bold text-primary/60 uppercase tracking-wide border-b border-secondary/20">{selectedBookingCategory}</p>
+                      <div className="divide-y divide-secondary/10">
+                        {getServicesByCategory(selectedBookingCategory).map((service) => {
+                          const isSelected = selectedBookingService?.id === service.id
+                          return (
+                            <div
+                              key={service.id}
+                              onClick={() => { setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration }); setSelectedTime(null) }}
+                              className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-all duration-200 ${
+                                isSelected ? 'bg-accent/15 border-l-4 border-l-accent' : 'hover:bg-secondary/10 border-l-4 border-l-transparent'
+                              }`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className={`font-semibold text-sm truncate ${isSelected ? 'text-primary' : 'text-primary'}`}>{service.name}</p>
+                                <div className="flex items-center gap-3 mt-0.5">
+                                  <p className="text-xs font-bold text-accent">${service.price_min} – ${service.price_max}</p>
+                                  <p className="text-[10px] text-primary/50">⏱ {service.duration} min</p>
+                                </div>
+                              </div>
+                              <div className={`ml-3 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                                isSelected ? 'bg-accent border-accent' : 'border-secondary/40'
+                              }`}>
+                                {isSelected && (
+                                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Time Slot Picker — appears once both date and service are selected */}
                   {selectedDate && selectedBookingService && (() => {
                     const schedule = getDaySchedule(selectedDate)
                     const slots = generateTimeSlots(schedule, selectedBookingService.duration)
                     const dayLabel = selectedDate.toLocaleDateString('en-US', { weekday: 'long' })
-
                     if (schedule === 'closed' || slots.length === 0) {
                       return (
                         <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30 text-center">
                           <p className="text-sm font-semibold text-primary/70">
-                            {selectedBookingStylist
-                              ? `${selectedBookingStylist.name} is not available on ${dayLabel}s.`
-                              : `The salon is closed on ${dayLabel}s.`}
+                            {selectedBookingStylist ? `${selectedBookingStylist.name} is not available on ${dayLabel}s.` : `The salon is closed on ${dayLabel}s.`}
                           </p>
                           <p className="mt-1 text-xs text-primary/50">Please select a different date or contact us directly.</p>
                         </div>
                       )
                     }
-
                     return (
                       <div>
-                        <p className="mb-2 text-sm font-semibold text-primary/70">Select a Time</p>
+                        <p className="mb-2 text-sm font-bold text-primary">Select a Time</p>
                         <div className="grid grid-cols-3 gap-2">
                           {slots.map((slot) => (
                             <button
@@ -1694,45 +1762,17 @@ export default function Home() {
                             </button>
                           ))}
                         </div>
-                        {selectedTime && (
-                          <p className="mt-2 text-xs text-accent font-semibold">⏰ Selected: {selectedTime}</p>
-                        )}
+                        {selectedTime && <p className="mt-2 text-xs text-accent font-semibold">⏰ {selectedTime}</p>}
                       </div>
                     )
                   })()}
-
-                  {selectedDate && !selectedBookingService && (
-                    <div className="p-3 border border-dashed rounded-lg border-secondary/30">
-                      <p className="text-xs text-center text-primary/40">Select a service to see available times</p>
-                    </div>
-                  )}
-
-                  {/* Selected Service Summary */}
-                  {selectedBookingService ? (
-                    <div className="p-4 border rounded-lg bg-accent/10 border-accent/30">
-                      <p className="mb-2 text-sm text-primary/70">Selected Service:</p>
-                      <p className="text-base font-bold text-primary">{selectedBookingService.name}</p>
-                      <p className="mt-1 text-sm text-primary/70">
-                        ${Number(selectedBookingService.price_min).toFixed(2)}&nbsp;&ndash;&nbsp;${Number(selectedBookingService.price_max).toFixed(2)}
-                      </p>
-                      <p className="mt-1 text-xs text-primary/50">
-                        &#128337; {selectedBookingService.duration} min
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="p-4 border border-dashed rounded-lg border-secondary/30">
-                      <p className="text-sm text-center text-primary/40">No service selected yet</p>
-                    </div>
-                  )}
                 </div>
 
-                {/* ── RIGHT: Form Fields ── */}
+                {/* ── RIGHT: Personal Information ── */}
                 <div className="mt-8 md:mt-0 space-y-5">
-                  {/* Customer Information */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold text-primary">Your Information</h3>
 
-                    {/* Name Input */}
                     <div>
                       <label className="block mb-2 text-sm font-semibold text-primary">Full Name</label>
                       <input
@@ -1740,16 +1780,13 @@ export default function Home() {
                         value={bookingName}
                         onChange={(e) => setBookingName(e.target.value)}
                         className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
-                          formErrors.bookingName
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                            : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
+                          formErrors.bookingName ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
                         }`}
                         placeholder="John Doe"
                       />
                       {formErrors.bookingName && <p className="mt-1 text-xs text-red-500">{formErrors.bookingName}</p>}
                     </div>
 
-                    {/* Email Input */}
                     <div>
                       <label className="block mb-2 text-sm font-semibold text-primary">Email</label>
                       <input
@@ -1757,16 +1794,13 @@ export default function Home() {
                         value={bookingEmail}
                         onChange={(e) => setBookingEmail(e.target.value)}
                         className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
-                          formErrors.bookingEmail
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                            : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
+                          formErrors.bookingEmail ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
                         }`}
                         placeholder="john@example.com"
                       />
                       {formErrors.bookingEmail && <p className="mt-1 text-xs text-red-500">{formErrors.bookingEmail}</p>}
                     </div>
 
-                    {/* Phone Input */}
                     <div>
                       <label className="block mb-2 text-sm font-semibold text-primary">Phone Number</label>
                       <input
@@ -1774,9 +1808,7 @@ export default function Home() {
                         value={bookingContact}
                         onChange={(e) => setBookingContact(e.target.value)}
                         className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition text-primary placeholder-gray-400 ${
-                          formErrors.bookingContact
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                            : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
+                          formErrors.bookingContact ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-secondary/30 focus:border-accent focus:ring-accent/20'
                         }`}
                         placeholder="(123) 456-7890"
                       />
@@ -1784,73 +1816,25 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Service Category Dropdown */}
-                  <div className="space-y-2">
-                    <label className="block text-sm font-bold text-primary">Select Service Category:</label>
-                    <select
-                      value={selectedBookingCategory}
-                      onChange={(e) => setSelectedBookingCategory(e.target.value)}
-                      className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
-                    >
-                      <option value="" disabled>— Choose a Hair Service —</option>
-                      {getBookingCategories().map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Services in Selected Category */}
-                  {selectedBookingCategory && (
-                    <div className="p-4 border rounded-lg bg-secondary/5 border-secondary/20">
-                      <p className="mb-3 text-sm font-bold text-primary">Services in {selectedBookingCategory}:</p>
-                      <div className="space-y-2">
-                        {getServicesByCategory(selectedBookingCategory).map((service) => {
-                          const isSelected = selectedBookingService?.id === service.id
-                          return (
-                            <div
-                              key={service.id}
-                              onClick={() => setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration })}
-                              className={`flex items-center justify-between px-3 py-3 text-xs rounded-lg cursor-pointer transition-all duration-200 sm:text-sm ${
-                                isSelected
-                                  ? 'bg-accent text-primary shadow-md scale-[1.02] border-2 border-accent'
-                                  : 'hover:bg-secondary/10 border-2 border-transparent'
-                              }`}
-                            >
-                              <div className="flex-1">
-                                <p className={`font-semibold ${isSelected ? 'text-white' : 'text-primary'}`}>{service.name}</p>
-                                <p className={`font-bold text-xs mt-0.5 ${isSelected ? 'text-white/80' : 'text-accent'}`}>${service.price_min} – ${service.price_max}</p>
-                                <p className={`text-[10px] mt-0.5 ${isSelected ? 'text-white/60' : 'text-primary/50'}`}>⏱ {service.duration} min</p>
-                              </div>
-                              <div className={`ml-3 flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 ${
-                                isSelected
-                                  ? 'bg-white text-accent'
-                                  : 'bg-secondary/20 text-primary'
-                              }`}>
-                                {isSelected && <span className="text-sm">✓</span>}
-                                {isSelected ? 'Selected' : 'Select'}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Selected Service Display */}
-                  {selectedBookingService && (
-                    <div className="flex items-center gap-3 p-4 border-2 border-accent rounded-xl bg-accent/10 animate-fade-in-up shadow-sm">
-                      <div className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-primary text-base font-bold flex-shrink-0">✓</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-primary/60 uppercase tracking-wide">Selected Service</p>
-                        <p className="text-base font-bold text-accent truncate">{selectedBookingService.name}</p>
-                        <p className="text-[10px] text-primary/50 font-medium -mt-0.5">{selectedBookingService.category}</p>
-                        <div className="flex items-center gap-3 mt-0.5">
-                          <p className="text-xs font-semibold text-primary/70">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
-                          <p className="text-[10px] text-primary/50">⏱ {selectedBookingService.duration} min</p>
+                  {/* Booking summary — shown on desktop once selections are made */}
+                  {(selectedBookingService || selectedDate || selectedTime) && (
+                    <div className="hidden md:block p-4 rounded-xl border border-secondary/20 bg-secondary/5 space-y-2">
+                      <p className="text-xs font-bold uppercase tracking-wide text-primary/40">Your Booking</p>
+                      {selectedBookingService && (
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-sm font-bold text-primary">{selectedBookingService.name}</p>
+                            <p className="text-xs text-primary/50">⏱ {selectedBookingService.duration} min</p>
+                          </div>
+                          <p className="text-sm font-bold text-accent whitespace-nowrap">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
                         </div>
-                      </div>
+                      )}
+                      {selectedDate && (
+                        <p className="text-xs text-primary/70">
+                          📅 {selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                          {selectedTime && <span className="ml-1">at {selectedTime}</span>}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
