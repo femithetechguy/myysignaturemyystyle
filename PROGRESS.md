@@ -344,6 +344,33 @@ Last updated: April 9, 2026 (session 5)
   - `fadeInUp` duration: `0.7s` → `0.4s`
   - Per-card stagger delay: `150ms` → `75ms`
 
+### SVG Logo System & Branding (session 6)
+- [x] **3 SVG logo files created** — no external assets, fully brand-matched:
+  - `public/favicon.svg` — "M" monogram on dark `#2a2420` rounded square; wired via Next.js metadata `icons`
+  - `public/assets/images/others/logo-icon.svg` — transparent bg, gold "M" with drop shadow (mobile header)
+  - `public/assets/images/others/logo-main.svg` — horizontal wordmark: M + divider + "MYY SIGNATURE / MYY STYLE / · HAIR SALON ·" (desktop header + footer)
+- [x] **Header updated**:
+  - Mobile: hardcoded center text replaced with `logo-main.svg`; left spacer replaces redundant M icon
+  - Desktop: `logo_trans.png` replaced with `logo-main.svg` (`h-20`)
+  - Both header logos scroll to top on click
+- [x] **Footer logo** — `logo-main.svg` centered above grid columns, clickable (scrolls to top)
+- [x] **Developer credit** — "Developed by FTTG Solutions" text replaced with a beveled gold `FiCode` (`</>`) badge (`react-icons/fi`) in the footer's copyright row, bottom-right; links to `fttgsolutions.com`; `developer_icon` key added to `app.json`
+- [x] **Chat FAB removed** — floating chat bubble removed; "Leave A Message" button in Contact section still functional
+- [x] **Scroll-to-top** — floating button (`fixed bottom-8 right-6`) restored for mid-page use; also added as matching gold badge in footer copyright row left side; floating button auto-hides within 300px of page bottom to prevent double-button overlap
+
+### Dynamic OG Image / Link Preview (session 6)
+- [x] `src/app/opengraph-image.tsx` **new** — `next/og` `ImageResponse`, edge runtime, 1200×630:
+  - Dark `#2a2420` background, 8px gold top bar, 4px gold bottom bar
+  - Label: `• MYY SIGNATURE MYY STYLE · HAIR SALON` (gold, uppercase)
+  - Headline: `Book Your Appointment` (white, 80px bold)
+  - Subtitle: `Premium Hair Salon · Locust Grove, GA` (tan, muted)
+  - Domain: `myysignaturemyystyle.com` (faded gold)
+- [x] `src/app/layout.tsx` updated:
+  - `metadataBase` added (`NEXT_PUBLIC_SITE_URL` or production domain)
+  - `og:image` → `/opengraph-image` (1200×630)
+  - `twitter:card` → `summary_large_image`
+  - All social share previews (WhatsApp, iMessage, Twitter, LinkedIn) now show branded card
+
 ---
 
 ## 🔄 In Progress / Needs Attention
@@ -357,7 +384,7 @@ Last updated: April 9, 2026 (session 5)
 ## 📋 Yet To Do
 
 ### Content & Branding
-- [ ] Replace placeholder logo files — `logo_trans.png` and `logo_opoque.jpg` in `public/assets/images/others/`
+- [x] Replace placeholder logo files — SVG logo system created (`logo-main.svg`, `logo-icon.svg`, `favicon.svg`); `logo_trans.png` no longer used
 - [x] `landing.png` hero background image replaced and migrated to Cloudinary
 - [ ] Add real portfolio/gallery images to `public/assets/images/portfolio/` (currently 7 placeholder IG posts)
 - [ ] Fill in `app.json` → `business.social.facebook` (currently empty string)

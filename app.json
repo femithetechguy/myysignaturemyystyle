@@ -1083,7 +1083,7 @@
     },
     "footer": {
       "copyright": "© 2025 {APP_NAME}. All rights reserved.",
-      "developed_by": "Developed by FTTG Solutions",
+      "developer_icon": "</>",
       "developed_by_link": "https://fttgsolutions.com",
       "sections": {
         "navigation": {
