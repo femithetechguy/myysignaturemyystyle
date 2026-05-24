@@ -635,6 +635,7 @@ export default function Home() {
             </button>
             <a
               href="#careers"
+              onClick={(e) => { e.preventDefault(); const el = document.getElementById('careers'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }) }}
               className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button_secondary}
@@ -730,7 +731,7 @@ export default function Home() {
             </div>
             <a
               href="#careers"
-              onClick={(e) => { e.preventDefault(); document.getElementById('careers')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+              onClick={(e) => { e.preventDefault(); const el = document.getElementById('careers'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }) }}
               className="flex-shrink-0 px-6 py-2 text-xs font-semibold tracking-widest text-primary uppercase rounded-lg bg-accent hover:bg-accent/80 hover:scale-105 active:scale-95 transition-all duration-200"
             >
               {content.hero.cta_button_secondary}
@@ -1691,51 +1692,47 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Service Category Dropdown */}
+                  {/* Service Category Pills */}
                   <div className="space-y-2">
                     <label className="block text-sm font-bold text-primary">Service Category</label>
-                    <select
-                      value={selectedBookingCategory}
-                      onChange={(e) => { setSelectedBookingCategory(e.target.value); setSelectedBookingService(null); setSelectedTime(null) }}
-                      className="w-full px-4 py-3 font-medium bg-white border rounded-lg border-secondary/30 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-primary"
-                    >
-                      <option value="" disabled>— Choose a category —</option>
+                    <div className="flex flex-wrap gap-2">
                       {getBookingCategories().map((category) => (
-                        <option key={category} value={category}>{category}</option>
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => { setSelectedBookingCategory(category); setSelectedBookingService(null); setSelectedTime(null) }}
+                          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200 ${
+                            selectedBookingCategory === category
+                              ? 'bg-primary text-secondary border-primary'
+                              : 'bg-white text-primary/70 border-secondary/30 hover:border-accent/50 hover:text-primary'
+                          }`}
+                        >
+                          {category}
+                        </button>
                       ))}
-                    </select>
+                    </div>
                   </div>
 
-                  {/* Services in Selected Category */}
+                  {/* Service list — mobile only (on desktop it lives in the right column) */}
                   {selectedBookingCategory && (
-                    <div className="border rounded-lg bg-secondary/5 border-secondary/20 overflow-hidden">
+                    <div className="md:hidden border rounded-lg bg-secondary/5 border-secondary/20 overflow-hidden">
                       <p className="px-4 py-2 text-xs font-bold text-primary/60 uppercase tracking-wide border-b border-secondary/20">{selectedBookingCategory}</p>
-                      <div className="divide-y divide-secondary/10">
+                      <div className="divide-y divide-secondary/10 max-h-52 overflow-y-auto">
                         {getServicesByCategory(selectedBookingCategory).map((service) => {
                           const isSelected = selectedBookingService?.id === service.id
                           return (
-                            <div
-                              key={service.id}
-                              onClick={() => { setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration }); setSelectedTime(null) }}
-                              className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-all duration-200 ${
-                                isSelected ? 'bg-accent/15 border-l-4 border-l-accent' : 'hover:bg-secondary/10 border-l-4 border-l-transparent'
-                              }`}
+                            <div key={service.id} onClick={() => { setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration }); setSelectedTime(null) }}
+                              className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-all duration-200 ${isSelected ? 'bg-accent/15 border-l-4 border-l-accent' : 'hover:bg-secondary/10 border-l-4 border-l-transparent'}`}
                             >
                               <div className="flex-1 min-w-0">
-                                <p className={`font-semibold text-sm truncate ${isSelected ? 'text-primary' : 'text-primary'}`}>{service.name}</p>
+                                <p className="font-semibold text-sm truncate text-primary">{service.name}</p>
                                 <div className="flex items-center gap-3 mt-0.5">
                                   <p className="text-xs font-bold text-accent">${service.price_min} – ${service.price_max}</p>
                                   <p className="text-[10px] text-primary/50">⏱ {service.duration} min</p>
                                 </div>
                               </div>
-                              <div className={`ml-3 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                                isSelected ? 'bg-accent border-accent' : 'border-secondary/40'
-                              }`}>
-                                {isSelected && (
-                                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
+                              <div className={`ml-3 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${isSelected ? 'bg-accent border-accent' : 'border-secondary/40'}`}>
+                                {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                               </div>
                             </div>
                           )
@@ -1831,6 +1828,34 @@ export default function Home() {
                       {formErrors.bookingContact && <p className="mt-1 text-xs text-red-500">{formErrors.bookingContact}</p>}
                     </div>
                   </div>
+
+                  {/* Service list — desktop only (fills empty space, mobile version is in left column) */}
+                  {selectedBookingCategory && (
+                    <div className="hidden md:block border rounded-lg bg-secondary/5 border-secondary/20 overflow-hidden">
+                      <p className="px-4 py-2 text-xs font-bold text-primary/60 uppercase tracking-wide border-b border-secondary/20">{selectedBookingCategory}</p>
+                      <div className="divide-y divide-secondary/10 max-h-64 overflow-y-auto">
+                        {getServicesByCategory(selectedBookingCategory).map((service) => {
+                          const isSelected = selectedBookingService?.id === service.id
+                          return (
+                            <div key={service.id} onClick={() => { setSelectedBookingService({ id: service.id, name: service.name, category: service.category, price_min: service.price_min, price_max: service.price_max, duration: service.duration }); setSelectedTime(null) }}
+                              className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-all duration-200 ${isSelected ? 'bg-accent/15 border-l-4 border-l-accent' : 'hover:bg-secondary/10 border-l-4 border-l-transparent'}`}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm truncate text-primary">{service.name}</p>
+                                <div className="flex items-center gap-3 mt-0.5">
+                                  <p className="text-xs font-bold text-accent">${service.price_min} – ${service.price_max}</p>
+                                  <p className="text-[10px] text-primary/50">⏱ {service.duration} min</p>
+                                </div>
+                              </div>
+                              <div className={`ml-3 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${isSelected ? 'bg-accent border-accent' : 'border-secondary/40'}`}>
+                                {isSelected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Booking summary — shown on desktop once selections are made */}
                   {(selectedBookingService || selectedDate || selectedTime) && (
