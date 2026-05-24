@@ -54,7 +54,7 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
       <div className="container-custom">
 
         {/* Section Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8 sm:mb-10">
           <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">Our Work</p>
           <h2 className="text-3xl font-bold sm:text-4xl text-primary mb-3">{config.content.gallery.title}</h2>
           <p className="text-base text-primary/60 max-w-xl mx-auto">{config.content.gallery.description}</p>
@@ -62,21 +62,51 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
 
         {items.length > 0 ? (
           <>
-            {/* Photo Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
+            {/* Mobile: horizontal snap-scroll strip */}
+            <div className="sm:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {items.map((item, idx) => (
+                <div
+                  key={item.id}
+                  className="snap-start flex-none rounded-xl overflow-hidden cursor-pointer shadow-md active:scale-95 transition-transform duration-150"
+                  style={{ width: '68vw', aspectRatio: '3/4' }}
+                  onClick={() => setModalIndex(idx)}
+                >
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={item.image}
+                      alt={item.title ?? 'Gallery photo'}
+                      fill
+                      sizes="68vw"
+                      className="object-cover object-top"
+                      unoptimized
+                    />
+                    {item.title && (
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-3 px-3">
+                        <p className="text-white font-semibold text-sm drop-shadow">{item.title}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {/* Trailing spacer so last card isn't flush against edge */}
+              <div className="flex-none w-1" />
+            </div>
+
+            {/* Desktop: grid */}
+            <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
               {items.map((item, idx) => (
                 <div
                   key={item.id}
                   className="group relative rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
-                  style={{ aspectRatio: '4/5' }}
+                  style={{ aspectRatio: '3/4' }}
                   onClick={() => setModalIndex(idx)}
                 >
                   <Image
                     src={item.image}
                     alt={item.title ?? 'Gallery photo'}
                     fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 1024px) 33vw, 25vw"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     unoptimized
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-end p-3">
@@ -91,7 +121,7 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
             </div>
           </>
         ) : (
-          /* Empty state — photos coming soon */
+          /* Empty state */
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4">
               <FiInstagram className="w-7 h-7 text-accent" />
@@ -103,15 +133,16 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
 
         {/* Instagram CTA */}
         {instagramUrl && (
-          <div className="text-center">
+          <div className="text-center mt-8 sm:mt-0">
             <a
               href={instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-accent text-accent font-semibold text-sm hover:bg-accent hover:text-white transition-all duration-300 hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-white font-semibold text-sm transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+              style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)' }}
             >
               <FiInstagram className="w-4 h-4" />
-              See more on Instagram
+              Follow us on Instagram
             </a>
           </div>
         )}
@@ -120,61 +151,68 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
       {/* Lightbox */}
       {current && modalIndex !== null && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setModalIndex(null)}
         >
           <div
-            className="relative w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl flex flex-col bg-primary"
-            style={{ maxHeight: '92dvh' }}
+            className="relative w-full max-w-sm sm:max-w-md rounded-2xl overflow-hidden shadow-2xl flex flex-col bg-primary"
+            style={{ maxHeight: '90dvh' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 flex-shrink-0">
               <p className="text-white font-bold text-base">{current.title ?? 'Photo'}</p>
-              <button onClick={() => setModalIndex(null)} className="text-white/60 hover:text-white transition-colors p-1">
+              <button onClick={() => setModalIndex(null)} className="text-white/60 hover:text-white transition-colors p-1 -mr-1">
                 <FiX className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Image */}
-            <div className="relative w-full flex-1 min-h-0" style={{ aspectRatio: '4/3' }}>
+            {/* Image — full portrait, no cropping */}
+            <div className="relative w-full flex-1 min-h-0">
               <Image
                 src={current.image}
                 alt={current.title ?? 'Gallery photo'}
                 fill
-                sizes="(max-width: 768px) 100vw, 672px"
-                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 448px"
+                className="object-contain"
                 unoptimized
                 priority
               />
+
+              {/* Nav arrows */}
               {items.length > 1 && (
                 <>
-                  <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 transition-all">
+                  <button
+                    onClick={prev}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white rounded-full p-2.5 transition-all"
+                  >
                     <FiChevronLeft className="w-5 h-5" />
                   </button>
-                  <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 transition-all">
+                  <button
+                    onClick={next}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white rounded-full p-2.5 transition-all"
+                  >
                     <FiChevronRight className="w-5 h-5" />
                   </button>
-                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
                     {modalIndex + 1} / {items.length}
                   </div>
                 </>
               )}
             </div>
 
-            {/* Description + dots */}
-            {(current.description || items.length > 1) && (
-              <div className="px-5 py-3 flex-shrink-0 bg-primary space-y-3">
-                {current.description && <p className="text-white/60 text-sm">{current.description}</p>}
-                {items.length > 1 && (
-                  <div className="flex justify-center gap-1.5">
-                    {items.map((_, i) => (
-                      <button key={i} onClick={() => setModalIndex(i)}
-                        className={`w-2 h-2 rounded-full transition-all duration-200 ${i === modalIndex ? 'bg-accent scale-125' : 'bg-white/30 hover:bg-white/60'}`}
-                      />
-                    ))}
-                  </div>
-                )}
+            {/* Dot navigation */}
+            {items.length > 1 && (
+              <div className="px-5 py-3 flex-shrink-0 bg-primary">
+                <div className="flex justify-center gap-1.5 flex-wrap">
+                  {items.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setModalIndex(i)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${i === modalIndex ? 'bg-accent scale-125' : 'bg-white/30 hover:bg-white/60'}`}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>
