@@ -288,7 +288,7 @@
               "Consistent styling across all photos",
               "At least 8-12 strong portfolio pieces"
             ],
-            "tip": "Invest in professional photography—DIY photos often hurt credibility more than no photos at all"
+            "tip": "Invest in professional photography\u2014DIY photos often hurt credibility more than no photos at all"
           },
           {
             "category": "Team Photos",
@@ -379,7 +379,7 @@
           "Update your portfolio quarterly. Outdated photos signal an inactive business.",
           "Ensure your color palette complements (not fights) your photos. Test by placing color swatches over hero images.",
           "Use consistent filters/editing across all portfolio photos for a cohesive brand look.",
-          "Show before-and-after transitions—they're powerful conversion drivers."
+          "Show before-and-after transitions\u2014they're powerful conversion drivers."
         ]
       }
     ]
@@ -519,37 +519,37 @@
     "benefits": [
       {
         "id": "benefit_001",
-        "icon": "💰",
+        "icon": "\ud83d\udcb0",
         "title": "Competitive Compensation",
         "description": "Competitive base salary plus commission structure and tips"
       },
       {
         "id": "benefit_002",
-        "icon": "📚",
+        "icon": "\ud83d\udcda",
         "title": "Continuing Education",
         "description": "Regular training workshops and education reimbursement for advanced certifications"
       },
       {
         "id": "benefit_003",
-        "icon": "⏰",
+        "icon": "\u23f0",
         "title": "Flexible Scheduling",
         "description": "Work-life balance with flexible hours and scheduling options"
       },
       {
         "id": "benefit_004",
-        "icon": "🎨",
+        "icon": "\ud83c\udfa8",
         "title": "Creative Freedom",
         "description": "Freedom to express your artistic vision and develop your unique style"
       },
       {
         "id": "benefit_005",
-        "icon": "🤝",
+        "icon": "\ud83e\udd1d",
         "title": "Supportive Environment",
         "description": "Collaborative team culture with mentorship and growth opportunities"
       },
       {
         "id": "benefit_006",
-        "icon": "✨",
+        "icon": "\u2728",
         "title": "Premium Products",
         "description": "Work with top-tier professional products and the latest tools"
       }
@@ -759,7 +759,7 @@
       },
       {
         "question": "Is booth rental available?",
-        "answer": "Currently, we offer commission-based positions. Booth rental may be available for experienced stylists with an established clientele—contact us to discuss."
+        "answer": "Currently, we offer commission-based positions. Booth rental may be available for experienced stylists with an established clientele\u2014contact us to discuss."
       },
       {
         "question": "Do you provide continuing education?",
@@ -856,25 +856,25 @@
     "site_name": "Myy Signature Myy Style",
     "site_url": "https://www.myysignaturemyystyle.com",
     "meta_tags": {
-      "title": "Myy Signature Myy Style — Book Your Appointment Online",
+      "title": "Myy Signature Myy Style \u2014 Book Your Appointment Online",
       "description": "Premium salon services in Locust Grove, GA. Book hair styling, coloring, nails, and more. Fast, easy online booking with secure payment.",
       "keywords": "salon, hair styling, coloring, nails, booking, Locust Grove, Henry County"
     },
     "pages": {
       "home": {
-        "title": "Myy Signature Myy Style — Premium Hair Salon in Locust Grove, GA",
+        "title": "Myy Signature Myy Style \u2014 Premium Hair Salon in Locust Grove, GA",
         "description": "Premium hair salon in Locust Grove, GA specializing in expert cuts, color, braids, locs, and styling for all hair types. Book online today.",
         "og_description": "Expert cuts, color, braids, locs & styling in Locust Grove, GA. Book your appointment online."
       },
       "book": {
         "title": "Book Your Appointment",
         "description": "Schedule your hair appointment online at Myy Signature Myy Style. Fast, easy booking for cuts, color, braids, locs, and more.",
-        "og_description": "Schedule online — expert cuts, color, braids, locs & more."
+        "og_description": "Schedule online \u2014 expert cuts, color, braids, locs & more."
       },
       "services": {
         "title": "Hair Services & Pricing",
-        "description": "Browse our full menu of hair services — cuts, chemical treatments, extensions, braids, locs, and more. Transparent pricing and online booking.",
-        "og_description": "Full service menu with pricing — cuts, color, braids, locs, extensions & more."
+        "description": "Browse our full menu of hair services \u2014 cuts, chemical treatments, extensions, braids, locs, and more. Transparent pricing and online booking.",
+        "og_description": "Full service menu with pricing \u2014 cuts, color, braids, locs, extensions & more."
       },
       "stylists": {
         "title": "Our Stylists",
@@ -883,8 +883,8 @@
       },
       "gallery": {
         "title": "Gallery",
-        "description": "Browse our gallery of hair transformations — cuts, color, braids, locs, and more. See the quality of work at Myy Signature Myy Style.",
-        "og_description": "Browse our gallery of hair transformations — cuts, color, braids, locs & more."
+        "description": "Browse our gallery of hair transformations \u2014 cuts, color, braids, locs, and more. See the quality of work at Myy Signature Myy Style.",
+        "og_description": "Browse our gallery of hair transformations \u2014 cuts, color, braids, locs & more."
       },
       "careers": {
         "title": "Join Our Team",
@@ -893,13 +893,13 @@
       },
       "about": {
         "title": "About Us",
-        "description": "Learn about Myy Signature Myy Style — a premium hair salon dedicated to expert styling and exceptional client experiences.",
+        "description": "Learn about Myy Signature Myy Style \u2014 a premium hair salon dedicated to expert styling and exceptional client experiences.",
         "og_description": "Premium hair salon dedicated to expert styling and exceptional client experiences."
       },
       "contact": {
         "title": "Contact Us",
-        "description": "Get in touch with Myy Signature Myy Style. Visit us or book online — we'd love to hear from you.",
-        "og_description": "Visit us or book online — we'd love to hear from you."
+        "description": "Get in touch with Myy Signature Myy Style. Visit us or book online \u2014 we'd love to hear from you.",
+        "og_description": "Visit us or book online \u2014 we'd love to hear from you."
       }
     }
   },
@@ -1127,7 +1127,7 @@
       ]
     },
     "footer": {
-      "copyright": "© 2025 {APP_NAME}. All rights reserved.",
+      "copyright": "\u00a9 2025 {APP_NAME}. All rights reserved.",
       "developer_icon": "</>",
       "developed_by_link": "https://fttgsolutions.com",
       "sections": {
@@ -1178,7 +1178,7 @@
     "booking_disclaimer": {
       "deposit_note": "A deposit is required to secure your appointment (amount depends on the service). Payment options are listed below.",
       "cancellation_note": "Cancellations made less than 12 hours in advance will incur your deposit service charge. No-shows receive no refund.",
-      "late_policy": "A grace period of 10–20 minutes may be allowed. Late arrivals may result in a shortened service or cancellation with applicable fees.",
+      "late_policy": "A grace period of 10\u201320 minutes may be allowed. Late arrivals may result in a shortened service or cancellation with applicable fees.",
       "confirmation_note": "By completing this booking you agree to our deposit, cancellation, and late-arrival policies."
     },
     "salon_policies": {
@@ -1188,7 +1188,7 @@
         "title": "Booking Policy",
         "points": [
           "All appointments must be scheduled through our official booking system.",
-          "A deposit is required to secure your booking — amount depends on the service.",
+          "A deposit is required to secure your booking \u2014 amount depends on the service.",
           "Please ensure you book the correct service to allow proper timing.",
           "For questions or service clarification, contact us directly before booking."
         ]
@@ -1196,7 +1196,7 @@
       "confirmation": {
         "title": "Appointment Confirmation",
         "points": [
-          "A confirmation reminder will be sent 24–48 hours prior to your appointment.",
+          "A confirmation reminder will be sent 24\u201348 hours prior to your appointment.",
           "Clients are required to confirm their appointment via the provided link.",
           "Failure to confirm may result in automatic cancellation and loss of your reserved time."
         ]
@@ -1220,7 +1220,7 @@
         "title": "Late Policy",
         "points": [
           "Please arrive on time to ensure full service.",
-          "A grace period of 10–20 minutes may be allowed.",
+          "A grace period of 10\u201320 minutes may be allowed.",
           "Late arrivals may result in a shortened service or cancellation, with applicable fees."
         ]
       },
@@ -1295,67 +1295,72 @@
       "description": "Explore our portfolio of stunning transformations and creative hair designs",
       "items": [
         {
-          "id": "cut-1",
-          "title": "Classic Fade",
-          "category": "Cuts",
-          "image": "/assets/images/portfolio/cut-1.jpg",
-          "description": "Clean and precise fade cut with detailed line work"
+          "id": "gallery_image_1_psposh",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_1_psposh"
         },
         {
-          "id": "cut-2",
-          "title": "Modern Undercut",
-          "category": "Cuts",
-          "image": "/assets/images/portfolio/cut-2.jpg",
-          "description": "Contemporary undercut style with textured top"
+          "id": "gallery_image_2_oe3s5j",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_2_oe3s5j"
         },
         {
-          "id": "color-1",
-          "title": "Vibrant Ombre",
-          "category": "Colors",
-          "image": "/assets/images/portfolio/color-1.jpg",
-          "description": "Gorgeous ombre blend from dark to light tones"
+          "id": "gallery_image_3_wtedjc",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_3_wtedjc"
         },
         {
-          "id": "color-2",
-          "title": "Rich Brunette",
-          "category": "Colors",
-          "image": "/assets/images/portfolio/color-2.jpg",
-          "description": "Deep brunette color with dimensional highlights"
+          "id": "gallery_image_4_lvwfhz",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_4_lvwfhz"
         },
         {
-          "id": "braids-1",
-          "title": "Box Braids",
-          "category": "Braids",
-          "image": "/assets/images/portfolio/braids-1.jpg",
-          "description": "Neat and uniform box braids with decorative beads"
+          "id": "gallery_image_5_oeijra",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_5_oeijra"
         },
         {
-          "id": "braids-2",
-          "title": "Crown Braids",
-          "category": "Braids",
-          "image": "/assets/images/portfolio/braids-2.jpg",
-          "description": "Elegant crown braid design for special occasions"
+          "id": "gallery_image_6_gjdnnl",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_6_gjdnnl"
         },
         {
-          "id": "style-1",
-          "title": "Glam Waves",
-          "category": "Styling",
-          "image": "/assets/images/portfolio/style-1.jpg",
-          "description": "Beautiful salon waves with lasting volume"
+          "id": "gallery_image_7_p1tofe",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_7_p1tofe"
         },
         {
-          "id": "style-2",
-          "title": "Sleek Blowout",
-          "category": "Styling",
-          "image": "/assets/images/portfolio/style-2.jpg",
-          "description": "Smooth and shiny blowout with professional finish"
+          "id": "gallery_image_8_z6h6ik",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_8_z6h6ik"
         },
         {
-          "id": "treatment-1",
-          "title": "Hair Treatment",
-          "category": "Treatments",
-          "image": "/assets/images/portfolio/treatment-1.jpg",
-          "description": "Deep conditioning treatment for healthy, shiny hair"
+          "id": "gallery_image_9_ldx3t5",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_9_ldx3t5"
+        },
+        {
+          "id": "gallery_image_10_q1z5gv",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_10_q1z5gv"
+        },
+        {
+          "id": "gallery_image_11_m6jc6i",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_11_m6jc6i"
+        },
+        {
+          "id": "gallery_image_12_gi6127",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_12_gi6127"
+        },
+        {
+          "id": "gallery_image_13_byinlc",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_13_byinlc"
+        },
+        {
+          "id": "gallery_image_14_aayar8",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_14_aayar8"
+        },
+        {
+          "id": "gallery_image_15_ewxl3n",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_15_ewxl3n"
+        },
+        {
+          "id": "gallery_image_16_gs9fpi",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_16_gs9fpi"
+        },
+        {
+          "id": "gallery_image_17_kfyi1l",
+          "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_17_kfyi1l"
         }
       ],
       "instagram_posts": [
