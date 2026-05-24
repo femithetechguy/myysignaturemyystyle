@@ -137,24 +137,28 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Update URL hash as user scrolls between sections
+  // Update URL hash as user scrolls between sections (debounced to avoid Chrome throttle)
   useEffect(() => {
     const sectionIds = ['services', 'stylists', 'gallery', 'book', 'careers', 'about', 'contact', 'connect']
     const visibilityMap = new Map<string, number>()
+    let timer: ReturnType<typeof setTimeout> | null = null
 
     const updateHash = () => {
-      if (window.scrollY < window.innerHeight * 0.5) {
-        history.replaceState(null, '', window.location.pathname)
-        return
-      }
-      let maxId = ''
-      let maxRatio = 0
-      visibilityMap.forEach((ratio, id) => {
-        if (ratio > maxRatio) { maxRatio = ratio; maxId = id }
-      })
-      if (maxId && maxRatio > 0.1) {
-        history.replaceState(null, '', `#${maxId}`)
-      }
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        if (window.scrollY < window.innerHeight * 0.5) {
+          history.replaceState(null, '', window.location.pathname)
+          return
+        }
+        let maxId = ''
+        let maxRatio = 0
+        visibilityMap.forEach((ratio, id) => {
+          if (ratio > maxRatio) { maxRatio = ratio; maxId = id }
+        })
+        if (maxId && maxRatio > 0.1) {
+          history.replaceState(null, '', `#${maxId}`)
+        }
+      }, 150)
     }
 
     const observer = new IntersectionObserver(
@@ -162,7 +166,7 @@ export default function Home() {
         entries.forEach(e => visibilityMap.set(e.target.id, e.intersectionRatio))
         updateHash()
       },
-      { threshold: Array.from({ length: 11 }, (_, i) => i * 0.1) }
+      { threshold: [0, 0.25, 0.5, 0.75, 1] }
     )
 
     sectionIds.forEach(id => {
@@ -170,7 +174,10 @@ export default function Home() {
       if (el) observer.observe(el)
     })
 
-    return () => observer.disconnect()
+    return () => {
+      if (timer) clearTimeout(timer)
+      observer.disconnect()
+    }
   }, [])
 
   // On load: handle hash from shared link (e.g. /#book auto-opens modal, others scroll to section)
@@ -516,7 +523,7 @@ export default function Home() {
           }}
           className="hidden md:block flex-shrink-0 hover:opacity-80 transition-opacity"
         >
-          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-16" unoptimized />
+          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-16" unoptimized priority />
         </button>
 
         {/* Mobile Center Logo */}
@@ -524,7 +531,7 @@ export default function Home() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="absolute left-12 right-12 flex justify-center items-center md:hidden hover:opacity-80 transition-opacity"
         >
-          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-11" unoptimized />
+          <Image src="/assets/images/others/logo-main.svg" alt="Myy Signature Myy Style" width={200} height={60} className="w-auto h-11" unoptimized priority />
         </button>
 
         {/* Desktop Navigation - Centered (flex-1 + justify-center keeps it centered between logo and spacer) */}

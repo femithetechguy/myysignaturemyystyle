@@ -18,7 +18,8 @@ interface GalleryProps {
 
 export default function Gallery({ instagramUrl }: GalleryProps) {
   const config = getAppConfig()
-  const items: GalleryItem[] = (config.content.gallery.items ?? []).filter(
+  const gallery = config.content?.gallery
+  const items: GalleryItem[] = (gallery?.items ?? []).filter(
     (item: GalleryItem) => item.image && !item.image.startsWith('/assets/images/portfolio')
   )
 
@@ -56,8 +57,8 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-10">
           <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">Our Work</p>
-          <h2 className="text-3xl font-bold sm:text-4xl text-primary mb-3">{config.content.gallery.title}</h2>
-          <p className="text-base text-primary/60 max-w-xl mx-auto">{config.content.gallery.description}</p>
+          <h2 className="text-3xl font-bold sm:text-4xl text-primary mb-3">{gallery?.title}</h2>
+          <p className="text-base text-primary/60 max-w-xl mx-auto">{gallery?.description}</p>
         </div>
 
         {items.length > 0 ? (
@@ -68,25 +69,23 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
               {items.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="snap-start flex-none rounded-xl overflow-hidden cursor-pointer shadow-md active:scale-95 transition-transform duration-150"
+                  className="snap-start flex-none relative rounded-xl overflow-hidden cursor-pointer shadow-md active:scale-95 transition-transform duration-150"
                   style={{ width: '68vw', aspectRatio: '3/4' }}
                   onClick={() => setModalIndex(idx)}
                 >
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={item.image}
-                      alt={item.title ?? 'Gallery photo'}
-                      fill
-                      sizes="68vw"
-                      className="object-cover object-top"
-                      unoptimized
-                    />
-                    {item.title && (
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-3 px-3">
-                        <p className="text-white font-semibold text-sm drop-shadow">{item.title}</p>
-                      </div>
-                    )}
-                  </div>
+                  <Image
+                    src={item.image}
+                    alt={item.title ?? 'Gallery photo'}
+                    fill
+                    sizes="68vw"
+                    className="object-cover object-top"
+                    unoptimized
+                  />
+                  {item.title && (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pt-8 pb-3 px-3">
+                      <p className="text-white font-semibold text-sm drop-shadow">{item.title}</p>
+                    </div>
+                  )}
                 </div>
               ))}
               {/* Trailing spacer so last card isn't flush against edge */}
