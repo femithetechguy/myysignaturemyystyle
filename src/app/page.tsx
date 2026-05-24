@@ -530,9 +530,18 @@ export default function Home() {
         {/* Desktop Navigation - Centered (flex-1 + justify-center keeps it centered between logo and spacer) */}
         <nav className="justify-center hidden flex-1 gap-6 md:flex lg:gap-16">
           {content.navigation.links.map((link) => (
-            <a 
-              key={link.href} 
-              href={link.href} 
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={(e) => {
+                e.preventDefault()
+                const id = link.href.replace('#', '')
+                const el = document.getElementById(id)
+                if (el) {
+                  const headerHeight = document.querySelector('header')?.offsetHeight ?? 80
+                  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - headerHeight, behavior: 'smooth' })
+                }
+              }}
               className={`transition-all duration-300 text-sm lg:text-base uppercase hover:scale-110 font-bold tracking-wide ${
                 navBackground === 'dark'
                   ? 'text-white hover:text-accent-light'
@@ -859,7 +868,7 @@ export default function Home() {
 
       {/* Gallery Section */}
       <section id="gallery" className="bg-white">
-        <Gallery services={services} instagramUrl={business.social.instagram} />
+        <Gallery instagramUrl={business.social.instagram} />
       </section>
 
       {/* Section Divider */}
