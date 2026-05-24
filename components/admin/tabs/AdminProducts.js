@@ -561,7 +561,7 @@ export default function AdminProducts() {
               📊 Columns ({visibleColumns.length}/{ALL_PRODUCT_COLUMNS.length})
             </button>
             {showColumnSelector && (
-              <div style={{
+              <div className="colSelectorDropdown" style={{
                 position: 'absolute',
                 top: '100%',
                 right: 0,

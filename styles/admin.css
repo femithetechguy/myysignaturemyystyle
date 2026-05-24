@@ -877,6 +877,30 @@ body [style*="position: fixed"] h4 {
   }
 }
 
+/* ========== COLUMN SELECTOR DROPDOWN ========== */
+/* Desktop: anchored to right edge of button (default) */
+.colSelectorDropdown {
+  /* inherits inline right:0 from component */
+}
+
+/* ========== APPOINTMENTS TAB ========== */
+.apptStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.weekViewOuter {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-only logout nav item — shown in mobile dropdown, hidden elsewhere */
+.logoutNavItem {
+  display: none !important;
+}
+
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
   .sidebar {
@@ -1021,6 +1045,17 @@ body [style*="position: fixed"] h4 {
   div[style*="maxWidth: 500px"] {
     max-width: 90% !important;
     margin: auto !important;
+  }
+
+  /* Appointments stats: 2-col on tablet */
+  .apptStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Make tables horizontally scrollable on tablets */
+  .quickActions {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -1342,6 +1377,41 @@ body [style*="position: fixed"] h4 {
   .info p {
     font-size: 0.85rem;
     margin: 5px 0;
+  }
+
+  /* Column selector dropdown: flip to open rightward on mobile */
+  .colSelectorDropdown {
+    right: auto !important;
+    left: 0 !important;
+    min-width: min(260px, calc(100vw - 20px)) !important;
+  }
+
+  /* Appointments stats: 2×2 grid on mobile */
+  .apptStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Logout button inside mobile nav dropdown */
+  .logoutNavItem {
+    display: flex !important;
+    color: #ff8888 !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    margin-top: 4px;
+    padding-top: 14px;
+  }
+
+  /* Truncate long header title on phones */
+  .header h1 {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Prevent horizontal overflow in main content */
+  .mainContent {
+    overflow-x: hidden;
   }
 }
 
