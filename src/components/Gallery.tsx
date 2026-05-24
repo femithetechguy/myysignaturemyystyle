@@ -66,7 +66,7 @@ export default function Gallery({ services, instagramUrl }: GalleryProps) {
   }, [modalIndex])
 
   return (
-    <section className="w-full py-20 bg-white">
+    <section className="w-full py-10 sm:py-14 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
