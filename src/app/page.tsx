@@ -1709,8 +1709,20 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Service Category Pills */}
-                  <div className="space-y-2">
+                  {/* Unavailability banner — shown immediately after date is picked */}
+                  {selectedDate && getDaySchedule(selectedDate) === 'closed' && (
+                    <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/40 text-center">
+                      <p className="text-sm font-semibold text-primary/80">
+                        {selectedBookingStylist
+                          ? `${selectedBookingStylist.name} is not available on ${selectedDate.toLocaleDateString('en-US', { weekday: 'long' })}s.`
+                          : `The salon is closed on ${selectedDate.toLocaleDateString('en-US', { weekday: 'long' })}s.`}
+                      </p>
+                      <p className="mt-1 text-xs text-primary/50">Please select a different date or contact us directly.</p>
+                    </div>
+                  )}
+
+                  {/* Service Category Pills — hidden when selected date is unavailable */}
+                  {(!selectedDate || getDaySchedule(selectedDate) !== 'closed') && <div className="space-y-2">
                     <label className="block text-sm font-bold text-primary">Service Category</label>
                     <div className="flex flex-wrap gap-2">
                       {getBookingCategories().map((category) => (
@@ -1728,10 +1740,10 @@ export default function Home() {
                         </button>
                       ))}
                     </div>
-                  </div>
+                  </div>}
 
-                  {/* Service list — mobile only (on desktop it lives in the right column) */}
-                  {selectedBookingCategory && (
+                  {/* Service list — mobile only, hidden when day is closed */}
+                  {(!selectedDate || getDaySchedule(selectedDate) !== 'closed') && selectedBookingCategory && (
                     <div className="md:hidden border rounded-lg bg-secondary/5 border-secondary/20 overflow-hidden">
                       <p className="px-4 py-2 text-xs font-bold text-primary/60 uppercase tracking-wide border-b border-secondary/20">{selectedBookingCategory}</p>
                       <div className="divide-y divide-secondary/10 max-h-52 overflow-y-auto">
@@ -1758,17 +1770,14 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Time Slot Picker — appears once both date and service are selected */}
-                  {selectedDate && selectedBookingService && (() => {
+                  {/* Time Slot Picker — appears once both date and service are selected and day is open */}
+                  {selectedDate && selectedBookingService && getDaySchedule(selectedDate) !== 'closed' && (() => {
                     const schedule = getDaySchedule(selectedDate)
                     const slots = generateTimeSlots(schedule, selectedBookingService.duration)
-                    const dayLabel = selectedDate.toLocaleDateString('en-US', { weekday: 'long' })
-                    if (schedule === 'closed' || slots.length === 0) {
+                    if (slots.length === 0) {
                       return (
                         <div className="p-4 border rounded-lg bg-secondary/10 border-secondary/30 text-center">
-                          <p className="text-sm font-semibold text-primary/70">
-                            {selectedBookingStylist ? `${selectedBookingStylist.name} is not available on ${dayLabel}s.` : `The salon is closed on ${dayLabel}s.`}
-                          </p>
+                          <p className="text-sm font-semibold text-primary/70">No available time slots for this service on the selected date.</p>
                           <p className="mt-1 text-xs text-primary/50">Please select a different date or contact us directly.</p>
                         </div>
                       )
