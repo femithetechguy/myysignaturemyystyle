@@ -24,6 +24,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [addressCopied, setAddressCopied] = useState(false)
   const [bookingLinkShared, setBookingLinkShared] = useState(false)
+  const [careersLinkShared, setCareersLinkShared] = useState(false)
   const [showShare, setShowShare] = useState(true)
   const [activeReviewIndex, setActiveReviewIndex] = useState(1)
   const [typedReviewText, setTypedReviewText] = useState('')
@@ -921,7 +922,22 @@ export default function Home() {
           <div className="mb-8 text-center">
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary/40 mb-2">Work With Us</p>
             <h2 className="mb-2 text-3xl font-bold sm:text-4xl text-primary">{careers.tagline}</h2>
-            <p className="text-base text-primary/60">{careers.introduction}</p>
+            <p className="text-base text-primary/60 mb-4">{careers.introduction}</p>
+            <button
+              onClick={async () => {
+                const url = `${window.location.origin}/careers`
+                await navigator.clipboard.writeText(url)
+                setCareersLinkShared(true)
+                setTimeout(() => setCareersLinkShared(false), 2000)
+                if (typeof navigator.share === 'function') {
+                  try { await navigator.share({ title: 'Join Our Team — Myy Signature Myy Style', text: 'We\'re hiring talented stylists! Check out our open positions.', url }) } catch { /* cancelled */ }
+                }
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-accent/40 text-xs font-semibold text-accent hover:bg-accent/10 transition-all duration-200"
+            >
+              <FiShare2 className="w-3.5 h-3.5" />
+              {careersLinkShared ? 'Link Copied!' : 'Share Careers Page'}
+            </button>
           </div>
 
           <div className="space-y-4">
