@@ -63,7 +63,8 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
         {items.length > 0 ? (
           <>
             {/* Mobile: horizontal snap-scroll strip */}
-            <div className="sm:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="sm:hidden relative">
+            <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {items.map((item, idx) => (
                 <div
                   key={item.id}
@@ -89,7 +90,10 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
                 </div>
               ))}
               {/* Trailing spacer so last card isn't flush against edge */}
-              <div className="flex-none w-1" />
+              <div className="flex-none w-4" />
+            </div>
+            {/* Right-edge fade hint */}
+            <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-white to-transparent pointer-events-none" />
             </div>
 
             {/* Desktop: grid */}
