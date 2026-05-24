@@ -249,7 +249,7 @@ export default function AdminServices() {
                 📊 Columns ({visibleColumns.length}/{allColumns.length})
               </button>
               {showColumnSelector && (
-                <div style={{
+                <div className="colSelectorDropdown" style={{
                   position: 'absolute',
                   top: '100%',
                   right: 0,

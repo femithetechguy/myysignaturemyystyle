@@ -877,6 +877,12 @@ body [style*="position: fixed"] h4 {
   }
 }
 
+/* ========== COLUMN SELECTOR DROPDOWN ========== */
+/* Desktop: anchored to right edge of button (default) */
+.colSelectorDropdown {
+  /* inherits inline right:0 from component */
+}
+
 /* ========== APPOINTMENTS TAB ========== */
 .apptStatsGrid {
   display: grid;
@@ -1371,6 +1377,13 @@ body [style*="position: fixed"] h4 {
   .info p {
     font-size: 0.85rem;
     margin: 5px 0;
+  }
+
+  /* Column selector dropdown: flip to open rightward on mobile */
+  .colSelectorDropdown {
+    right: auto !important;
+    left: 0 !important;
+    min-width: min(260px, calc(100vw - 20px)) !important;
   }
 
   /* Appointments stats: 2×2 grid on mobile */
