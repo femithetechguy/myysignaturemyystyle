@@ -142,7 +142,7 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
               style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)' }}
             >
               <FiInstagram className="w-4 h-4" />
-              Follow us on Instagram
+              See More on Instagram
             </a>
           </div>
         )}
