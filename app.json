@@ -1296,70 +1296,87 @@
       "items": [
         {
           "id": "gallery_image_1_psposh",
+          "title": "Copper Pixie Cut",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_1_psposh"
         },
         {
           "id": "gallery_image_2_oe3s5j",
+          "title": "Pin Curls",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_2_oe3s5j"
         },
         {
           "id": "gallery_image_3_wtedjc",
+          "title": "Defined Pin Curls",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_3_wtedjc"
         },
         {
           "id": "gallery_image_4_lvwfhz",
+          "title": "Bouncy Blowout",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_4_lvwfhz"
         },
         {
           "id": "gallery_image_5_oeijra",
+          "title": "Silk Press",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_5_oeijra"
         },
         {
           "id": "gallery_image_6_gjdnnl",
+          "title": "Silk Press with Bun",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_6_gjdnnl"
         },
         {
           "id": "gallery_image_7_p1tofe",
+          "title": "Sew-In Bob",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_7_p1tofe"
         },
         {
           "id": "gallery_image_8_z6h6ik",
+          "title": "Feed-In Braids",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_8_z6h6ik"
         },
         {
           "id": "gallery_image_9_ldx3t5",
+          "title": "Sleek Bob Sew-In",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_9_ldx3t5"
         },
         {
           "id": "gallery_image_10_q1z5gv",
+          "title": "Finger Wave Pixie",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_10_q1z5gv"
         },
         {
           "id": "gallery_image_11_m6jc6i",
+          "title": "Glamour Curls",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_11_m6jc6i"
         },
         {
           "id": "gallery_image_12_gi6127",
+          "title": "Curly Pixie",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_12_gi6127"
         },
         {
           "id": "gallery_image_13_byinlc",
+          "title": "Knotless Cornrows",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_13_byinlc"
         },
         {
           "id": "gallery_image_14_aayar8",
+          "title": "Designer Cornrows",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_14_aayar8"
         },
         {
           "id": "gallery_image_15_ewxl3n",
+          "title": "Kids' Curly Style",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_15_ewxl3n"
         },
         {
           "id": "gallery_image_16_gs9fpi",
+          "title": "Bubble Ponytail",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_16_gs9fpi"
         },
         {
           "id": "gallery_image_17_kfyi1l",
+          "title": "Half Cornrow Style",
           "image": "https://res.cloudinary.com/dvkbgsaaf/image/upload/w_800,q_auto,f_auto/gallery_image_17_kfyi1l"
         }
       ],
