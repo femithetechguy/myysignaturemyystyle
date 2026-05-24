@@ -155,20 +155,24 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
           onClick={() => setModalIndex(null)}
         >
           <div
-            className="relative w-full max-w-sm sm:max-w-md rounded-2xl overflow-hidden shadow-2xl flex flex-col bg-primary"
-            style={{ maxHeight: '90dvh' }}
+            className="relative w-full max-w-sm sm:max-w-md rounded-2xl overflow-hidden shadow-2xl bg-primary"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 flex-shrink-0">
-              <p className="text-white font-bold text-base">{current.title ?? 'Photo'}</p>
-              <button onClick={() => setModalIndex(null)} className="text-white/60 hover:text-white transition-colors p-1 -mr-1">
-                <FiX className="w-5 h-5" />
-              </button>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+              <p className="text-white font-bold text-sm truncate pr-3">{current.title ?? 'Photo'}</p>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                {items.length > 1 && (
+                  <span className="text-white/50 text-xs font-medium">{modalIndex + 1} / {items.length}</span>
+                )}
+                <button onClick={() => setModalIndex(null)} className="text-white/60 hover:text-white transition-colors p-1 -mr-1">
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
-            {/* Image — full portrait, no cropping */}
-            <div className="relative w-full flex-1 min-h-0">
+            {/* Image — fixed height so it always renders */}
+            <div className="relative w-full" style={{ height: '65dvh' }}>
               <Image
                 src={current.image}
                 alt={current.title ?? 'Gallery photo'}
@@ -194,16 +198,13 @@ export default function Gallery({ instagramUrl }: GalleryProps) {
                   >
                     <FiChevronRight className="w-5 h-5" />
                   </button>
-                  <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                    {modalIndex + 1} / {items.length}
-                  </div>
                 </>
               )}
             </div>
 
             {/* Dot navigation */}
             {items.length > 1 && (
-              <div className="px-5 py-3 flex-shrink-0 bg-primary">
+              <div className="px-4 py-3 bg-primary">
                 <div className="flex justify-center gap-1.5 flex-wrap">
                   {items.map((_, i) => (
                     <button
