@@ -868,7 +868,7 @@ export default function Home() {
 
       {/* Gallery Section */}
       <section id="gallery" className="bg-white">
-        <Gallery services={services} instagramUrl={business.social.instagram} />
+        <Gallery instagramUrl={business.social.instagram} />
       </section>
 
       {/* Section Divider */}
