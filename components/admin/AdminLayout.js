@@ -169,6 +169,11 @@ export default function AdminLayout() {
               <span className="label">{tab.label}</span>
             </button>
           ))}
+          {/* Logout — only visible in mobile dropdown */}
+          <button onClick={handleLogout} className="navItem logoutNavItem">
+            <span className="icon">🔒</span>
+            <span className="label">Logout</span>
+          </button>
         </nav>
 
         {/* Logout Button */}

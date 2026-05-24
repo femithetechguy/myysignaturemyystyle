@@ -238,7 +238,8 @@ function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, o
         <button onClick={nextWeek} style={navBtnStyle}>›</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
+      <div className="weekViewOuter">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', minWidth: '560px' }}>
         {days.map((day, i) => {
           const dateKey = day.toISOString().split('T')[0];
           const appts = (appointmentsByDate[dateKey] || []).sort((a, b) =>
@@ -273,6 +274,7 @@ function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, o
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
@@ -429,7 +431,7 @@ export default function AdminAppointments() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
         <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B' }}>Appointments</h2>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
           {/* View toggle */}
           <div style={{ display: 'flex', background: '#f5f5f5', borderRadius: '8px', padding: '3px', border: '1px solid #ddd' }}>
             {[['list','☰ List'],['week','⬜ Week'],['month','📅 Month']].map(([v, label]) => (
@@ -452,7 +454,7 @@ export default function AdminAppointments() {
       </div>
 
       {/* Stats bar */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '20px' }}>
+      <div className="apptStatsGrid">
         {[
           { label: 'Today', value: stats.today, accent: '#D4AF37' },
           { label: 'This Week', value: stats.week, accent: '#3B82F6' },
