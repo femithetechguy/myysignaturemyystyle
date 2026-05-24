@@ -3,7 +3,7 @@
 import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone, FiCode, FiMapPin, FiClock } from 'react-icons/fi'
+import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone, FiCode, FiMapPin, FiClock, FiSettings } from 'react-icons/fi'
 import { SiZelle, SiCashapp } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
@@ -1267,7 +1267,7 @@ export default function Home() {
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.follow.title}</h3>
               <div className="flex justify-start gap-4">
                 {business.social.instagram && (
-                  <a 
+                  <a
                     href={business.social.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -1277,6 +1277,13 @@ export default function Home() {
                     <FiInstagram className="w-6 h-6" />
                   </a>
                 )}
+                <a
+                  href="/admin"
+                  className="transition-colors duration-300 text-secondary/20 hover:text-secondary/60"
+                  aria-label="Admin"
+                >
+                  <FiSettings className="w-5 h-5" />
+                </a>
               </div>
             </div>
           </div>
