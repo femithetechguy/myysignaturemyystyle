@@ -252,6 +252,13 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Lock body scroll whenever any modal is open
+  useEffect(() => {
+    const anyOpen = showBookingModal || showApplicationModal || showConfirmationModal
+    document.body.style.overflow = anyOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [showBookingModal, showApplicationModal, showConfirmationModal])
+
   // Fetch services from database
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
