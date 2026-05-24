@@ -72,9 +72,7 @@ export default function Home() {
   })
   const [applicationSubmitted, setApplicationSubmitted] = useState(false)
   const [appAvailDays, setAppAvailDays] = useState<string[]>([])
-  const [appAvailStartDate, setAppAvailStartDate] = useState<number | null>(null)
-  const [appAvailMonth, setAppAvailMonth] = useState(new Date().getMonth())
-  const [appAvailYear, setAppAvailYear] = useState(new Date().getFullYear())
+  const [appAvailStartDate, setAppAvailStartDate] = useState('')
   const [policyAccepted, setPolicyAccepted] = useState(false)
   const [showFullPolicy, setShowFullPolicy] = useState(false)
   const [copiedZelle, setCopiedZelle] = useState(false)
@@ -2392,7 +2390,7 @@ export default function Home() {
                   const availParts: string[] = []
                   if (appAvailDays.length > 0) availParts.push(`Days: ${appAvailDays.join(', ')}`)
                   if (appAvailStartDate) {
-                    const d = new Date(appAvailYear, appAvailMonth, appAvailStartDate)
+                    const d = new Date(appAvailStartDate + 'T00:00:00')
                     availParts.push(`Start: ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`)
                   }
                   const finalData = { ...applicationData, availability: availParts.join(' | ') }
@@ -2406,9 +2404,7 @@ export default function Home() {
                     setShowApplicationModal(false)
                     setApplicationSubmitted(false)
                     setAppAvailDays([])
-                    setAppAvailStartDate(null)
-                    setAppAvailMonth(new Date().getMonth())
-                    setAppAvailYear(new Date().getFullYear())
+                    setAppAvailStartDate('')
                     setApplicationData({
                       full_name: '',
                       email: '',
@@ -2426,6 +2422,8 @@ export default function Home() {
                     })
                   }, 3000)
               }} className="p-6 space-y-5">
+
+                <p className="text-xs font-bold uppercase tracking-widest text-primary/40">Contact</p>
 
                 {/* Row 1: Name + Email */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -2459,20 +2457,25 @@ export default function Home() {
                   </div>
                   <div>
                     <label className="block mb-1.5 text-sm font-medium text-primary">Employment Type <span className="text-red-500">*</span></label>
-                    <select value={applicationData.employment_type}
-                      onChange={(e) => { setApplicationData({ ...applicationData, employment_type: e.target.value }); if (formErrors.employment_type) setFormErrors({ ...formErrors, employment_type: '' }) }}
-                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent text-primary ${formErrors.employment_type ? 'border-red-500' : 'border-accent/30'}`}>
-                      <option value="">Select type</option>
-                      <option value="Full-time">Full-time</option>
-                      <option value="Part-time">Part-time</option>
-                      <option value="Flexible">Flexible</option>
-                    </select>
+                    <div className={`flex gap-2 flex-wrap p-1 rounded-lg ${formErrors.employment_type ? 'ring-1 ring-red-400' : ''}`}>
+                      {['Full-time', 'Part-time', 'Flexible'].map((type) => (
+                        <button key={type} type="button"
+                          onClick={() => { setApplicationData({ ...applicationData, employment_type: type }); if (formErrors.employment_type) setFormErrors({ ...formErrors, employment_type: '' }) }}
+                          className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 ${
+                            applicationData.employment_type === type
+                              ? 'bg-primary text-secondary border-primary'
+                              : 'bg-white text-primary/70 border-accent/30 hover:border-accent/60 hover:text-primary'
+                          }`}>{type}</button>
+                      ))}
+                    </div>
                     {formErrors.employment_type && <p data-app-error className="mt-1 text-xs text-red-500">{formErrors.employment_type}</p>}
                   </div>
                 </div>
 
-                {/* License note */}
                 <p className="text-xs text-primary/50 italic">Your Georgia Cosmetology License number may be requested during final selection.</p>
+
+                <hr className="border-accent/10" />
+                <p className="text-xs font-bold uppercase tracking-widest text-primary/40">Experience</p>
 
                 {/* Row 3: Years Experience + Portfolio */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -2540,88 +2543,42 @@ export default function Home() {
                   </div>
                 </div>
 
+                <hr className="border-accent/10" />
+                <p className="text-xs font-bold uppercase tracking-widest text-primary/40">Availability</p>
+
                 {/* Availability */}
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-primary">Availability</label>
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    {/* Day toggles */}
-                    <div>
-                      <p className="mb-2 text-xs text-primary/60">Available days</p>
-                      <div className="flex flex-wrap gap-2">
-                        {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day) => {
-                          const on = appAvailDays.includes(day)
-                          return (
-                            <button key={day} type="button"
-                              onClick={() => setAppAvailDays(on ? appAvailDays.filter(d => d !== day) : [...appAvailDays, day])}
-                              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
-                                on ? 'bg-accent text-primary border-accent' : 'border-accent/30 text-primary/60 hover:border-accent/60'
-                              }`}>{day}</button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                    {/* Mini calendar — earliest start date */}
-                    <div>
-                      <p className="mb-2 text-xs text-primary/60">Earliest start date</p>
-                      <div className="border rounded-lg border-accent/20 p-3 bg-secondary/5">
-                        {/* Month nav */}
-                        <div className="flex items-center justify-between mb-2">
-                          <button type="button" onClick={() => {
-                            if (appAvailMonth === 0) { setAppAvailMonth(11); setAppAvailYear(appAvailYear - 1) }
-                            else setAppAvailMonth(appAvailMonth - 1)
-                          }} className="p-1 rounded hover:bg-accent/10 text-primary/60 hover:text-accent transition-colors">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                          </button>
-                          <span className="text-xs font-semibold text-primary">
-                            {new Date(appAvailYear, appAvailMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
-                          </span>
-                          <button type="button" onClick={() => {
-                            if (appAvailMonth === 11) { setAppAvailMonth(0); setAppAvailYear(appAvailYear + 1) }
-                            else setAppAvailMonth(appAvailMonth + 1)
-                          }} className="p-1 rounded hover:bg-accent/10 text-primary/60 hover:text-accent transition-colors">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                          </button>
-                        </div>
-                        {/* Day headers */}
-                        <div className="grid grid-cols-7 mb-1">
-                          {['S','M','T','W','T','F','S'].map((d, i) => (
-                            <div key={i} className="text-center text-[10px] font-bold text-primary/40">{d}</div>
-                          ))}
-                        </div>
-                        {/* Days grid */}
-                        <div className="grid grid-cols-7 gap-y-0.5">
-                          {(() => {
-                            const firstDay = new Date(appAvailYear, appAvailMonth, 1).getDay()
-                            const daysInMonth = new Date(appAvailYear, appAvailMonth + 1, 0).getDate()
-                            const today = new Date(); today.setHours(0,0,0,0)
-                            const cells = []
-                            for (let i = 0; i < firstDay; i++) cells.push(<div key={`e${i}`} />)
-                            for (let d = 1; d <= daysInMonth; d++) {
-                              const date = new Date(appAvailYear, appAvailMonth, d)
-                              const isPast = date < today
-                              const isSelected = appAvailStartDate === d && !isPast
-                              cells.push(
-                                <button key={d} type="button" disabled={isPast}
-                                  onClick={() => setAppAvailStartDate(d)}
-                                  className={`text-[11px] w-full aspect-square rounded-full transition-all duration-100 ${
-                                    isSelected ? 'bg-accent text-primary font-bold' :
-                                    isPast ? 'text-primary/20 cursor-not-allowed' :
-                                    'text-primary/70 hover:bg-accent/10 hover:text-accent'
-                                  }`}>{d}</button>
-                              )
-                            }
-                            return cells
-                          })()}
-                        </div>
-                        {appAvailStartDate && (
-                          <p className="mt-2 text-[11px] text-center text-accent font-semibold">
-                            Starting {new Date(appAvailYear, appAvailMonth, appAvailStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </p>
-                        )}
-                      </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {/* Day toggles */}
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-primary">Available days</p>
+                    <div className="flex flex-wrap gap-2">
+                      {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day) => {
+                        const on = appAvailDays.includes(day)
+                        return (
+                          <button key={day} type="button"
+                            onClick={() => setAppAvailDays(on ? appAvailDays.filter(d => d !== day) : [...appAvailDays, day])}
+                            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${
+                              on ? 'bg-accent text-primary border-accent' : 'border-accent/30 text-primary/60 hover:border-accent/60'
+                            }`}>{day}</button>
+                        )
+                      })}
                     </div>
                   </div>
+                  {/* Earliest start date — native date picker */}
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-primary">Earliest start date</label>
+                    <input
+                      type="date"
+                      value={appAvailStartDate}
+                      min={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setAppAvailStartDate(e.target.value)}
+                      className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent text-primary"
+                    />
+                  </div>
                 </div>
+
+                <hr className="border-accent/10" />
+                <p className="text-xs font-bold uppercase tracking-widest text-primary/40">Tell Us More</p>
 
                 {/* Why Join + References side by side on desktop */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -2633,11 +2590,11 @@ export default function Home() {
                       placeholder="Tell us what excites you about this opportunity…" />
                   </div>
                   <div>
-                    <label className="block mb-1.5 text-sm font-medium text-primary">Professional References</label>
+                    <label className="block mb-1.5 text-sm font-medium text-primary">References <span className="text-primary/40 font-normal text-xs">(optional, can share later)</span></label>
                     <textarea value={applicationData.references} rows={3}
                       onChange={(e) => setApplicationData({ ...applicationData, references: e.target.value })}
                       className="w-full px-4 py-2 border rounded-lg border-accent/30 focus:ring-2 focus:ring-accent focus:border-transparent text-primary placeholder-gray-400"
-                      placeholder="Name, Title, Phone/Email (2–3 references)" />
+                      placeholder="Name, Title, Phone/Email" />
                   </div>
                 </div>
 
