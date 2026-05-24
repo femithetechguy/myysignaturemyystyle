@@ -619,6 +619,7 @@ export default function Home() {
           alt="Myy Signature Hair Salon"
           fill
           priority
+          unoptimized
           className="object-cover object-center"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
           onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/others/landing.png' }}
@@ -1130,6 +1131,7 @@ export default function Home() {
                     alt="Myy Signature storefront"
                     width={800}
                     height={600}
+                    unoptimized
                     className="w-full h-full object-cover rounded-2xl"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/others/out_landing.png' }}
@@ -1155,7 +1157,6 @@ export default function Home() {
                 width={400}
                 height={700}
                 className="w-full h-auto rounded-2xl md:rounded-3xl"
-                unoptimized
               />
             </div>
 
