@@ -536,6 +536,7 @@ CREATE TRIGGER products_updated_timestamp
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS instagram_handle VARCHAR(100);
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS booking_slug VARCHAR(100);
 ALTER TABLE services ADD COLUMN IF NOT EXISTS staff_ids JSONB DEFAULT '[]';
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS total_appointments INTEGER DEFAULT 0;
 
 
 -- ============================================================================

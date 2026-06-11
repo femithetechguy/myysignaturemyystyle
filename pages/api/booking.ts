@@ -111,14 +111,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const lastName  = nameParts.slice(1).join(' ') || null
     const customerId = `CUS${Date.now()}`
     await pool.query(
-      `INSERT INTO customers (customer_id, first_name, last_name, email, phone, total_appointments)
-       VALUES ($1, $2, $3, $4, $5, 1)
+      `INSERT INTO customers (customer_id, first_name, last_name, email, phone)
+       VALUES ($1, $2, $3, $4, $5)
        ON CONFLICT (email) DO UPDATE SET
-         first_name         = EXCLUDED.first_name,
-         last_name          = EXCLUDED.last_name,
-         phone              = COALESCE(EXCLUDED.phone, customers.phone),
-         total_appointments = customers.total_appointments + 1,
-         updated_at         = CURRENT_TIMESTAMP`,
+         first_name = EXCLUDED.first_name,
+         last_name  = EXCLUDED.last_name,
+         phone      = COALESCE(EXCLUDED.phone, customers.phone),
+         updated_at = CURRENT_TIMESTAMP`,
       [customerId, firstName, lastName, customer_email, customer_phone ?? null]
     )
   } catch (dbErr) {
