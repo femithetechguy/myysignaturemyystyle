@@ -1138,7 +1138,10 @@ body [style*="position: fixed"] h4 {
   .navItem {
     padding: 11px 15px;
     gap: 12px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     white-space: nowrap;
     flex-shrink: 0;
     border-radius: 0;
