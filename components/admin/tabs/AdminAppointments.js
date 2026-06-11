@@ -206,7 +206,14 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
 
 // ── Week view ─────────────────────────────────────────────────────────────────
 function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, onDelete, onView }) {
-  // Get Monday of current week
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   const getWeekStart = (date) => {
     const d = new Date(date);
     const day = d.getDay();
@@ -229,53 +236,82 @@ function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, o
 
   const weekLabel = `${days[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${days[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
 
+  const dayCards = days.map((day, i) => {
+    const dateKey = day.toISOString().split('T')[0];
+    const appts = (appointmentsByDate[dateKey] || []).sort((a, b) =>
+      (a.appointment_time || '').localeCompare(b.appointment_time || '')
+    );
+    const isToday = isSameDay(day.toISOString(), today);
+    return { day, dateKey, appts, isToday, i };
+  });
+
   return (
     <div>
       {/* Week nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <button onClick={prevWeek} style={navBtnStyle}>‹</button>
         <span style={{ fontWeight: 700, fontSize: '1rem', color: '#1B1B1B' }}>{weekLabel}</span>
         <button onClick={nextWeek} style={navBtnStyle}>›</button>
       </div>
 
-      <div className="weekViewOuter">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', minWidth: '560px' }}>
-        {days.map((day, i) => {
-          const dateKey = day.toISOString().split('T')[0];
-          const appts = (appointmentsByDate[dateKey] || []).sort((a, b) =>
-            (a.appointment_time || '').localeCompare(b.appointment_time || '')
-          );
-          const isToday = isSameDay(day.toISOString(), today);
-
-          return (
+      {isMobile ? (
+        /* ── Mobile: vertical stack, skip empty days ── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {dayCards.map(({ day, appts, isToday, i }) => (
             <div key={i} style={{
               background: isToday ? '#FEF9EC' : '#fafafa',
               border: isToday ? '2px solid #D4AF37' : '1px solid #eee',
               borderRadius: '10px',
-              padding: '10px 8px',
-              minHeight: '140px',
+              padding: '10px 12px',
+              opacity: appts.length === 0 ? 0.45 : 1,
             }}>
-              <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: appts.length ? '8px' : 0 }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: isToday ? '#D4AF37' : '#999', textTransform: 'uppercase', minWidth: '28px' }}>
                   {day.toLocaleDateString('en-US', { weekday: 'short' })}
-                </div>
-                <div style={{
-                  fontSize: '1.2rem', fontWeight: 800,
-                  color: isToday ? '#D4AF37' : '#1B1B1B',
-                  lineHeight: 1.2,
-                }}>{day.getDate()}</div>
+                </span>
+                <span style={{ fontSize: '1rem', fontWeight: 800, color: isToday ? '#D4AF37' : '#1B1B1B' }}>
+                  {day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+                {appts.length > 0 && (
+                  <span style={{ marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 700, color: '#D4AF37', background: '#FEF9EC', border: '1px solid #D4AF37', borderRadius: '999px', padding: '1px 8px' }}>
+                    {appts.length} appt{appts.length > 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
-
-              {appts.length === 0 ? (
-                <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#ccc', marginTop: '16px' }}>—</div>
-              ) : (
-                appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} onView={onView} compact />)
-              )}
+              {appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} onView={onView} compact />)}
             </div>
-          );
-        })}
-      </div>
-      </div>
+          ))}
+        </div>
+      ) : (
+        /* ── Desktop: 7-column grid ── */
+        <div className="weekViewOuter">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', minWidth: '560px' }}>
+            {dayCards.map(({ day, appts, isToday, i }) => (
+              <div key={i} style={{
+                background: isToday ? '#FEF9EC' : '#fafafa',
+                border: isToday ? '2px solid #D4AF37' : '1px solid #eee',
+                borderRadius: '10px',
+                padding: '10px 8px',
+                minHeight: '140px',
+              }}>
+                <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999', textTransform: 'uppercase' }}>
+                    {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                  </div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: isToday ? '#D4AF37' : '#1B1B1B', lineHeight: 1.2 }}>
+                    {day.getDate()}
+                  </div>
+                </div>
+                {appts.length === 0 ? (
+                  <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#ccc', marginTop: '16px' }}>—</div>
+                ) : (
+                  appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} onView={onView} compact />)
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
