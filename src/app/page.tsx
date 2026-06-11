@@ -41,6 +41,8 @@ export default function Home() {
   const [selectedBookingStylist, setSelectedBookingStylist] = useState<{ id: number; staff_id: string; name: string; title: string; photo: string; booking_slug: string; specialties: string[]; availability: Record<string, string> | null } | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [bookedSlots, setBookedSlots] = useState<string[]>([])
+  const [slotsLoading, setSlotsLoading] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedCategory, setSelectedCategory] = useState('Hair Cut')
@@ -466,6 +468,18 @@ export default function Home() {
     friday: '09:00-18:00',
     saturday: '10:00-16:00',
   }
+
+  // Fetch already-booked slots whenever the selected date changes
+  useEffect(() => {
+    if (!selectedDate) { setBookedSlots([]); return }
+    const iso = selectedDate.toISOString().split('T')[0]
+    setSlotsLoading(true)
+    fetch(`/api/available-slots?date=${iso}`)
+      .then(r => r.ok ? r.json() : { bookedSlots: [] })
+      .then(d => setBookedSlots(d.bookedSlots ?? []))
+      .catch(() => setBookedSlots([]))
+      .finally(() => setSlotsLoading(false))
+  }, [selectedDate])
 
   const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
@@ -1828,26 +1842,46 @@ export default function Home() {
                         </div>
                       )
                     }
+                    const availableSlots = slots.filter(s => !bookedSlots.includes(s))
+                    const allTaken = availableSlots.length === 0
                     return (
                       <div>
                         <p className="mb-2 text-sm font-bold text-primary">Select a Time</p>
-                        <div className="grid grid-cols-3 gap-2">
-                          {slots.map((slot) => (
-                            <button
-                              key={slot}
-                              type="button"
-                              onClick={() => setSelectedTime(slot === selectedTime ? null : slot)}
-                              className={`py-2 px-1 text-xs font-semibold rounded-lg border transition-all duration-200 ${
-                                selectedTime === slot
-                                  ? 'bg-accent text-primary border-accent shadow-md scale-105'
-                                  : 'bg-secondary/10 text-primary border-secondary/30 hover:bg-secondary/30 hover:border-secondary/50'
-                              }`}
-                            >
-                              {slot}
-                            </button>
-                          ))}
-                        </div>
-                        {selectedTime && <p className="mt-2 text-xs text-accent font-semibold">⏰ {selectedTime}</p>}
+                        {slotsLoading ? (
+                          <p className="text-xs text-primary/50 py-2">Checking availability…</p>
+                        ) : allTaken ? (
+                          <div className="p-4 border rounded-lg bg-red-50 border-red-200 text-center">
+                            <p className="text-sm font-semibold text-red-600">No available times on this date.</p>
+                            <p className="mt-1 text-xs text-red-400">All slots are booked — please choose a different date.</p>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="grid grid-cols-3 gap-2">
+                              {slots.map((slot) => {
+                                const taken = bookedSlots.includes(slot)
+                                return (
+                                  <button
+                                    key={slot}
+                                    type="button"
+                                    disabled={taken}
+                                    onClick={() => !taken && setSelectedTime(slot === selectedTime ? null : slot)}
+                                    className={`py-2 px-1 text-xs font-semibold rounded-lg border transition-all duration-200 ${
+                                      taken
+                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed line-through'
+                                        : selectedTime === slot
+                                        ? 'bg-accent text-primary border-accent shadow-md scale-105'
+                                        : 'bg-secondary/10 text-primary border-secondary/30 hover:bg-secondary/30 hover:border-secondary/50'
+                                    }`}
+                                    title={taken ? 'This time is already booked' : undefined}
+                                  >
+                                    {slot}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                            {selectedTime && <p className="mt-2 text-xs text-accent font-semibold">⏰ {selectedTime}</p>}
+                          </>
+                        )}
                       </div>
                     )
                   })()}
