@@ -42,6 +42,7 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [bookedSlots, setBookedSlots] = useState<string[]>([])
+  const [workingHours, setWorkingHours] = useState<string | null>(null)
   const [slotsLoading, setSlotsLoading] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
@@ -469,21 +470,25 @@ export default function Home() {
     saturday: '10:00-16:00',
   }
 
-  // Fetch already-booked slots whenever the selected date changes
+  // Fetch booked slots + working hours whenever date or stylist changes
   useEffect(() => {
-    if (!selectedDate) { setBookedSlots([]); return }
+    if (!selectedDate) { setBookedSlots([]); setWorkingHours(null); return }
     const iso = selectedDate.toISOString().split('T')[0]
+    const staffParam = selectedBookingStylist?.id ? `&staff_id=${selectedBookingStylist.id}` : ''
     setSlotsLoading(true)
-    fetch(`/api/available-slots?date=${iso}`)
-      .then(r => r.ok ? r.json() : { bookedSlots: [] })
-      .then(d => setBookedSlots(d.bookedSlots ?? []))
-      .catch(() => setBookedSlots([]))
+    fetch(`/api/available-slots?date=${iso}${staffParam}`)
+      .then(r => r.ok ? r.json() : { bookedSlots: [], workingHours: null })
+      .then(d => { setBookedSlots(d.bookedSlots ?? []); setWorkingHours(d.workingHours ?? null) })
+      .catch(() => { setBookedSlots([]); setWorkingHours(null) })
       .finally(() => setSlotsLoading(false))
-  }, [selectedDate])
+  }, [selectedDate, selectedBookingStylist])
 
   const DAY_NAMES = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
   const getDaySchedule = (date: Date): string => {
+    // Prefer live value from DB (set by the available-slots API fetch)
+    if (workingHours !== null) return workingHours
+    // Fallback: hardcoded business hours
     const key = DAY_NAMES[date.getDay()]
     const schedule = selectedBookingStylist?.availability ?? BUSINESS_HOURS
     return (schedule as Record<string, string>)[key] ?? 'closed'
