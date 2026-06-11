@@ -1106,8 +1106,9 @@ export default function Home() {
                     <p className="text-xs text-primary/70">{content.footer.sections.hours.sunday}</p>
                   </div>
                   <div className="p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
-                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3">
-                      <FiShare2 className="w-5 h-5 text-accent" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-3 gap-1">
+                      <FiInstagram className="w-4 h-4 text-white" />
+                      <SiTiktok className="w-3 h-3 text-white" />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.follow.title}</p>
                     <div className="flex flex-col gap-1">
