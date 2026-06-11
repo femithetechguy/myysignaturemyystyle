@@ -87,7 +87,7 @@ function AvailabilityEditor({ value, onChange }) {
   );
 }
 
-export default function AdminStaff() {
+export default function AdminStaff({ refreshKey = 0 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -110,7 +110,7 @@ export default function AdminStaff() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [refreshKey]);
 
   const fetchData = async () => {
     try {
@@ -379,28 +379,6 @@ export default function AdminStaff() {
                 </div>
               )}
             </div>
-          )}
-          {showRefresh && (
-            <button
-              onClick={fetchData}
-              disabled={loading}
-              style={{
-                padding: '7px 12px',
-                background: '#D4AF37',
-                color: '#1B1B1B',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold',
-                fontSize: '0.85rem',
-                opacity: loading ? 0.6 : 1,
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => !loading && (e.target.style.background = '#C99A2D')}
-              onMouseLeave={(e) => !loading && (e.target.style.background = '#D4AF37')}
-            >
-              {loading ? loadingBtn : refreshBtn}
-            </button>
           )}
         </div>
       </div>

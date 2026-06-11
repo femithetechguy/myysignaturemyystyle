@@ -76,6 +76,7 @@ export default function AdminLayout() {
   const [sidebarClosed, setSidebarClosed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [config, setConfig] = useState(staticConfig);
+  const [refreshKey, setRefreshKey] = useState(0);
   
   // Load fresh config on mount to pick up any JSON file changes
   useEffect(() => {
@@ -215,8 +216,27 @@ export default function AdminLayout() {
       <div className={`mainContent ${sidebarClosed ? 'sidebar-closed' : ''}`}>
         {/* Tab Description */}
         {activeTabConfig && (
-          <div className="info">
-            <p><strong>{activeTabConfig.label}</strong> - {activeTabConfig.description}</p>
+          <div className="info" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+            <p style={{ margin: 0 }}><strong>{activeTabConfig.label}</strong> - {activeTabConfig.description}</p>
+            {activeTabConfig.showRefresh && (
+              <button
+                onClick={() => setRefreshKey(k => k + 1)}
+                title="Refresh"
+                style={{
+                  flexShrink: 0,
+                  padding: '5px 10px',
+                  background: 'transparent',
+                  border: '1px solid rgba(212,175,55,0.4)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  lineHeight: 1,
+                  color: '#D4AF37'
+                }}
+              >
+                🔄
+              </button>
+            )}
           </div>
         )}
 
@@ -225,7 +245,7 @@ export default function AdminLayout() {
           {ComponentToRender && activeTab === 'dashboard' ? (
             <ComponentToRender onNavigate={handleTabChange} />
           ) : ComponentToRender ? (
-            <ComponentToRender />
+            <ComponentToRender refreshKey={refreshKey} />
           ) : null}
         </div>
       </div>

@@ -293,7 +293,7 @@ const navBtnStyle = {
 };
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function AdminAppointments() {
+export default function AdminAppointments({ refreshKey = 0 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

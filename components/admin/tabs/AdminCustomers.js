@@ -5,7 +5,7 @@ import { colors, text, button, styles as themeStyles, primaryButtonHover } from 
 // Auto-generated fields that should not be editable
 const AUTO_GENERATED_FIELDS = ['id', 'created_at', 'updated_at', 'created_date', 'updated_date', 'date_created', 'date_updated'];
 
-export default function AdminCustomers() {
+export default function AdminCustomers({ refreshKey = 0 }) {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

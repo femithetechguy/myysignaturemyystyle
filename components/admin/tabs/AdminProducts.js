@@ -8,7 +8,7 @@ const AUTO_GENERATED_FIELDS = ['product_id', 'created_at', 'updated_at', 'create
 // All possible columns for products
 const ALL_PRODUCT_COLUMNS = ['product_id', 'product_name', 'category', 'price', 'duration_minutes', 'difficulty_level', 'availability_status', 'is_active', 'description', 'staff_required', 'required_materials'];
 
-export default function AdminProducts() {
+export default function AdminProducts({ refreshKey = 0 }) {
   const [config, setConfig] = useState(staticConfig);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);

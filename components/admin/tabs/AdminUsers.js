@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import staticConfig from '../../../config/admin.json';
 import { colors, text, button, styles as themeStyles, primaryButtonHover } from '../AdminThemeProvider';
 
-export default function AdminUsers() {
+export default function AdminUsers({ refreshKey = 0 }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
