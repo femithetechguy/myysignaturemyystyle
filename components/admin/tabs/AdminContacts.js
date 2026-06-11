@@ -21,6 +21,7 @@ export default function AdminContacts({ refreshKey = 0 }) {
   const [visibleColumns, setVisibleColumns] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [viewingItem, setViewingItem] = useState(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -274,37 +275,32 @@ export default function AdminContacts({ refreshKey = 0 }) {
               {sortedData.map((item, idx) => (
                 <tr key={item.submission_id || idx} style={{ borderBottom: '1px solid #eee' }}>
                   {columns.map(col => (
-                    <td key={col} style={{ padding: '12px', color: '#666' }}>
+                    <td key={col} data-label={formatColumnName(col)} style={{ padding: '12px', color: '#666' }}>
                       {item[col] != null ? String(item[col]) : '-'}
                     </td>
                   ))}
                   {isEditable && (
                     <td style={{ padding: '12px' }}>
-                      <button 
+                      <button
+                        onClick={() => setViewingItem(item)}
+                        style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }}
+                        title="View"
+                      >
+                        {actions.view_icon || '👁️'}
+                      </button>
+                      <span style={{ margin: '0 6px', color: '#ccc' }}>{actions.separator}</span>
+                      <button
                         onClick={() => handleEdit(item)}
-                        style={{ 
-                          cursor: 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0
-                        }}
+                        style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }}
                         title="Edit"
                       >
                         {actions.edit_icon}
                       </button>
-                      <span style={{ margin: '0 8px', color: '#ccc' }}>{actions.separator}</span>
-                      <button 
+                      <span style={{ margin: '0 6px', color: '#ccc' }}>{actions.separator}</span>
+                      <button
                         onClick={() => handleDelete(item)}
                         disabled={deleting}
-                        style={{ 
-                          cursor: deleting ? 'not-allowed' : 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0,
-                          opacity: deleting ? 0.6 : 1
-                        }}
+                        style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0, opacity: deleting ? 0.6 : 1 }}
                         title="Delete"
                       >
                         {actions.delete_icon}
@@ -323,6 +319,43 @@ export default function AdminContacts({ refreshKey = 0 }) {
           {config.messages?.empty || 'No data found'}
         </div>
       )}
+      {/* View Modal */}
+      {viewingItem && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}
+        >
+          <div style={{ background: 'white', borderRadius: '12px', padding: '30px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ View Record</h3>
+              <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {allColumns.map(col => (
+                <div key={col} style={{ display: 'flex', gap: '12px', padding: '10px 12px', background: AUTO_GENERATED_FIELDS.includes(col.toLowerCase()) ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                  <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.85rem', flexShrink: 0 }}>{formatColumnName(col)}</span>
+                  <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.9rem' }}>{viewingItem[col] != null ? String(viewingItem[col]) : '—'}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <button
+                onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
+                style={{ padding: '10px 20px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={() => setViewingItem(null)}
+                style={{ padding: '10px 20px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Modal */}
       {showModal && editingItem && (
         <div 

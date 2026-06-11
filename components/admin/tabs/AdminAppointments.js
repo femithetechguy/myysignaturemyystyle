@@ -52,7 +52,7 @@ function isSameDay(dateStr, date) {
 }
 
 // ── Card used in List and Week views ──────────────────────────────────────────
-function ApptCard({ appt, onEdit, onDelete, compact = false }) {
+function ApptCard({ appt, onEdit, onDelete, onView, compact = false }) {
   const s = STATUS_STYLES[appt.status] || STATUS_STYLES.pending;
   return (
     <div style={{
@@ -106,6 +106,8 @@ function ApptCard({ appt, onEdit, onDelete, compact = false }) {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', flexShrink: 0 }}>
+        <button onClick={() => onView && onView(appt)} title="View"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>👁️</button>
         <button onClick={() => onEdit(appt)} title="Edit"
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>✏️</button>
         <button onClick={() => onDelete(appt)} title="Delete"
@@ -205,7 +207,7 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
 }
 
 // ── Week view ─────────────────────────────────────────────────────────────────
-function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, onDelete }) {
+function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, onDelete, onView }) {
   // Get Monday of current week
   const getWeekStart = (date) => {
     const d = new Date(date);
@@ -269,7 +271,7 @@ function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, o
               {appts.length === 0 ? (
                 <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#ccc', marginTop: '16px' }}>—</div>
               ) : (
-                appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} compact />)
+                appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} onView={onView} compact />)
               )}
             </div>
           );
@@ -301,6 +303,7 @@ export default function AdminAppointments({ refreshKey = 0 }) {
   const [config, setConfig] = useState(staticConfig.admin?.appointments || {});
   const [editingItem, setEditingItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [viewingItem, setViewingItem] = useState(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -572,7 +575,7 @@ export default function AdminAppointments({ refreshKey = 0 }) {
                       {appts.length} appt{appts.length !== 1 ? 's' : ''}
                     </span>
                   </div>
-                  {appts.map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} />)}
+                  {appts.map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} onView={setViewingItem} />)}
                 </div>
               ));
             })()
@@ -588,6 +591,7 @@ export default function AdminAppointments({ refreshKey = 0 }) {
           setCalendarDate={setCalendarDate}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onView={setViewingItem}
         />
       )}
 
@@ -616,7 +620,55 @@ export default function AdminAppointments({ refreshKey = 0 }) {
           </div>
           {drillDay.appts
             .sort((a, b) => (a.appointment_time || '').localeCompare(b.appointment_time || ''))
-            .map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} />)}
+            .map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} onView={setViewingItem} />)}
+        </div>
+      )}
+
+      {/* ── VIEW MODAL ── */}
+      {viewingItem && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}
+        >
+          <div style={{ background: 'white', borderRadius: '12px', padding: '30px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ Appointment</h3>
+                <StatusBadge status={viewingItem.status} />
+              </div>
+              <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {Object.keys(viewingItem).map(col => {
+                let val = viewingItem[col];
+                if (val == null) val = '—';
+                else if (col.includes('date')) val = formatDate(val);
+                else if (col.includes('time') && !col.includes('created')) val = formatTime(val);
+                else val = String(val);
+                const isAuto = AUTO_GENERATED_FIELDS.includes(col.toLowerCase());
+                return (
+                  <div key={col} style={{ display: 'flex', gap: '12px', padding: '9px 12px', background: isAuto ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                    <span style={{ minWidth: '140px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.82rem', flexShrink: 0, textTransform: 'capitalize' }}>{col.replace(/_/g, ' ')}</span>
+                    <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.88rem' }}>{val}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <button
+                onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
+                style={{ padding: '10px 20px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={() => setViewingItem(null)}
+                style={{ padding: '10px 20px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

@@ -169,15 +169,6 @@
         { "icon": "📧", "title": "Contacts", "description": "Client messages" }
       ]
     },
-    "staff": {
-      "title": "Manage Staff",
-      "description": "View and manage stylists and staff members",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
-      "messages": {
-        "loading": "Loading staff...",
-        "empty": "No staff found"
-      }
-    },
     "products": {
       "title": "Manage Products",
       "description": "View and manage product catalog",
@@ -209,7 +200,7 @@
     "services": {
       "title": "Manage Services",
       "description": "View and manage salon services and pricing",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
       "add_btn": "Add Service",
       "messages": {
         "loading": "Loading services...",
@@ -221,7 +212,7 @@
     "appointments": {
       "title": "Manage Appointments",
       "description": "View and manage customer appointments",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
       "add_btn": "Add Appointment",
       "messages": {
         "loading": "Loading appointments...",
@@ -233,7 +224,7 @@
     "staff": {
       "title": "Manage Staff",
       "description": "View and manage staff members",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
       "add_btn": "Add Staff Member",
       "messages": {
         "loading": "Loading staff...",
@@ -245,7 +236,7 @@
     "applications": {
       "title": "Manage Career Applications",
       "description": "View and manage job applications",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
       "messages": {
         "loading": "Loading applications...",
         "empty": "No applications found",
@@ -256,7 +247,7 @@
     "reviews": {
       "title": "Manage Reviews",
       "description": "View and manage customer reviews",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
       "add_btn": "Add Review",
       "messages": {
         "loading": "Loading reviews...",
@@ -280,7 +271,7 @@
     "contacts": {
       "title": "Contact Submissions",
       "description": "View contact form submissions",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
       "messages": {
         "loading": "Loading contacts...",
         "empty": "No contact submissions found",
