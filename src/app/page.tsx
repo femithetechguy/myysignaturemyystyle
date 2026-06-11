@@ -16,7 +16,7 @@ export default function Home() {
   // DB-backed data — fall back to app.json values until the fetch resolves
   const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number; price_max: number; category: string; images: string[]; staff_ids: string[] }[]>([])
   const [reviews, setReviews] = useState(content.reviews_section.reviews)
-  const [stylists, setStylists] = useState<{ id: number; staff_id: string; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[]; availability: Record<string, string> }[]>([])
+  const [stylists, setStylists] = useState<{ id: number; staff_id: string; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[]; availability: Record<string, string>; metadata?: Record<string, string> }[]>([])
   const [stylistsLoading, setStylistsLoading] = useState(true)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [navBackground, setNavBackground] = useState('dark')
@@ -863,6 +863,11 @@ export default function Home() {
                       {stylist.instagram_handle && (
                         <a href={`https://instagram.com/${stylist.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
                           <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylist.instagram_handle}
+                        </a>
+                      )}
+                      {stylist.metadata?.instagram_braids && (
+                        <a href={`https://instagram.com/${stylist.metadata.instagram_braids}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                          <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylist.metadata.instagram_braids}
                         </a>
                       )}
                     </div>
