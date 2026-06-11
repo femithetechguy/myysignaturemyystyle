@@ -289,15 +289,7 @@ export default function AdminServices({ refreshKey = 0 }) {
                       >
                         {actions.view_icon || '👁️'}
                       </button>
-                      <span style={{ margin: '0 6px', color: '#ccc' }}>{actions.separator}</span>
-                      <button
-                        onClick={() => handleEdit(item)}
-                        style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }}
-                        title="Edit"
-                      >
-                        {actions.edit_icon}
-                      </button>
-                      <span style={{ margin: '0 6px', color: '#ccc' }}>{actions.separator}</span>
+                      
                       <button
                         onClick={() => handleDelete(item)}
                         disabled={deleting}

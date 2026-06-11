@@ -108,8 +108,6 @@ function ApptCard({ appt, onEdit, onDelete, onView, compact = false }) {
       <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', flexShrink: 0 }}>
         <button onClick={() => onView && onView(appt)} title="View"
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>👁️</button>
-        <button onClick={() => onEdit(appt)} title="Edit"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>✏️</button>
         <button onClick={() => onDelete(appt)} title="Delete"
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>🗑️</button>
       </div>
