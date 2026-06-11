@@ -83,7 +83,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await pool.query(
       `INSERT INTO appointments
         (appointment_id, appointment_date, appointment_time, duration, total_amount, status, notes, metadata)
-       VALUES ($1, $2, $3, $4, $5, 'pending', $6, $7)
+       VALUES ($1, $2, $3, $4, $5, 'confirmed', $6, $7)
        ON CONFLICT (appointment_id) DO NOTHING`,
       [
         booking_reference,
