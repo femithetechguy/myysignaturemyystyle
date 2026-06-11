@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: June 11, 2026 (session 9)
+Last updated: June 11, 2026 (session 10)
 
 ---
 
@@ -401,6 +401,42 @@ Last updated: June 11, 2026 (session 9)
   - `html` + `body` changed to `overflow-x: clip` (truly clips CSS transforms; `hidden` does not clip `translateX` animations due to viewport scroll container behaviour)
   - About section element given `overflow-hidden` class to contain its `slideInLeft`/`slideInRight` animation overflow
 
+### Admin Panel — Desktop Layout Fixes (session 10, FTTG-25)
+- [x] **Stats grid**: 4 columns at ≥1200px (`repeat(4, 1fr)`) — 8 stat cards render as 2 clean rows on desktop
+- [x] **Table horizontal scroll**: `.mainContent` gets `min-width: 0` (prevents flex overflow); `.content` gets `overflow-x: auto` so tables scroll within their container instead of breaking layout
+- [x] **Sidebar at 769–1199px**: dedicated `@media (min-width: 769px) and (max-width: 1199px)` block — sidebar narrows to 240px (from 280px); mainContent margin-left matches; `.sidebar.closed` stays 80px
+- [x] **AdminPolicies width**: root div gets `maxWidth: 860px` — textareas no longer stretch full viewport width on large screens
+- [x] **Appointments week view**: day columns changed from `minWidth: '560px'` fixed to `minmax(90px, 1fr)` — fills available space, no fixed minimum
+- [x] **Action button consistency** across all 6 generic tabs (Contacts, Applications, Reviews, Services, Staff, Gallery):
+  - All action cells standardised to flex row: `👁️ | 🗑️`
+  - `data-label="Actions"` on `<td>`, `padding: '12px'`
+  - Buttons: `padding: '2px 4px'`, `fontSize: '1.1rem'`, no background/border
+  - `|` separator: `color: '#ddd'`
+
+### Staff Availability — DB-Driven Booking Calendar (session 10, FTTG-5)
+- [x] **`pages/api/available-slots.ts`** rewritten — uses `staff_availability` table only (no JSON column)
+  - Single-date mode: fetches day row for `staff_id + day_of_week`; falls back to `FALLBACK_HOURS` if no row
+  - Booked slots now scoped per stylist: `WHERE staff_id = $2 AND status NOT IN ('cancelled')` when `staff_id` provided
+  - `?weekly=true` mode: returns full 7-day schedule `{ 0: 'closed', 1: '09:00-17:00', ... }` for calendar preview
+  - `resolveDay()` helper: finds DB row; falls back to `FALLBACK_HOURS[dayOfWeek] ?? 'closed'`
+- [x] **`pages/api/admin/staff-availability.ts`** new endpoint:
+  - `GET ?staff_id=X`: returns `{ schedule: { monday: '09:00-17:00', sunday: 'closed', ... } }` from DB
+  - `PUT ?staff_id=X`: upserts all 7 days via `ON CONFLICT (staff_id, day_of_week) DO UPDATE SET`
+  - JWT-protected (same middleware as all other admin endpoints)
+- [x] **`components/admin/tabs/AdminStaff.js`** updated:
+  - `handleEdit` now `async`: pre-initializes `editingAvailability` from `staff.availability` JSON column (ensures save always has data), then fetches `/api/admin/staff-availability` and overrides with DB values if response has keys
+  - `AvailabilityEditor` reads `editingAvailability` (DB-sourced) rather than the JSON column directly
+  - `handleSave` runs staff fields PUT + availability PUT in `Promise.all`
+- [x] **`src/app/page.tsx`** updated:
+  - `stylistWeeklySchedule` state (`Record<number, string> | null`) added
+  - `useEffect` on `selectedBookingStylist?.id` fetches `?weekly=true` when stylist selected; sets schedule
+  - Calendar day cells: `isClosedDay` derived from `stylistWeeklySchedule[dow] === 'closed'` (DB-sourced); falls back to `BUSINESS_HOURS` when no stylist selected
+- [x] **Egwono's schedule fixed in DB** (direct SQL update to match FTTG-5 spec):
+  - Monday (day_of_week=1): `is_available = false`
+  - Tue–Fri (day_of_week=2–5): `start_time='09:00', end_time='17:00'`
+  - Saturday (day_of_week=6): `start_time='09:00', end_time='17:00'`
+  - Sunday (day_of_week=0): inserted with `start_time='11:00', end_time='19:00', is_available=true`
+
 ### Refresh Bug Fix — All Tabs (session 9)
 - [x] **Customers, Orders, Appointments tabs not re-fetching on Refresh**: all three had `useEffect(fn, [])` missing `refreshKey` in the dependency array — the AdminLayout toolbar Refresh button had no effect on them
   - Fixed: `AdminCustomers.js`, `AdminOrders.js`, `AdminAppointments.js` — all now use `[refreshKey]` in their primary data-fetch `useEffect`
@@ -473,7 +509,8 @@ Last updated: June 11, 2026 (session 9)
 - [ ] Add real Cloudinary photo URLs to the 3 seeded staff records (currently empty strings — update via admin Staff tab once DB is seeded)
 - [ ] Integrate payment processor for the 25% deposit (Stripe recommended)
   - Stripe setup: create `pages/api/payments/create-checkout.js`, add `STRIPE_SECRET_KEY` to `.env.local`
-- [ ] Build available-dates logic (block already-booked slots on the booking calendar)
+- [x] Booking calendar greys closed days per-stylist from `staff_availability` DB (FTTG-5)
+- [ ] Block already-booked time slots on the booking calendar (available-slots API foundation is in place)
 - [ ] Admin: allow staff to confirm / reject / reschedule appointments from the Appointments tab
 
 ### Admin Panel
