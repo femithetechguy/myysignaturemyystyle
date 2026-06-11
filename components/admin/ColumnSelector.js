@@ -67,6 +67,12 @@ export default function ColumnSelector({ allColumns, visibleColumns, onToggle, o
         📊 Columns ({visibleColumns.length}/{allColumns.length})
       </button>
 
+      {open && fixedStyle && (
+        <div
+          onClick={() => setOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 999, background: 'rgba(0,0,0,0.3)' }}
+        />
+      )}
       {open && (
         <div style={{
           ...dropdownStyle,
