@@ -79,6 +79,19 @@
         "description": "Manage customer appointments"
       },
       {
+        "id": "customers",
+        "label": "Customers",
+        "icon": "🧑‍💼",
+        "component": "AdminCustomers",
+        "table": "customers",
+        "editable": false,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "View customer accounts"
+      },
+      {
         "id": "staff",
         "label": "Staff",
         "icon": "👨‍💼",
@@ -116,6 +129,19 @@
         "loadingBtn": "🔄 Loading...",
         "sort": true,
         "description": "Manage customer reviews"
+      },
+      {
+        "id": "gallery",
+        "label": "Gallery",
+        "icon": "🖼️",
+        "component": "AdminGallery",
+        "table": "gallery",
+        "editable": true,
+        "showRefresh": true,
+        "refreshBtn": "🔄 Refresh",
+        "loadingBtn": "🔄 Loading...",
+        "sort": true,
+        "description": "Manage gallery images"
       },
       {
         "id": "contacts",
