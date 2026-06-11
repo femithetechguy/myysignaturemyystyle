@@ -1276,7 +1276,7 @@ body [style*="position: fixed"] h4 {
   }
 
   th, td {
-    padding: 8px 0 !important;
+    padding: 4px 0 !important;
     display: block;
     width: 100%;
     text-align: left;
@@ -1288,18 +1288,31 @@ body [style*="position: fixed"] h4 {
     font-weight: bold;
     color: #D4AF37;
     display: block;
-    margin-bottom: 4px;
-    font-size: 0.8rem;
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
-  /* Action buttons in tables */
-  button {
-    padding: 8px 12px;
-    font-size: 0.9rem;
-    min-height: 40px;
+  /* Action cell — icons side by side with breathing room */
+  td:last-child {
+    display: flex !important;
+    align-items: center;
+    gap: 14px;
+    padding-top: 8px !important;
+    width: auto !important;
   }
 
-  /* Modal styling for mobile */
+  td:last-child button {
+    padding: 0 !important;
+    min-height: unset !important;
+    font-size: 1.2rem !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+  }
+
+  /* Modal styling for mobile — note: table action icons have their own button override above */
   div[style*="position: fixed"][style*="top: 0"] {
     padding: 10px !important;
     z-index: 9999 !important;
