@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { sendMail } from '../../lib/mailer'
+import { pool } from '../../lib/dbQueries'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
@@ -16,6 +17,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     message,
     message_type: message_type ?? 'inquiry',
     selected_service: selected_service ?? '',
+  }
+
+  // Save to DB (non-fatal)
+  try {
+    const isEmail = contact.includes('@')
+    const submissionId = `CON${Date.now()}`
+    await pool.query(
+      `INSERT INTO contact_submissions (submission_id, name, email, phone, message_type, service, message)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (submission_id) DO NOTHING`,
+      [
+        submissionId,
+        name,
+        isEmail ? contact : null,
+        isEmail ? null : contact,
+        message_type ?? 'inquiry',
+        selected_service ?? null,
+        message,
+      ]
+    )
+  } catch (dbErr) {
+    console.error('[/api/contact] DB insert failed (non-fatal):', dbErr)
   }
 
   try {
