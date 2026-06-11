@@ -648,17 +648,17 @@ export default function Home() {
             <span className="block">{content.hero.title.split(' ').slice(2).join(' ')}</span>
           </h1>
           <h2 className="mb-8 text-base font-light tracking-wider uppercase sm:text-2xl md:text-3xl lg:text-4xl sm:mb-10 md:mb-12 text-secondary animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
-          <div className="flex flex-row items-center justify-center gap-3 sm:gap-6">
+          <div className="flex flex-col xs:flex-row items-center justify-center gap-3 sm:gap-6 w-full px-2">
             <button
               onClick={handleScheduleClick}
-              className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+              className="w-full xs:w-auto px-6 py-3.5 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button}
             </button>
             <a
               href="#careers"
               onClick={(e) => { e.preventDefault(); const el = document.getElementById('careers'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }) }}
-              className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+              className="w-full xs:w-auto px-6 py-3.5 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button_secondary}
             </a>
@@ -1123,18 +1123,18 @@ export default function Home() {
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.follow.title}</p>
                     <div className="flex flex-col gap-1">
                       {business.social.instagram && (
-                        <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-accent hover:text-accent/80 transition-colors duration-200">
-                          <FiInstagram className="w-3 h-3" />@myysignaturemyystyle
+                        <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-bold text-accent hover:text-accent/80 transition-colors duration-200 truncate">
+                          <FiInstagram className="w-3 h-3 flex-shrink-0" />@myysignaturemyystyle
                         </a>
                       )}
                       {business.social.instagram_braids && (
-                        <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-accent hover:text-accent/80 transition-colors duration-200">
-                          <FiInstagram className="w-3 h-3" />@myybraidz
+                        <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-bold text-accent hover:text-accent/80 transition-colors duration-200 truncate">
+                          <FiInstagram className="w-3 h-3 flex-shrink-0" />@myybraidz
                         </a>
                       )}
                       {business.social.tiktok && (
-                        <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-accent hover:text-accent/80 transition-colors duration-200">
-                          <SiTiktok className="w-3 h-3" />@okpako84
+                        <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-bold text-accent hover:text-accent/80 transition-colors duration-200 truncate">
+                          <SiTiktok className="w-3 h-3 flex-shrink-0" />@okpako84
                         </a>
                       )}
                     </div>
@@ -1286,7 +1286,7 @@ export default function Home() {
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.contact.title}</h3>
               <p className="text-xs sm:text-sm text-secondary/90">{business.address}</p>
               <p className="mt-2 text-xs sm:text-sm text-secondary/90">{business.contact.phone}</p>
-              <p className="text-xs sm:text-sm text-secondary/90">{business.contact.email}</p>
+              <p className="text-xs sm:text-sm text-secondary/90 break-all">{business.contact.email}</p>
             </div>
             <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.hours.title}</h3>
