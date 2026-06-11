@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 9, 2026 (session 5)
+Last updated: June 10, 2026 (session 8)
 
 ---
 
@@ -371,6 +371,29 @@ Last updated: April 9, 2026 (session 5)
   - `twitter:card` → `summary_large_image`
   - All social share previews (WhatsApp, iMessage, Twitter, LinkedIn) now show branded card
 
+### Project Setup & Tooling (session 8)
+- [x] **CLAUDE.md created** — full project context file for AI-assisted development (tech stack, structure, key patterns, env vars, run instructions, commit format)
+- [x] **Linear GitHub integration confirmed** — webhook set up on `myysignaturemyystyle` repo; `Fixes FTTG-XX` / `Ref FTTG-XX` commit messages now link and close Linear issues automatically
+
+### Staff — Egwono Update (session 8, FTTG-6)
+- [x] Stylist name updated from placeholder "Jane" → **Egwono** (CEO & Senior Stylist) directly in Neon DB via Node script
+- [x] Simple bio written: "Egwono is the founder and lead stylist at Myy Signature Myy Style…"
+- [x] `dbquries/setup_all.sql` seed updated — `staff_003` entry changed from "Char" to "Egwono" with matching title and bio
+- [ ] Real bio to be updated when Egwono sends it (update via admin Staff tab or direct DB update)
+
+### Social Media & Business Info (session 8, FTTG-10)
+- [x] **Business email** updated in `app.json` → `myysignaturemyystyle@gmail.com`
+- [x] **Social links** added to `app.json → business.social`:
+  - `instagram`: `https://www.instagram.com/myysignaturemyystyle` (already existed)
+  - `instagram_braids`: `https://www.instagram.com/myybraidz` (new)
+  - `tiktok`: `https://www.tiktok.com/@okpako84` (new)
+- [x] **Hours** updated in `app.json → content.footer.sections.hours`:
+  - Monday: Closed · Tue–Sat: 9:00 AM–5:00 PM · Sunday: 11:00 AM–7:00 PM
+- [x] **Footer Follow Us card** (mobile) — now shows all 3 handles with platform icons; card header uses Instagram + TikTok icons instead of generic share icon
+- [x] **Footer Follow Us** (desktop) — Instagram, @myybraidz Instagram, and TikTok icon links added
+- [x] **Connect With Us section** — `@myybraidz` and `@okpako84` (TikTok, black icon) rows added alongside existing Instagram and email/phone links
+- [x] `SiTiktok` imported from `react-icons/si`
+
 ---
 
 ## 🔄 In Progress / Needs Attention
@@ -387,7 +410,8 @@ Last updated: April 9, 2026 (session 5)
 - [x] Replace placeholder logo files — SVG logo system created (`logo-main.svg`, `logo-icon.svg`, `favicon.svg`); `logo_trans.png` no longer used
 - [x] `landing.png` hero background image replaced and migrated to Cloudinary
 - [ ] Add real portfolio/gallery images to `public/assets/images/portfolio/` (currently 7 placeholder IG posts)
-- [ ] Fill in `app.json` → `business.social.facebook` (currently empty string)
+- [ ] Fill in `app.json` → `business.social.facebook` (currently empty string — no Facebook page yet)
+- [x] Social media handles added: `@myysignaturemyystyle`, `@myybraidz` (Instagram), `@okpako84` (TikTok)
 - [x] Hair Cut category expanded: **Adult Haircut**, **Kids Haircut**, **Military Haircut**, **Fade** added to `data/services.json` (44 services total)
   - `cut_003` renamed from "Haircut" → "Adult Haircut"
   - `cut_004` Kids Haircut ($25–$40, 45 min)
