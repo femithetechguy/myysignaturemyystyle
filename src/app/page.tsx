@@ -1006,7 +1006,7 @@ export default function Home() {
       </div>
 
       {/* About Section */}
-      <section id="about" className="py-10 bg-white sm:py-14">
+      <section id="about" className="py-10 bg-white sm:py-14 overflow-hidden">
         <div className="container-custom">
           <div className="grid items-center grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <div className="animate-slide-in-left">
