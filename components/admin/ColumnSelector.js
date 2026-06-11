@@ -83,9 +83,9 @@ export default function ColumnSelector({ allColumns, visibleColumns, onToggle, o
             <button onClick={onSelectMin} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#f5f5f5', color: '#1B1B1B', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}>Min</button>
           </div>
           {allColumns.map(col => (
-            <label key={col} style={{ display: 'block', padding: '11px 14px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', color: '#1B1B1B', fontSize: '0.9rem', lineHeight: '1.4', textAlign: 'left' }}>
-              <input type="checkbox" checked={visibleColumns.includes(col)} onChange={() => onToggle(col)} style={{ width: 18, height: 18, marginRight: 10, verticalAlign: 'middle', cursor: 'pointer' }} />
-              <span style={{ verticalAlign: 'middle' }}>{formatColumnName(col)}</span>
+            <label key={col} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', color: '#1B1B1B', fontSize: '0.9rem', gap: '12px' }}>
+              <span style={{ flex: 1 }}>{formatColumnName(col)}</span>
+              <input type="checkbox" checked={visibleColumns.includes(col)} onChange={() => onToggle(col)} style={{ width: 20, height: 20, cursor: 'pointer', flexShrink: 0, accentColor: '#D4AF37' }} />
             </label>
           ))}
         </div>

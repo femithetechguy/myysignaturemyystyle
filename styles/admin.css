@@ -1322,10 +1322,14 @@ body [style*="position: fixed"] h4 {
     resize: vertical;
   }
 
-  input[type="checkbox"] {
-    min-height: auto;
-    width: auto;
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: auto !important;
+    width: auto !important;
+    padding: 0 !important;
+    border: none !important;
     cursor: pointer;
+    display: inline !important;
   }
 
   /* Modal form styling */
