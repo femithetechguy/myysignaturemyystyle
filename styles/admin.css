@@ -888,8 +888,8 @@ body [style*="position: fixed"] h4 {
 .apptStatsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .weekViewOuter {
@@ -1411,10 +1411,10 @@ body [style*="position: fixed"] h4 {
 
   /* Column selector dropdown: flip to open rightward on mobile */
 
-  /* Appointments stats: 2×2 grid on mobile */
+  /* Appointments stats: single 4-col row on mobile (cards are compact) */
   .apptStatsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
   }
 
   /* Logout button inside mobile nav dropdown */

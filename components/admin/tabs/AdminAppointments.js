@@ -435,29 +435,18 @@ export default function AdminAppointments({ refreshKey = 0 }) {
   return (
     <div className="dashboardContainer">
 
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
-        <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B' }}>Appointments</h2>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* View toggle */}
-          <div style={{ display: 'flex', background: '#f5f5f5', borderRadius: '8px', padding: '3px', border: '1px solid #ddd' }}>
-            {[['list','☰ List'],['week','⬜ Week'],['month','📅 Month']].map(([v, label]) => (
-              <button key={v} onClick={() => { setView(v); setDrillDay(null); }}
-                style={{
-                  padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer',
-                  fontWeight: 600, fontSize: '0.85rem',
-                  background: view === v ? '#D4AF37' : 'transparent',
-                  color: view === v ? '#1B1B1B' : '#666',
-                  transition: 'all 0.15s',
-                }}>{label}</button>
-            ))}
-          </div>
-
-          <button onClick={fetchData} disabled={loading}
-            style={{ padding: '8px 18px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 700, opacity: loading ? 0.6 : 1 }}>
-            {loading ? '⏳ Loading...' : '🔄 Refresh'}
-          </button>
-        </div>
+      {/* View toggle */}
+      <div style={{ display: 'flex', background: '#f5f5f5', borderRadius: '8px', padding: '3px', border: '1px solid #ddd', marginBottom: '12px', alignSelf: 'flex-start' }}>
+        {[['list','☰ List'],['week','⬜ Week'],['month','📅 Month']].map(([v, label]) => (
+          <button key={v} onClick={() => { setView(v); setDrillDay(null); }}
+            style={{
+              padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer',
+              fontWeight: 600, fontSize: '0.85rem',
+              background: view === v ? '#D4AF37' : 'transparent',
+              color: view === v ? '#1B1B1B' : '#666',
+              transition: 'all 0.15s',
+            }}>{label}</button>
+        ))}
       </div>
 
       {/* Stats bar */}
@@ -468,41 +457,38 @@ export default function AdminAppointments({ refreshKey = 0 }) {
           { label: 'Upcoming', value: stats.upcoming, accent: '#10B981' },
           { label: 'Total', value: stats.total, accent: '#6B7280' },
         ].map(({ label, value, accent }) => (
-          <div key={label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '10px', padding: '14px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: accent, lineHeight: 1.2, marginTop: '4px' }}>{value}</div>
+          <div key={label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#999', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: accent, lineHeight: 1.2, marginTop: '2px' }}>{value}</div>
           </div>
         ))}
       </div>
 
       {/* Filters (list view only) */}
       {view === 'list' && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
           {/* Period filter */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
             {[['today','Today'],['week','This Week'],['month','This Month'],['upcoming','Upcoming'],['all','All']].map(([v, label]) => (
               <button key={v} onClick={() => setFilterPeriod(v)}
                 style={{
-                  padding: '5px 14px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
-                  fontSize: '0.82rem', fontWeight: 600, transition: 'all 0.15s',
+                  padding: '4px 11px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
+                  fontSize: '0.78rem', fontWeight: 600, transition: 'all 0.15s',
                   background: filterPeriod === v ? '#1B1B1B' : 'white',
                   color: filterPeriod === v ? 'white' : '#555',
                   borderColor: filterPeriod === v ? '#1B1B1B' : '#ddd',
                 }}>{label}</button>
             ))}
           </div>
-
-          <div style={{ width: '1px', background: '#ddd', height: '24px', margin: '0 4px' }} />
-
           {/* Status filter */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
             {[['all','All'], ...Object.entries(STATUS_STYLES).map(([k, v]) => [k, v.label])].map(([v, label]) => {
               const s = STATUS_STYLES[v];
               return (
                 <button key={v} onClick={() => setFilterStatus(v)}
                   style={{
-                    padding: '5px 14px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
-                    fontSize: '0.82rem', fontWeight: 600, transition: 'all 0.15s',
+                    padding: '4px 11px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
+                    fontSize: '0.78rem', fontWeight: 600, transition: 'all 0.15s',
                     background: filterStatus === v ? (s?.bg || '#1B1B1B') : 'white',
                     color: filterStatus === v ? (s?.color || 'white') : '#555',
                     borderColor: filterStatus === v ? (s?.color || '#1B1B1B') : '#ddd',
