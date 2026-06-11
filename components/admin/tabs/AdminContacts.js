@@ -274,7 +274,7 @@ export default function AdminContacts({ refreshKey = 0 }) {
                     {formatColumnName(col)}{getSortIndicator(col)}
                   </th>
                 ))}
-                {isEditable && <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', color: '#1B1B1B', borderBottom: '2px solid #ddd' }}>Actions</th>}
+                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', color: '#1B1B1B', background: '#f5f5f5' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -285,8 +285,7 @@ export default function AdminContacts({ refreshKey = 0 }) {
                       {item[col] != null ? String(item[col]) : '-'}
                     </td>
                   ))}
-                  {isEditable && (
-                    <td style={{ padding: '12px' }}>
+                  <td data-label="Actions" style={{ padding: '12px' }}>
                       <button
                         onClick={() => setViewingItem(item)}
                         style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }}
@@ -294,7 +293,7 @@ export default function AdminContacts({ refreshKey = 0 }) {
                       >
                         {actions.view_icon || '👁️'}
                       </button>
-                      
+                      <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
                       <button
                         onClick={() => handleDelete(item)}
                         disabled={deleting}
@@ -304,7 +303,6 @@ export default function AdminContacts({ refreshKey = 0 }) {
                         {actions.delete_icon}
                       </button>
                     </td>
-                  )}
                 </tr>
               ))}
             </tbody>

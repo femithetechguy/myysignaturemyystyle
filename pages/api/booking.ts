@@ -83,7 +83,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await pool.query(
       `INSERT INTO appointments
         (appointment_id, appointment_date, appointment_time, duration, total_amount, status, notes, metadata)
-       VALUES ($1, $2, $3, $4, $5, 'pending', $6, $7)
+       VALUES ($1, $2, $3, $4, $5, 'confirmed', $6, $7)
        ON CONFLICT (appointment_id) DO NOTHING`,
       [
         booking_reference,
@@ -103,6 +103,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           appointment_time,
         }),
       ]
+    )
+
+    // Upsert customer — insert on first booking, update on repeat (email is the unique key)
+    const nameParts = customer_name.trim().split(/\s+/)
+    const firstName = nameParts[0]
+    const lastName  = nameParts.slice(1).join(' ') || null
+    const customerId = `CUS${Date.now()}`
+    await pool.query(
+      `INSERT INTO customers (customer_id, first_name, last_name, email, phone)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (email) DO UPDATE SET
+         first_name = EXCLUDED.first_name,
+         last_name  = EXCLUDED.last_name,
+         phone      = COALESCE(EXCLUDED.phone, customers.phone),
+         updated_at = CURRENT_TIMESTAMP`,
+      [customerId, firstName, lastName, customer_email, customer_phone ?? null]
     )
   } catch (dbErr) {
     console.error('[/api/booking] DB insert failed (non-fatal):', dbErr)

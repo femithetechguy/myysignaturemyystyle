@@ -204,7 +204,7 @@
     "customers": {
       "title": "Manage Customers",
       "description": "View and manage customer accounts",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "view_icon": "👁️", "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
       "messages": {
         "loading": "Loading customers...",
         "empty": "No customers found",
@@ -297,7 +297,7 @@
     "contacts": {
       "title": "Contact Submissions",
       "description": "View contact form submissions",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|", "view_icon": "👁️" },
+      "actions": { "view_icon": "👁️", "delete_icon": "🗑️", "separator": "|" },
       "messages": {
         "loading": "Loading contacts...",
         "empty": "No contact submissions found",

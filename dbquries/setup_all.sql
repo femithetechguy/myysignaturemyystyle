@@ -536,6 +536,22 @@ CREATE TRIGGER products_updated_timestamp
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS instagram_handle VARCHAR(100);
 ALTER TABLE staff ADD COLUMN IF NOT EXISTS booking_slug VARCHAR(100);
 ALTER TABLE services ADD COLUMN IF NOT EXISTS staff_ids JSONB DEFAULT '[]';
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS total_appointments INTEGER DEFAULT 0;
+
+-- Default staff availability: Mon–Fri 09:00–18:00, Sat 10:00–16:00 (Sun = closed, no row)
+INSERT INTO staff_availability (staff_id, day_of_week, start_time, end_time, is_available)
+SELECT s.id, days.dow, days.start_t::TIME, days.end_t::TIME, true
+FROM staff s
+CROSS JOIN (VALUES
+  (1, '09:00', '18:00'),
+  (2, '09:00', '18:00'),
+  (3, '09:00', '18:00'),
+  (4, '09:00', '18:00'),
+  (5, '09:00', '18:00'),
+  (6, '10:00', '16:00')
+) AS days(dow, start_t, end_t)
+WHERE s.status = 'active'
+ON CONFLICT (staff_id, day_of_week) DO NOTHING;
 
 
 -- ============================================================================

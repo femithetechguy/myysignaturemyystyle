@@ -1,349 +1,176 @@
 import { useState, useEffect } from 'react';
 import ColumnSelector from '../ColumnSelector';
 import staticConfig from '../../../config/admin.json';
-import { colors, text, button, styles as themeStyles, primaryButtonHover } from '../AdminThemeProvider';
 
-// Auto-generated fields that should not be editable
-const AUTO_GENERATED_FIELDS = ['id', 'created_at', 'updated_at', 'created_date', 'updated_date', 'date_created', 'date_updated'];
+const AUTO_GENERATED_FIELDS = ['id', 'created_at', 'updated_at', 'customer_id'];
 
 export default function AdminCustomers({ refreshKey = 0 }) {
-  const [customers, setCustomers] = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tableName, setTableName] = useState('customers');
+  const [config, setConfig] = useState(staticConfig.admin.customers || {});
+  const actions = config.actions || { view_icon: '👁️', delete_icon: '🗑️', separator: '|' };
   const [isEditable, setIsEditable] = useState(true);
-  const [showRefresh, setShowRefresh] = useState(true);
-  const [refreshBtn, setRefreshBtn] = useState('🔄 Refresh');
-  const [loadingBtn, setLoadingBtn] = useState('🔄 Loading...');
-  const [editingCustomer, setEditingCustomer] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [sortEnabled, setSortEnabled] = useState(true);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState([]);
-
-  const customersConfig = staticConfig.admin.customers || {
-    title: "Manage Customers",
-    description: "View and manage customer accounts",
-    actions: {
-      edit_icon: "✏️",
-      delete_icon: "🗑️",
-      separator: "|"
-    },
-    messages: {
-      loading: "Loading customers...",
-      empty: "No customers found",
-      empty_hint: "Customers will appear here once added.",
-      error_hint: "The customers table may not exist yet. Create it in the database first."
-    }
-  };
-  const actions = customersConfig.actions || { edit_icon: "✏️", delete_icon: "🗑️", separator: "|" };
-  const messages = customersConfig.messages || {};
+  const [editingItem, setEditingItem] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [viewingItem, setViewingItem] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    fetchWithFreshConfig();
+    fetchData();
   }, [refreshKey]);
 
-  const fetchWithFreshConfig = async () => {
+  useEffect(() => {
+    const anyOpen = showModal || !!viewingItem;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal, viewingItem]);
+
+  const fetchData = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('adminToken');
-      
-      if (!token) {
-        setError('No authentication token. Please login again.');
-        setLoading(false);
-        return;
-      }
+      if (!token) { setError('No authentication token.'); setLoading(false); return; }
 
-      // Load fresh config from API
-      let currentTableName = 'customers';
       try {
-        const configRes = await fetch('/api/config', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const configRes = await fetch('/api/config', { headers: { Authorization: `Bearer ${token}` } });
         if (configRes.ok) {
           const freshConfig = await configRes.json();
-          const customersTab = freshConfig.admin?.tabs?.find(tab => tab.id === 'customers');
-          currentTableName = customersTab?.table || 'customers';
-          setTableName(currentTableName);
-          setIsEditable(customersTab?.editable !== false);
-          setShowRefresh(customersTab?.showRefresh !== false);
-          setRefreshBtn(customersTab?.refreshBtn || '🔄 Refresh');
-          setLoadingBtn(customersTab?.loadingBtn || '🔄 Loading...');
-          setSortEnabled(customersTab?.sort === true);
+          const tab = freshConfig.admin?.tabs?.find(t => t.id === 'customers');
+          setTableName(tab?.table || 'customers');
+          setConfig(freshConfig.admin?.customers || {});
+          setIsEditable(tab?.editable !== false);
+          setSortEnabled(tab?.sort === true);
         }
-      } catch (configErr) {
-        console.error('Config load failed, using default:', configErr);
-      }
+      } catch (e) { console.error('Config load failed:', e); }
 
-      // Fetch customers
-      const url = `/api/admin/customers?table=${currentTableName}&t=${Date.now()}`;
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const res = await fetch(`/api/admin/customers?table=${tableName}&t=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to fetch customers: ${response.status}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Failed to fetch customers: ${res.status}`);
       }
-
-      const data = await response.json();
-      setCustomers(data.customers || data || []);
+      const result = await res.json();
+      setData(result.customers || result || []);
       setError(null);
     } catch (err) {
-      console.error('Fetch error:', err);
       setError(err.message);
+      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (customer) => {
-    setEditingCustomer({ ...customer });
-    setShowModal(true);
-  };
+  const handleEdit = (item) => { setEditingItem({ ...item }); setShowModal(true); };
 
   const handleSave = async () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('adminToken');
-      
-      const response = await fetch(`/api/admin/customers?table=${tableName}&id=${editingCustomer.id}`, {
+      const res = await fetch(`/api/admin/customers?table=${tableName}&id=${editingItem.id}`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(editingCustomer)
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingItem)
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update customer');
-      }
-
-      setShowModal(false);
-      setEditingCustomer(null);
-      await fetchWithFreshConfig();
-    } catch (err) {
-      console.error('Save error:', err);
-      alert('Error saving customer: ' + err.message);
-    } finally {
-      setSaving(false);
-    }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Failed to update'); }
+      setShowModal(false); setEditingItem(null); await fetchData();
+    } catch (err) { console.error('Save error:', err); alert('Error saving: ' + err.message); }
+    finally { setSaving(false); }
   };
 
-  const handleDelete = async (customerId, customerName) => {
-    if (!confirm(`Are you sure you want to delete "${customerName}"?`)) {
-      return;
-    }
-    
+  const handleDelete = async (item) => {
+    const displayName = item.first_name || item.email || item.id;
+    if (!confirm(`Delete "${displayName}"?`)) return;
     try {
       setDeleting(true);
       const token = localStorage.getItem('adminToken');
-      
-      const response = await fetch(`/api/admin/customers?table=${tableName}&id=${customerId}`, {
+      const res = await fetch(`/api/admin/customers?table=${tableName}&id=${item.id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete customer');
-      }
-
-      await fetchWithFreshConfig();
-    } catch (err) {
-      console.error('Delete error:', err);
-      alert('Error deleting customer: ' + err.message);
-    } finally {
-      setDeleting(false);
-    }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Failed to delete'); }
+      await fetchData();
+    } catch (err) { console.error('Delete error:', err); alert('Error deleting: ' + err.message); }
+    finally { setDeleting(false); }
   };
 
-  const handleInputChange = (field, value) => {
-    setEditingCustomer({ ...editingCustomer, [field]: value });
-  };
+  const handleInputChange = (field, value) => setEditingItem({ ...editingItem, [field]: value });
 
-  const handleSort = (column) => {
+  const handleSort = (col) => {
     if (!sortEnabled) return;
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
-      setSortDirection('asc');
-    }
+    if (sortColumn === col) setSortDirection(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortColumn(col); setSortDirection('asc'); }
   };
 
-  const getSortIndicator = (column) => {
-    if (!sortEnabled) return '';
-    if (sortColumn !== column) return ' ↕';
+  const getSortIndicator = (col) => {
+    if (!sortEnabled || sortColumn !== col) return '';
     return sortDirection === 'asc' ? ' ↑' : ' ↓';
   };
 
-  const sortedCustomers = [...customers].sort((a, b) => {
-    if (!sortColumn) return 0;
-    const aVal = a[sortColumn] ?? '';
-    const bVal = b[sortColumn] ?? '';
-    if (typeof aVal === 'number' && typeof bVal === 'number') {
-      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
-    }
-    const comparison = String(aVal).localeCompare(String(bVal));
-    return sortDirection === 'asc' ? comparison : -comparison;
+  const sortedData = [...data].sort((a, b) => {
+    if (!sortEnabled || !sortColumn) return 0;
+    const aVal = a[sortColumn]; const bVal = b[sortColumn];
+    if (aVal == null && bVal == null) return 0;
+    if (aVal == null) return 1; if (bVal == null) return -1;
+    const mult = sortDirection === 'asc' ? 1 : -1;
+    if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * mult;
+    return String(aVal).localeCompare(String(bVal)) * mult;
   });
 
-  const headerStyle = (column) => ({
-    padding: '12px',
-    textAlign: 'left',
-    fontWeight: 'bold',
-    color: '#1B1B1B',
-    borderBottom: '2px solid #ddd',
-    cursor: sortEnabled ? 'pointer' : 'default',
-    userSelect: 'none'
-  });
-
-  // Get columns dynamically from data
-  const allColumns = customers.length > 0 ? Object.keys(customers[0]).filter(col => !col.startsWith('_')) : [];
-  
-  // Initialize visible columns when data loads
-  useEffect(() => {
-    if (allColumns.length > 0 && visibleColumns.length === 0) {
-      // Default to first 6 columns or all if less than 6
-      setVisibleColumns(allColumns.slice(0, Math.min(6, allColumns.length)));
-    }
-  }, [allColumns.length]);
-
-  // Columns to display in table (filtered by selection)
+  const allColumns = data.length > 0 ? Object.keys(data[0]) : [];
   const columns = visibleColumns.length > 0 ? visibleColumns : allColumns;
 
-  // Get editable fields (exclude auto-generated)
-  const getEditableFields = () => {
-    return allColumns.filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()));
-  };
-
-  const toggleColumn = (col) => {
-    if (visibleColumns.includes(col)) {
-      // Don't allow removing the last column
-      if (visibleColumns.length > 1) {
-        setVisibleColumns(visibleColumns.filter(c => c !== col));
-      }
-    } else {
-      setVisibleColumns([...visibleColumns, col]);
+  useEffect(() => {
+    if (data.length > 0 && visibleColumns.length === 0) {
+      setVisibleColumns(Object.keys(data[0]).slice(0, Math.min(6, Object.keys(data[0]).length)));
     }
-  };
+  }, [data]);
 
-  const selectAllColumns = () => {
-    setVisibleColumns([...allColumns]);
-  };
+  const toggleColumn = (col) => setVisibleColumns(prev => prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]);
+  const selectAllColumns = () => setVisibleColumns(allColumns);
+  const selectMinColumns = () => setVisibleColumns(allColumns.slice(0, Math.min(6, allColumns.length)));
+  const formatColumnName = (col) => col.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-  const selectMinColumns = () => {
-    // Select first 3 columns minimum
-    setVisibleColumns(allColumns.slice(0, Math.min(3, allColumns.length)));
-  };
-
-  // Format column name for display (snake_case to Title Case)
-  const formatColumnName = (col) => {
-    return col.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  };
-
-  // Render cell value with special handling for status fields
-  const renderCellValue = (value, column) => {
-    if (value === null || value === undefined) return '-';
-    
-    // Handle status/is_active fields with badge styling
-    if (column === 'status' || column === 'is_active') {
-      const isActive = value === 'active' || value === true || value === 1;
-      const isPending = value === 'pending';
-      return (
-        <span style={{
-          padding: '4px 10px',
-          borderRadius: '12px',
-          background: isActive ? '#D4AF37' : isPending ? '#fff3cd' : '#ccc',
-          color: '#1B1B1B',
-          fontSize: '0.85rem',
-          fontWeight: '500'
-        }}>
-          {typeof value === 'boolean' ? (value ? 'active' : 'inactive') : value}
-        </span>
-      );
-    }
-    
-    // Handle date fields
-    if (column.includes('created') || column.includes('date') || column.includes('updated')) {
-      try {
-        return new Date(value).toLocaleDateString();
-      } catch {
-        return value;
-      }
-    }
-    
-    return String(value);
-  };
+  const headerStyle = (col) => ({
+    padding: '12px', textAlign: 'left', fontWeight: 'bold',
+    cursor: sortEnabled ? 'pointer' : 'default', userSelect: 'none',
+    color: '#1B1B1B', background: sortColumn === col ? '#e8e8e8' : '#f5f5f5'
+  });
 
   return (
     <div className="dashboardContainer">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '10px', flexWrap: 'wrap' }}>
-        <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B', flex: 1, minWidth: '150px' }}>{customersConfig.title}</h2>
+        <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B', flex: 1, minWidth: '150px' }}>{config.title || 'Manage Customers'}</h2>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
-          {/* Column Selector */}
           {allColumns.length > 0 && (
-            <ColumnSelector
-              allColumns={allColumns}
-              visibleColumns={visibleColumns}
-              onToggle={toggleColumn}
-              onSelectAll={selectAllColumns}
-              onSelectMin={selectMinColumns}
-              formatColumnName={formatColumnName}
-            />
+            <ColumnSelector allColumns={allColumns} visibleColumns={visibleColumns} onToggle={toggleColumn} onSelectAll={selectAllColumns} onSelectMin={selectMinColumns} formatColumnName={formatColumnName} />
           )}
         </div>
       </div>
-      
-      <div className="info" style={{ marginBottom: '30px', padding: '12px', background: '#f5f5f5', borderRadius: '6px' }}>
-        <p style={{ margin: 0, fontSize: '0.95rem' }}>🧑‍💼 Total Customers: <strong>{customers.length}</strong> | 📁 Table: <strong>{tableName}</strong></p>
+
+      <div style={{ marginBottom: '20px', padding: '12px', background: '#f5f5f5', borderRadius: '6px' }}>
+        <p style={{ margin: 0, fontSize: '0.95rem' }}>🧑‍💼 Total Customers: <strong>{data.length}</strong> | 📁 Table: <strong>{tableName}</strong></p>
       </div>
 
       {error && (
-        <div style={{ 
-          padding: '20px', 
-          background: '#fff3f3', 
-          border: '2px solid #ff6b6b', 
-          borderRadius: '8px', 
-          marginBottom: '20px',
-          boxShadow: '0 2px 8px rgba(255, 107, 107, 0.2)'
-        }}>
-          <p style={{ margin: 0, color: '#d32f2f', fontWeight: 'bold', fontSize: '1.1rem' }}>⚠️ Error</p>
+        <div style={{ padding: '20px', background: '#fff3f3', border: '2px solid #ff6b6b', borderRadius: '8px', marginBottom: '20px' }}>
+          <p style={{ margin: 0, color: '#d32f2f', fontWeight: 'bold' }}>⚠️ Error</p>
           <p style={{ margin: '10px 0 0 0', color: '#333' }}>{error}</p>
-          <p style={{ margin: '10px 0 0 0', color: '#666', fontSize: '0.9rem' }}>
-            💡 <strong>Hint:</strong> The customers table may not exist yet. Create it in the database first.
-          </p>
         </div>
       )}
 
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-          <p>Loading customers...</p>
-        </div>
-      )}
+      {loading && <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading customers...</div>}
 
-      {!loading && !error && customers.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666', background: '#f9f9f9', borderRadius: '8px' }}>
-          <p style={{ fontSize: '1.2rem', margin: 0 }}>No customers found</p>
-          <p style={{ margin: '10px 0 0 0', fontSize: '0.9rem' }}>Customers will appear here once the table is set up and populated.</p>
-        </div>
-      )}
-
-      {!loading && !error && customers.length > 0 && (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      {!loading && data.length > 0 && (
+        <div className="quickActions" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
             <thead>
               <tr style={{ background: '#f5f5f5' }}>
                 {columns.map(col => (
@@ -351,54 +178,26 @@ export default function AdminCustomers({ refreshKey = 0 }) {
                     {formatColumnName(col)}{getSortIndicator(col)}
                   </th>
                 ))}
-                {isEditable && <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', color: '#1B1B1B', borderBottom: '2px solid #ddd' }}>Actions</th>}
+                <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', color: '#1B1B1B', background: '#f5f5f5' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {sortedCustomers.map((customer, index) => (
-                <tr key={customer.id || index} style={{ borderBottom: '1px solid #eee' }}>
-                  {columns.map((col, colIndex) => (
-                    <td key={col} style={{ 
-                      padding: '12px', 
-                      color: colIndex === 0 || col === 'id' ? '#666' : col === 'name' || colIndex === 1 ? '#1B1B1B' : '#666',
-                      fontWeight: col === 'name' || colIndex === 1 ? 'bold' : 'normal'
-                    }}>
-                      {renderCellValue(customer[col], col)}
+              {sortedData.map((item, idx) => (
+                <tr key={item.id || idx} style={{ borderBottom: '1px solid #eee' }}>
+                  {columns.map(col => (
+                    <td key={col} data-label={formatColumnName(col)} style={{ padding: '12px', color: '#666' }}>
+                      {item[col] != null ? String(item[col]) : '-'}
                     </td>
                   ))}
-                  {isEditable && (
-                    <td style={{ padding: '12px' }}>
-                      <button 
-                        onClick={() => handleEdit(customer)}
-                        style={{ 
-                          cursor: 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0
-                        }}
-                        title={`Edit ${customer.name || customer.id}`}
-                      >
-                        {actions.edit_icon}
-                      </button>
-                      <span style={{ margin: '0 8px', color: '#ccc' }}>{actions.separator}</span>
-                      <button 
-                        onClick={() => handleDelete(customer.id, customer.name || customer.id)}
-                        disabled={deleting}
-                        style={{ 
-                          cursor: deleting ? 'not-allowed' : 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0,
-                          opacity: deleting ? 0.6 : 1
-                        }}
-                        title={`Delete ${customer.name || customer.id}`}
-                      >
-                        {actions.delete_icon}
-                      </button>
-                    </td>
-                  )}
+                  <td data-label="Actions" style={{ padding: '12px' }}>
+                    <button onClick={() => setViewingItem(item)} style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }} title="View">
+                      {actions.view_icon || '👁️'}
+                    </button>
+                    <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
+                    <button onClick={() => handleDelete(item)} disabled={deleting} style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0, opacity: deleting ? 0.6 : 1 }} title="Delete">
+                      {actions.delete_icon || '🗑️'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -406,127 +205,90 @@ export default function AdminCustomers({ refreshKey = 0 }) {
         </div>
       )}
 
-      {/* Edit Modal - Dynamic fields based on visible columns */}
-      {showModal && editingCustomer && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}
-          onClick={(e) => e.target === e.currentTarget && setShowColumnSelector(false)}
-        >
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '30px',
-            width: '90%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-          }}>
-            <h3 style={{ margin: '0 0 20px 0', color: '#1B1B1B' }}>✏️ Edit Customer</h3>
-            
-            {/* Show non-editable fields (auto-generated) as read-only info */}
+      {!loading && data.length === 0 && !error && (
+        <div style={{ padding: '20px', textAlign: 'center', color: '#666', background: '#f9f9f9', borderRadius: '4px' }}>
+          No customers yet. Customers are created automatically when a booking is made.
+        </div>
+      )}
+
+      {/* View Modal */}
+      {viewingItem && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ View Customer</h3>
+              <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {allColumns.map(col => (
+                <div key={col} style={{ display: 'flex', gap: '12px', padding: '6px 10px', background: AUTO_GENERATED_FIELDS.includes(col.toLowerCase()) ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                  <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.78rem', flexShrink: 0 }}>{formatColumnName(col)}</span>
+                  <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.85rem' }}>{viewingItem[col] != null ? String(viewingItem[col]) : '—'}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+              {isEditable && (
+                <button onClick={() => { setViewingItem(null); handleEdit(viewingItem); }} style={{ padding: '8px 16px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  ✏️ Edit
+                </button>
+              )}
+              <button onClick={() => setViewingItem(null)} style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showModal && editingItem && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ margin: '0 0 12px 0', color: '#1B1B1B' }}>✏️ Edit Customer</h3>
             {allColumns.filter(col => AUTO_GENERATED_FIELDS.includes(col.toLowerCase())).length > 0 && (
-              <div style={{ 
-                marginBottom: '20px', 
-                padding: '12px', 
-                background: '#f9f9f9', 
-                borderRadius: '6px',
-                fontSize: '0.9rem',
-                color: '#666'
-              }}>
+              <div style={{ marginBottom: '12px', padding: '12px', background: '#f9f9f9', borderRadius: '6px', fontSize: '0.9rem', color: '#666' }}>
                 {allColumns.filter(col => AUTO_GENERATED_FIELDS.includes(col.toLowerCase())).map(col => (
-                  <span key={col} style={{ marginRight: '20px' }}>
-                    <strong>{formatColumnName(col)}:</strong> {editingCustomer[col] || '-'}
+                  <span key={col} style={{ marginRight: '20px', display: 'inline-block' }}>
+                    <strong>{formatColumnName(col)}:</strong> {editingItem[col] || '-'}
                   </span>
                 ))}
               </div>
             )}
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {/* Dynamic editable fields - based on visible columns that are editable */}
-              {visibleColumns
-                .filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()))
-                .map(col => {
-                  const isStatusField = col === 'status' || col === 'is_active';
-                  const isNotesField = col === 'notes' || col === 'description' || col === 'comments';
-                  const isEmailField = col.includes('email');
-                  const isNumberField = col.includes('amount') || col.includes('price') || col.includes('total') || col.includes('quantity');
-                  
-                  return (
-                    <div key={col}>
-                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px', color: '#1B1B1B' }}>
-                        {formatColumnName(col)}
-                      </label>
-                      {isStatusField ? (
-                        <select
-                          value={editingCustomer[col] || 'active'}
-                          onChange={(e) => handleInputChange(col, e.target.value)}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
-                        >
-                          <option value="active">Active</option>
-                          <option value="inactive">Inactive</option>
-                          <option value="pending">Pending</option>
-                        </select>
-                      ) : isNotesField ? (
-                        <textarea
-                          value={editingCustomer[col] || ''}
-                          onChange={(e) => handleInputChange(col, e.target.value)}
-                          rows={3}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }}
-                        />
-                      ) : (
-                        <input
-                          type={isEmailField ? 'email' : isNumberField ? 'number' : 'text'}
-                          step={isNumberField ? '0.01' : undefined}
-                          value={editingCustomer[col] || ''}
-                          onChange={(e) => handleInputChange(col, isNumberField ? parseFloat(e.target.value) || '' : e.target.value)}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {allColumns.filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase())).map(col => {
+                const isTextArea = col === 'notes' || col === 'address';
+                const isEmail = col.includes('email');
+                const isNumber = col.includes('total') || col.includes('points') || col.includes('spent');
+                const isBoolean = col === 'marketing_consent';
+                return (
+                  <div key={col}>
+                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '2px', color: '#1B1B1B' }}>{formatColumnName(col)}</label>
+                    {isBoolean ? (
+                      <select value={editingItem[col] ? 'true' : 'false'} onChange={(e) => handleInputChange(col, e.target.value === 'true')}
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    ) : isTextArea ? (
+                      <textarea value={editingItem[col] || ''} onChange={(e) => handleInputChange(col, e.target.value)} rows={2}
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }} />
+                    ) : (
+                      <input type={isEmail ? 'email' : isNumber ? 'number' : 'text'} step={isNumber ? '1' : undefined}
+                        value={editingItem[col] || ''} onChange={(e) => handleInputChange(col, isNumber ? parseInt(e.target.value) || '' : e.target.value)}
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '25px' }}>
-              <button
-                onClick={() => { setShowModal(false); setEditingCustomer(null); }}
-                style={{
-                  padding: '10px 20px',
-                  background: '#f5f5f5',
-                  color: '#333',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
+              <button onClick={() => { setShowModal(false); setEditingItem(null); }} style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
                 Cancel
               </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                style={{
-                  padding: '10px 20px',
-                  background: saving ? '#ccc' : '#D4AF37',
-                  color: '#1B1B1B',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: saving ? 'not-allowed' : 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
+              <button onClick={handleSave} disabled={saving} style={{ padding: '8px 16px', background: saving ? '#ccc' : '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}>
                 {saving ? 'Saving...' : '💾 Save'}
               </button>
             </div>
