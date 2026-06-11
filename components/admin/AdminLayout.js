@@ -213,11 +213,6 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <div className={`mainContent ${sidebarClosed ? 'sidebar-closed' : ''}`}>
-        {/* Header */}
-        <div className="header">
-          <h1>{config.app.name} - {config.admin.header.admin_suffix}</h1>
-        </div>
-
         {/* Tab Description */}
         {activeTabConfig && (
           <div className="info">
