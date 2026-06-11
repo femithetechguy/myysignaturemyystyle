@@ -254,6 +254,7 @@ body [style*="position: fixed"] h4 {
 .mainContent {
   margin-left: 280px;
   flex: 1;
+  min-width: 0;
   padding: 20px;
   transition: margin-left 0.3s ease;
 }
@@ -437,6 +438,7 @@ body [style*="position: fixed"] h4 {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
 }
 
 /* ========== DASHBOARD SPECIFIC ========== */
@@ -533,6 +535,12 @@ body [style*="position: fixed"] h4 {
   gap: 16px;
   margin-bottom: 30px;
   font-family: var(--admin-font-primary, 'Nunito'), sans-serif;
+}
+
+@media (min-width: 1200px) {
+  .stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .statCard {
@@ -900,6 +908,25 @@ body [style*="position: fixed"] h4 {
 /* Mobile-only logout nav item — shown in mobile dropdown, hidden elsewhere */
 .logoutNavItem {
   display: none !important;
+}
+
+/* ========== MEDIUM VIEWPORT (tablet landscape / small desktop) ========== */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .sidebar {
+    width: 240px;
+  }
+
+  .sidebar.closed {
+    width: 80px;
+  }
+
+  .mainContent {
+    margin-left: 240px;
+  }
+
+  .sidebar.closed ~ .mainContent {
+    margin-left: 80px;
+  }
 }
 
 /* ========== RESPONSIVE DESIGN ========== */

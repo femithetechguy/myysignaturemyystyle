@@ -107,7 +107,7 @@ export default function AdminPolicies() {
   if (!policies || !disclaimer) return <div className="dashboardContainer"><p>No policy data found. Run <code>dbquries/business_settings.sql</code> first.</p></div>;
 
   return (
-    <div className="dashboardContainer">
+    <div className="dashboardContainer" style={{ maxWidth: '860px' }}>
       <h2 style={{ fontSize: '1.8rem', marginBottom: '6px' }}>{config.title || 'Salon Policies'}</h2>
       <p style={{ color: '#666', marginBottom: '30px', fontSize: '0.95rem' }}>{config.description}</p>
 

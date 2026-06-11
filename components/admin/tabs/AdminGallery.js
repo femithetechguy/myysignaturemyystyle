@@ -279,36 +279,25 @@ export default function AdminGallery({ refreshKey = 0 }) {
                     </td>
                   ))}
                   {isEditable && (
-                    <td style={{ padding: '12px' }}>
-                      <button 
-                        onClick={() => handleEdit(item)}
-                        style={{ 
-                          cursor: 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0
-                        }}
-                        title="Edit"
-                      >
-                        {actions.edit_icon}
-                      </button>
-                      <span style={{ margin: '0 8px', color: '#ccc' }}>{actions.separator}</span>
-                      <button 
-                        onClick={() => handleDelete(item)}
-                        disabled={deleting}
-                        style={{ 
-                          cursor: deleting ? 'not-allowed' : 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0,
-                          opacity: deleting ? 0.6 : 1
-                        }}
-                        title="Delete"
-                      >
-                        {actions.delete_icon}
-                      </button>
+                    <td data-label="Actions" style={{ padding: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <button
+                          onClick={() => handleEdit(item)}
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: '2px 4px' }}
+                          title="Edit"
+                        >
+                          {actions.edit_icon}
+                        </button>
+                        <span style={{ color: '#ddd' }}>|</span>
+                        <button
+                          onClick={() => handleDelete(item)}
+                          disabled={deleting}
+                          style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: '2px 4px', opacity: deleting ? 0.6 : 1 }}
+                          title="Delete"
+                        >
+                          {actions.delete_icon}
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>

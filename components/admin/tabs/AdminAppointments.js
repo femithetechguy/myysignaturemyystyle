@@ -295,7 +295,7 @@ function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, o
       ) : (
         /* ── Desktop: 7-column grid ── */
         <div className="weekViewOuter">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', minWidth: '560px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(90px, 1fr))', gap: '8px' }}>
             {dayCards.map(({ day, appts, isToday, i }) => (
               <div key={i} style={{
                 background: isToday ? '#FEF9EC' : '#fafafa',
