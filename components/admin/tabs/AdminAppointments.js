@@ -314,6 +314,12 @@ export default function AdminAppointments({ refreshKey = 0 }) {
 
   useEffect(() => { fetchData(); }, []);
 
+  useEffect(() => {
+    const anyOpen = showModal || !!viewingItem;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal, viewingItem]);
+
   const fetchData = async () => {
     try {
       setLoading(true);

@@ -113,6 +113,12 @@ export default function AdminStaff({ refreshKey = 0 }) {
     fetchData();
   }, [refreshKey]);
 
+  useEffect(() => {
+    const anyOpen = showModal || !!viewingItem;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal, viewingItem]);
+
   const fetchData = async () => {
     try {
       setLoading(true);
