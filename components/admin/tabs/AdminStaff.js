@@ -104,6 +104,7 @@ export default function AdminStaff({ refreshKey = 0 }) {
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
+  const [editingAvailability, setEditingAvailability] = useState(null); // from staff_availability table
   const [showModal, setShowModal] = useState(false);
   const [viewingItem, setViewingItem] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -179,9 +180,7 @@ export default function AdminStaff({ refreshKey = 0 }) {
   };
 
   
-  const handleEdit = (item) => {
-    // Stringify any JSONB object/array values so they're editable as text,
-    // but keep `availability` as a plain object for the structured editor
+  const handleEdit = async (item) => {
     const normalized = { ...item };
     Object.keys(normalized).forEach(k => {
       if (k === 'availability') return;
@@ -190,6 +189,25 @@ export default function AdminStaff({ refreshKey = 0 }) {
       }
     });
     setEditingItem(normalized);
+
+    // Pre-initialize from JSON column so save always has something to write
+    const jsonAvail = item.availability && typeof item.availability === 'object' ? item.availability : {};
+    setEditingAvailability(jsonAvail);
+
+    // Fetch authoritative schedule from staff_availability table and override
+    const token = localStorage.getItem('adminToken');
+    try {
+      const res = await fetch(`/api/admin/staff-availability?staff_id=${item.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.schedule && Object.keys(data.schedule).length > 0) {
+          setEditingAvailability(data.schedule);
+        }
+      }
+    } catch (_) {}
+
     setShowModal(true);
   };
 
@@ -210,23 +228,37 @@ export default function AdminStaff({ refreshKey = 0 }) {
           }
         }
       });
-      
-      const response = await fetch(`/api/admin/users?table=${tableName}&id=${itemId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update item');
+      // Save staff fields and availability in parallel
+      const saves = [
+        fetch(`/api/admin/users?table=${tableName}&id=${itemId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }),
+      ];
+
+      if (editingAvailability !== null) {
+        saves.push(
+          fetch(`/api/admin/staff-availability?staff_id=${editingItem.id}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ schedule: editingAvailability }),
+          })
+        );
+      }
+
+      const results = await Promise.all(saves);
+      for (const res of results) {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to save');
+        }
       }
 
       setShowModal(false);
       setEditingItem(null);
+      setEditingAvailability(null);
       await fetchData();
     } catch (err) {
       console.error('Save error:', err);
@@ -394,23 +426,25 @@ export default function AdminStaff({ refreshKey = 0 }) {
                     </td>
                   ))}
                   {isEditable && (
-                    <td style={{ padding: '12px' }}>
-                      <button
-                        onClick={() => setViewingItem(item)}
-                        style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }}
-                        title="View"
-                      >
-                        {actions.view_icon || '👁️'}
-                      </button>
-                      
-                      <button
-                        onClick={() => handleDelete(item)}
-                        disabled={deleting}
-                        style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0, opacity: deleting ? 0.6 : 1 }}
-                        title="Delete"
-                      >
-                        {actions.delete_icon}
-                      </button>
+                    <td data-label="Actions" style={{ padding: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <button
+                          onClick={() => setViewingItem(item)}
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: '2px 4px' }}
+                          title="View"
+                        >
+                          {actions.view_icon || '👁️'}
+                        </button>
+                        <span style={{ color: '#ddd' }}>|</span>
+                        <button
+                          onClick={() => handleDelete(item)}
+                          disabled={deleting}
+                          style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: '2px 4px', opacity: deleting ? 0.6 : 1 }}
+                          title="Delete"
+                        >
+                          {actions.delete_icon}
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>
@@ -536,8 +570,8 @@ export default function AdminStaff({ refreshKey = 0 }) {
                         </select>
                       ) : col === 'availability' ? (
                         <AvailabilityEditor
-                          value={editingItem[col] || {}}
-                          onChange={(val) => handleInputChange(col, val)}
+                          value={editingAvailability || editingItem[col] || {}}
+                          onChange={(val) => setEditingAvailability(val)}
                         />
                       ) : isJsonb || isTextArea ? (
                         <>
