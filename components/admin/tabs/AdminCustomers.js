@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ColumnSelector from '../ColumnSelector';
 import staticConfig from '../../../config/admin.json';
 import { colors, text, button, styles as themeStyles, primaryButtonHover } from '../AdminThemeProvider';
 
@@ -22,7 +23,6 @@ export default function AdminCustomers({ refreshKey = 0 }) {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState([]);
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
 
   const customersConfig = staticConfig.admin.customers || {
     title: "Manage Customers",
@@ -295,65 +295,15 @@ export default function AdminCustomers({ refreshKey = 0 }) {
         <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
           {/* Column Selector */}
           {allColumns.length > 0 && (
-            <div style={{ position: 'relative', display: 'flex' }}>
-              <button
-                onClick={() => setShowColumnSelector(!showColumnSelector)}
-                style={{
-                  padding: '7px 12px',
-                  background: '#f5f5f5',
-                  color: '#1B1B1B',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '0.85rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxSizing: 'border-box'
-                }}
-              >
-                📊 Columns ({visibleColumns.length}/{allColumns.length})
-              </button>
-              {showColumnSelector && (
-                <div className="colSelectorDropdown" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '5px',
-                  background: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  zIndex: 100,
-                  minWidth: '220px',
-                  maxHeight: '400px',
-                  overflowY: 'auto'
-                }}>
-                  <div style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', gap: '8px' }}>
-                    <button onClick={selectAllColumns} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>All</button>
-                    <button onClick={selectMinColumns} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#f5f5f5', color: '#1B1B1B', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}>Min</button>
-                  </div>
-                  {allColumns.map(col => (
-                    <label key={col} style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      padding: '10px 12px', 
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #f0f0f0',
-                      color: '#1B1B1B'
-                    }}>
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.includes(col)}
-                        onChange={() => toggleColumn(col)}
-                        style={{ marginRight: '10px' }}
-                      />
-                      {formatColumnName(col)}
-                    </label>
-                  ))}
-                </div>
-              )}
+            <ColumnSelector
+              allColumns={allColumns}
+              visibleColumns={visibleColumns}
+              onToggle={toggleColumn}
+              onSelectAll={selectAllColumns}
+              onSelectMin={selectMinColumns}
+              formatColumnName={formatColumnName}
+            />
+          )}
             </div>
           )}
           {showRefresh && (

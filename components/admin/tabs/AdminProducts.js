@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ColumnSelector from '../ColumnSelector';
 import staticConfig from '../../../config/admin.json';
 import { colors, text, button, styles as themeStyles, primaryButtonHover } from '../AdminThemeProvider';
 
@@ -25,7 +26,6 @@ export default function AdminProducts({ refreshKey = 0 }) {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState(['product_id', 'product_name', 'category', 'price', 'availability_status', 'is_active']);
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
 
   // Derived values from config
   const productsConfig = config.admin.products || {
