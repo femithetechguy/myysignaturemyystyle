@@ -333,13 +333,13 @@ export default function AdminApplications({ refreshKey = 0 }) {
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
               <button
                 onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
-                style={{ padding: '10px 20px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                style={{ padding: '8px 16px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
               >
                 ✏️ Edit
               </button>
               <button
                 onClick={() => setViewingItem(null)}
-                style={{ padding: '10px 20px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+                style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
               >
                 Close
               </button>
@@ -406,14 +406,14 @@ export default function AdminApplications({ refreshKey = 0 }) {
                   
                   return (
                     <div key={col}>
-                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px', color: '#1B1B1B' }}>
+                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '2px', color: '#1B1B1B' }}>
                         {formatColumnName(col)}
                       </label>
                       {isBoolean ? (
                         <select
                           value={editingItem[col] ? 'true' : 'false'}
                           onChange={(e) => handleInputChange(col, e.target.value === 'true')}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
                         >
                           <option value="true">Yes</option>
                           <option value="false">No</option>
@@ -422,8 +422,8 @@ export default function AdminApplications({ refreshKey = 0 }) {
                         <textarea
                           value={editingItem[col] || ''}
                           onChange={(e) => handleInputChange(col, e.target.value)}
-                          rows={3}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }}
+                          rows={2}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }}
                         />
                       ) : (
                         <input
@@ -431,7 +431,7 @@ export default function AdminApplications({ refreshKey = 0 }) {
                           step={isNumber ? '0.01' : undefined}
                           value={editingItem[col] || ''}
                           onChange={(e) => handleInputChange(col, isNumber ? parseFloat(e.target.value) || '' : e.target.value)}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
                         />
                       )}
                     </div>

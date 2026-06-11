@@ -1329,10 +1329,10 @@ body [style*="position: fixed"] h4 {
   input,
   select,
   textarea {
-    font-size: 16px !important;
-    padding: 12px !important;
+    font-size: 16px !important; /* prevents iOS zoom */
+    padding: 8px 10px !important;
     width: 100% !important;
-    min-height: 44px;
+    min-height: unset !important;
     box-sizing: border-box;
     border-radius: 6px;
     border: 1px solid #ddd;

@@ -701,28 +701,28 @@ export default function AdminAppointments({ refreshKey = 0 }) {
 
                   return (
                     <div key={col}>
-                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '4px', fontSize: '0.85rem', color: '#1B1B1B', textTransform: 'capitalize' }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '2px', fontSize: '0.8rem', color: '#1B1B1B', textTransform: 'capitalize' }}>
                         {col.replace(/_/g, ' ')}
                       </label>
                       {isSelect ? (
                         <select value={editingItem[col] || ''} onChange={e => setEditingItem({ ...editingItem, [col]: e.target.value })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
                           {['pending','confirmed','completed','cancelled','no_show'].map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       ) : isBoolean ? (
                         <select value={editingItem[col] ? 'true' : 'false'} onChange={e => setEditingItem({ ...editingItem, [col]: e.target.value === 'true' })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
                           <option value="true">Yes</option>
                           <option value="false">No</option>
                         </select>
                       ) : isTextArea ? (
                         <textarea value={editingItem[col] || ''} rows={2} onChange={e => setEditingItem({ ...editingItem, [col]: e.target.value })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', resize: 'vertical', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', resize: 'vertical', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
                       ) : (
                         <input type={isDate ? 'date' : isTime ? 'time' : isNumber ? 'number' : 'text'}
                           value={isDate ? toDateKey(editingItem[col]) : (editingItem[col] || '')}
                           onChange={e => setEditingItem({ ...editingItem, [col]: isNumber ? parseFloat(e.target.value) || '' : e.target.value })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
                       )}
                     </div>
                   );
@@ -731,11 +731,11 @@ export default function AdminAppointments({ refreshKey = 0 }) {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
               <button onClick={() => { setShowModal(false); setEditingItem(null); }}
-                style={{ padding: '9px 20px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
+                style={{ padding: '8px 16px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                style={{ padding: '9px 20px', background: saving ? '#ccc' : '#D4AF37', border: 'none', borderRadius: '6px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#1B1B1B' }}>
+                style={{ padding: '8px 16px', background: saving ? '#ccc' : '#D4AF37', border: 'none', borderRadius: '6px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#1B1B1B' }}>
                 {saving ? 'Saving…' : '💾 Save'}
               </button>
             </div>
