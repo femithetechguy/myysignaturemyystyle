@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ColumnSelector from '../ColumnSelector';
 import staticConfig from '../../../config/admin.json';
 import { colors, text, button, styles as themeStyles, primaryButtonHover } from '../AdminThemeProvider';
 
@@ -8,7 +9,7 @@ const AUTO_GENERATED_FIELDS = ['product_id', 'created_at', 'updated_at', 'create
 // All possible columns for products
 const ALL_PRODUCT_COLUMNS = ['product_id', 'product_name', 'category', 'price', 'duration_minutes', 'difficulty_level', 'availability_status', 'is_active', 'description', 'staff_required', 'required_materials'];
 
-export default function AdminProducts() {
+export default function AdminProducts({ refreshKey = 0 }) {
   const [config, setConfig] = useState(staticConfig);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,6 @@ export default function AdminProducts() {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState(['product_id', 'product_name', 'category', 'price', 'availability_status', 'is_active']);
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
 
   // Derived values from config
   const productsConfig = config.admin.products || {
@@ -544,7 +544,7 @@ export default function AdminProducts() {
             <button
               onClick={() => setShowColumnSelector(!showColumnSelector)}
               style={{
-                padding: '10px 16px',
+                padding: '7px 12px',
                 background: button.secondaryBg,
                 color: text.primary,
                 border: `1px solid ${button.secondaryBorder}`,

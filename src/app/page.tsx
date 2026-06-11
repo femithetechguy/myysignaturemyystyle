@@ -4,7 +4,7 @@ import { getAppConfig, getContent, getGallery, getCareers } from '@/lib/config'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { FiInstagram, FiCopy, FiMap, FiShare2, FiMail, FiPhone, FiCode, FiMapPin, FiClock, FiSettings } from 'react-icons/fi'
-import { SiZelle, SiCashapp } from 'react-icons/si'
+import { SiZelle, SiCashapp, SiTiktok } from 'react-icons/si'
 import Gallery from '@/components/Gallery'
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
   // DB-backed data — fall back to app.json values until the fetch resolves
   const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number; price_max: number; category: string; images: string[]; staff_ids: string[] }[]>([])
   const [reviews, setReviews] = useState(content.reviews_section.reviews)
-  const [stylists, setStylists] = useState<{ id: number; staff_id: string; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[]; availability: Record<string, string> }[]>([])
+  const [stylists, setStylists] = useState<{ id: number; staff_id: string; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[]; availability: Record<string, string>; metadata?: Record<string, string> }[]>([])
   const [stylistsLoading, setStylistsLoading] = useState(true)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [navBackground, setNavBackground] = useState('dark')
@@ -648,17 +648,17 @@ export default function Home() {
             <span className="block">{content.hero.title.split(' ').slice(2).join(' ')}</span>
           </h1>
           <h2 className="mb-8 text-base font-light tracking-wider uppercase sm:text-2xl md:text-3xl lg:text-4xl sm:mb-10 md:mb-12 text-secondary animate-fade-in-up drop-shadow-md">{content.hero.subtitle}</h2>
-          <div className="flex flex-row items-center justify-center gap-3 sm:gap-6">
+          <div className="flex flex-col xs:flex-row items-center justify-center gap-3 sm:gap-6 w-full px-2">
             <button
               onClick={handleScheduleClick}
-              className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+              className="w-full xs:w-auto px-6 py-3.5 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 border-2 rounded shadow-lg bg-accent hover:bg-transparent hover:text-accent sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-accent animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button}
             </button>
             <a
               href="#careers"
               onClick={(e) => { e.preventDefault(); const el = document.getElementById('careers'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' }) }}
-              className="px-10 py-4 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
+              className="w-full xs:w-auto px-6 py-3.5 text-sm font-light tracking-widest text-primary uppercase transition-all duration-300 bg-secondary border-2 rounded shadow-lg hover:bg-transparent hover:text-secondary sm:px-14 md:px-16 sm:py-4 md:py-5 sm:text-base md:text-lg border-secondary animate-fade-in hover:scale-110 hover:shadow-2xl hover:drop-shadow-lg active:scale-95"
             >
               {content.hero.cta_button_secondary}
             </a>
@@ -815,6 +815,11 @@ export default function Home() {
                       <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylists[0].instagram_handle}
                     </a>
                   )}
+                  {stylists[0].metadata?.instagram_braids && (
+                    <a href={`https://instagram.com/${stylists[0].metadata.instagram_braids}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                      <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylists[0].metadata.instagram_braids}
+                    </a>
+                  )}
                 </div>
                 {stylists[0].booking_slug && (
                   <button onClick={() => handleStylistBookClick(stylists[0])} className="w-full py-2.5 rounded-xl bg-accent text-primary text-sm font-bold hover:bg-accent/80 hover:scale-[1.02] active:scale-95 transition-all duration-200">
@@ -863,6 +868,11 @@ export default function Home() {
                       {stylist.instagram_handle && (
                         <a href={`https://instagram.com/${stylist.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
                           <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylist.instagram_handle}
+                        </a>
+                      )}
+                      {stylist.metadata?.instagram_braids && (
+                        <a href={`https://instagram.com/${stylist.metadata.instagram_braids}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                          <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylist.metadata.instagram_braids}
                         </a>
                       )}
                     </div>
@@ -996,7 +1006,7 @@ export default function Home() {
       </div>
 
       {/* About Section */}
-      <section id="about" className="py-10 bg-white sm:py-14">
+      <section id="about" className="py-10 bg-white sm:py-14 overflow-hidden">
         <div className="container-custom">
           <div className="grid items-center grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <div className="animate-slide-in-left">
@@ -1101,25 +1111,32 @@ export default function Home() {
                       <FiClock className="w-5 h-5 text-accent" />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.hours.title}</p>
-                    <p className="text-xs text-primary/70 mb-0.5">{content.footer.sections.hours.mon_fri}</p>
-                    <p className="text-xs text-primary/70 mb-0.5">{content.footer.sections.hours.saturday}</p>
+                    <p className="text-xs text-primary/70 mb-0.5">{content.footer.sections.hours.monday}</p>
+                    <p className="text-xs text-primary/70 mb-0.5">{content.footer.sections.hours.tue_sat}</p>
                     <p className="text-xs text-primary/70">{content.footer.sections.hours.sunday}</p>
                   </div>
                   <div className="p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-3">
                       <FiInstagram className="w-5 h-5 text-white" />
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.follow.title}</p>
-                    {business.social.instagram && (
-                      <a
-                        href={business.social.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-bold text-accent hover:text-accent/80 transition-colors duration-200"
-                      >
-                        @myysignaturemyystyle
-                      </a>
-                    )}
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-3">{content.footer.sections.follow.title}</p>
+                    <div className="flex items-center gap-3">
+                      {business.social.instagram && (
+                        <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram @myysignaturemyystyle" className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                          <FiInstagram className="w-4 h-4 text-white" />
+                        </a>
+                      )}
+                      {business.social.instagram_braids && (
+                        <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" aria-label="Instagram @myybraidz" className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                          <FiInstagram className="w-4 h-4 text-white" />
+                        </a>
+                      )}
+                      {business.social.tiktok && (
+                        <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok @okpako84" className="w-9 h-9 rounded-xl bg-[#010101] flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                          <SiTiktok className="w-4 h-4 text-white" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1180,20 +1197,33 @@ export default function Home() {
               </h2>
 
               <div className="flex flex-col gap-3 sm:gap-5">
-                {/* Instagram */}
-                <a
-                  href={business.social.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 sm:gap-4 group"
-                >
+                {/* Instagram — main */}
+                <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 group">
                   <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200">
                     <FiInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">
-                    @myysignaturemyystyle
-                  </span>
+                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">@myysignaturemyystyle</span>
                 </a>
+
+                {/* Instagram — braids */}
+                {business.social.instagram_braids && (
+                  <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 group">
+                    <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <FiInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">@myybraidz</span>
+                  </a>
+                )}
+
+                {/* TikTok */}
+                {business.social.tiktok && (
+                  <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 group">
+                    <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-[#010101] shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <SiTiktok className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">@okpako84</span>
+                  </a>
+                )}
 
                 {/* Email */}
                 <a
@@ -1255,26 +1285,30 @@ export default function Home() {
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.contact.title}</h3>
               <p className="text-xs sm:text-sm text-secondary/90">{business.address}</p>
               <p className="mt-2 text-xs sm:text-sm text-secondary/90">{business.contact.phone}</p>
-              <p className="text-xs sm:text-sm text-secondary/90">{business.contact.email}</p>
+              <p className="text-xs sm:text-sm text-secondary/90 break-all">{business.contact.email}</p>
             </div>
             <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.hours.title}</h3>
-              <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.mon_fri}</p>
-              <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.saturday}</p>
+              <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.monday}</p>
+              <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.tue_sat}</p>
               <p className="text-xs sm:text-sm text-secondary/90">{content.footer.sections.hours.sunday}</p>
             </div>
             <div className="animate-fade-in-up">
               <h3 className="mb-4 text-base font-bold sm:text-lg">{content.footer.sections.follow.title}</h3>
               <div className="flex justify-start gap-4">
                 {business.social.instagram && (
-                  <a
-                    href={business.social.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors duration-300 text-secondary/70 hover:text-accent"
-                    aria-label="Instagram"
-                  >
+                  <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" className="transition-colors duration-300 text-secondary/70 hover:text-accent" aria-label="Instagram @myysignaturemyystyle">
                     <FiInstagram className="w-6 h-6" />
+                  </a>
+                )}
+                {business.social.instagram_braids && (
+                  <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" className="transition-colors duration-300 text-secondary/70 hover:text-accent" aria-label="Instagram @myybraidz">
+                    <FiInstagram className="w-6 h-6" />
+                  </a>
+                )}
+                {business.social.tiktok && (
+                  <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" className="transition-colors duration-300 text-secondary/70 hover:text-accent" aria-label="TikTok @okpako84">
+                    <SiTiktok className="w-5 h-5" />
                   </a>
                 )}
                 <a

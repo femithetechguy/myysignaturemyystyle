@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import ColumnSelector from '../ColumnSelector';
 import staticConfig from '../../../config/admin.json';
 
 const AUTO_GENERATED_FIELDS = ['id', 'created_at', 'updated_at', 'gallery_id'];
 
-export default function AdminGallery() {
+export default function AdminGallery({ refreshKey = 0 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +19,6 @@ export default function AdminGallery() {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState([]);
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -26,7 +26,7 @@ export default function AdminGallery() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [refreshKey]);
 
   const fetchData = async () => {
     try {
@@ -228,76 +228,15 @@ export default function AdminGallery() {
         <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B', flex: 1, minWidth: '150px' }}>{config.title || 'Manage Gallery'}</h2>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
           {allColumns.length > 0 && (
-            <div style={{ position: 'relative', display: 'flex' }}>
-              <button
-                onClick={() => setShowColumnSelector(!showColumnSelector)}
-                style={{
-                  padding: '10px 16px',
-                  background: '#f5f5f5',
-                  color: '#1B1B1B',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-              >
-                📊 Columns ({visibleColumns.length}/{allColumns.length})
-              </button>
-              {showColumnSelector && (
-                <div className="colSelectorDropdown" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '5px',
-                  background: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  zIndex: 100,
-                  minWidth: '220px',
-                  maxHeight: '400px',
-                  overflowY: 'auto'
-                }}>
-                  <div style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', gap: '8px' }}>
-                    <button onClick={selectAllColumns} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>All</button>
-                    <button onClick={selectMinColumns} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#f5f5f5', color: '#1B1B1B', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}>Min</button>
-                  </div>
-                  {allColumns.map(col => (
-                    <label key={col} style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', color: '#1B1B1B' }}>
-                      <input type="checkbox" checked={visibleColumns.includes(col)} onChange={() => toggleColumn(col)} style={{ marginRight: '10px' }} />
-                      {formatColumnName(col)}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {showRefresh && (
-            <button
-              onClick={fetchData}
-              disabled={loading}
-              style={{
-                padding: '10px 20px',
-                background: '#D4AF37',
-                color: '#1B1B1B',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold',
-                fontSize: '0.95rem',
-                opacity: loading ? 0.6 : 1,
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => !loading && (e.target.style.background = '#C99A2D')}
-              onMouseLeave={(e) => !loading && (e.target.style.background = '#D4AF37')}
-            >
-              {loading ? loadingBtn : refreshBtn}
-            </button>
-          )}
+            <ColumnSelector
+              allColumns={allColumns}
+              visibleColumns={visibleColumns}
+              onToggle={toggleColumn}
+              onSelectAll={selectAllColumns}
+              onSelectMin={selectMinColumns}
+              formatColumnName={formatColumnName}
+            />
+        )}
         </div>
       </div>
       

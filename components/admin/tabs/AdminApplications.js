@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import ColumnSelector from '../ColumnSelector';
 import staticConfig from '../../../config/admin.json';
 
 const AUTO_GENERATED_FIELDS = ['id', 'created_at', 'updated_at', 'application_id'];
 
-export default function AdminApplications() {
+export default function AdminApplications({ refreshKey = 0 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,15 +19,21 @@ export default function AdminApplications() {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [visibleColumns, setVisibleColumns] = useState([]);
-  const [showColumnSelector, setShowColumnSelector] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [viewingItem, setViewingItem] = useState(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [refreshKey]);
+
+  useEffect(() => {
+    const anyOpen = showModal || !!viewingItem;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal, viewingItem]);
 
   const fetchData = async () => {
     try {
@@ -228,76 +235,15 @@ export default function AdminApplications() {
         <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B', flex: 1, minWidth: '150px' }}>{config.title || 'Manage Applications'}</h2>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
           {allColumns.length > 0 && (
-            <div style={{ position: 'relative', display: 'flex' }}>
-              <button
-                onClick={() => setShowColumnSelector(!showColumnSelector)}
-                style={{
-                  padding: '10px 16px',
-                  background: '#f5f5f5',
-                  color: '#1B1B1B',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '0.95rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}
-              >
-                📊 Columns ({visibleColumns.length}/{allColumns.length})
-              </button>
-              {showColumnSelector && (
-                <div className="colSelectorDropdown" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '5px',
-                  background: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  zIndex: 100,
-                  minWidth: '220px',
-                  maxHeight: '400px',
-                  overflowY: 'auto'
-                }}>
-                  <div style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', gap: '8px' }}>
-                    <button onClick={selectAllColumns} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>All</button>
-                    <button onClick={selectMinColumns} style={{ flex: 1, padding: '6px', fontSize: '0.8rem', background: '#f5f5f5', color: '#1B1B1B', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}>Min</button>
-                  </div>
-                  {allColumns.map(col => (
-                    <label key={col} style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #f0f0f0', color: '#1B1B1B' }}>
-                      <input type="checkbox" checked={visibleColumns.includes(col)} onChange={() => toggleColumn(col)} style={{ marginRight: '10px' }} />
-                      {formatColumnName(col)}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {showRefresh && (
-            <button
-              onClick={fetchData}
-              disabled={loading}
-              style={{
-                padding: '10px 20px',
-                background: '#D4AF37',
-                color: '#1B1B1B',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold',
-                fontSize: '0.95rem',
-                opacity: loading ? 0.6 : 1,
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => !loading && (e.target.style.background = '#C99A2D')}
-              onMouseLeave={(e) => !loading && (e.target.style.background = '#D4AF37')}
-            >
-              {loading ? loadingBtn : refreshBtn}
-            </button>
-          )}
+            <ColumnSelector
+              allColumns={allColumns}
+              visibleColumns={visibleColumns}
+              onToggle={toggleColumn}
+              onSelectAll={selectAllColumns}
+              onSelectMin={selectMinColumns}
+              formatColumnName={formatColumnName}
+            />
+        )}
         </div>
       </div>
       
@@ -319,8 +265,8 @@ export default function AdminApplications() {
       )}
 
       {!loading && data.length > 0 && (
-        <div className="quickActions">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="quickActions" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
             <thead>
               <tr style={{ background: '#f5f5f5' }}>
                 {columns.map(col => (
@@ -335,37 +281,24 @@ export default function AdminApplications() {
               {sortedData.map((item, idx) => (
                 <tr key={item.application_id || idx} style={{ borderBottom: '1px solid #eee' }}>
                   {columns.map(col => (
-                    <td key={col} style={{ padding: '12px', color: '#666' }}>
+                    <td key={col} data-label={formatColumnName(col)} style={{ padding: '12px', color: '#666' }}>
                       {item[col] != null ? String(item[col]) : '-'}
                     </td>
                   ))}
                   {isEditable && (
                     <td style={{ padding: '12px' }}>
-                      <button 
-                        onClick={() => handleEdit(item)}
-                        style={{ 
-                          cursor: 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0
-                        }}
-                        title="Edit"
+                      <button
+                        onClick={() => setViewingItem(item)}
+                        style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }}
+                        title="View"
                       >
-                        {actions.edit_icon}
+                        {actions.view_icon || '👁️'}
                       </button>
-                      <span style={{ margin: '0 8px', color: '#ccc' }}>{actions.separator}</span>
-                      <button 
+                      
+                      <button
                         onClick={() => handleDelete(item)}
                         disabled={deleting}
-                        style={{ 
-                          cursor: deleting ? 'not-allowed' : 'pointer', 
-                          background: 'none', 
-                          border: 'none',
-                          fontSize: '1.1rem',
-                          padding: 0,
-                          opacity: deleting ? 0.6 : 1
-                        }}
+                        style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0, opacity: deleting ? 0.6 : 1 }}
                         title="Delete"
                       >
                         {actions.delete_icon}
@@ -384,6 +317,43 @@ export default function AdminApplications() {
           {config.messages?.empty || 'No data found'}
         </div>
       )}
+      {/* View Modal */}
+      {viewingItem && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}
+        >
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ View Record</h3>
+              <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {allColumns.map(col => (
+                <div key={col} style={{ display: 'flex', gap: '12px', padding: '6px 10px', background: AUTO_GENERATED_FIELDS.includes(col.toLowerCase()) ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                  <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.78rem', flexShrink: 0 }}>{formatColumnName(col)}</span>
+                  <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.85rem' }}>{viewingItem[col] != null ? String(viewingItem[col]) : '—'}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+              <button
+                onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
+                style={{ padding: '8px 16px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={() => setViewingItem(null)}
+                style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Modal */}
       {showModal && editingItem && (
         <div 
@@ -404,19 +374,19 @@ export default function AdminApplications() {
           <div style={{
             background: 'white',
             borderRadius: '12px',
-            padding: '30px',
+            padding: '20px 16px',
             width: '90%',
             maxWidth: '600px',
             maxHeight: '90vh',
             overflowY: 'auto',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
           }}>
-            <h3 style={{ margin: '0 0 20px 0', color: '#1B1B1B' }}>✏️ Edit Item</h3>
+            <h3 style={{ margin: '0 0 12px 0', color: '#1B1B1B' }}>✏️ Edit Item</h3>
             
             {/* Show auto-generated fields as read-only */}
             {allColumns.filter(col => AUTO_GENERATED_FIELDS.includes(col.toLowerCase())).length > 0 && (
               <div style={{ 
-                marginBottom: '20px', 
+                marginBottom: '12px', 
                 padding: '12px', 
                 background: '#f9f9f9', 
                 borderRadius: '6px',
@@ -431,7 +401,7 @@ export default function AdminApplications() {
               </div>
             )}
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {visibleColumns
                 .filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()))
                 .map(col => {
@@ -442,14 +412,14 @@ export default function AdminApplications() {
                   
                   return (
                     <div key={col}>
-                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px', color: '#1B1B1B' }}>
+                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '2px', color: '#1B1B1B' }}>
                         {formatColumnName(col)}
                       </label>
                       {isBoolean ? (
                         <select
                           value={editingItem[col] ? 'true' : 'false'}
                           onChange={(e) => handleInputChange(col, e.target.value === 'true')}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
                         >
                           <option value="true">Yes</option>
                           <option value="false">No</option>
@@ -458,8 +428,8 @@ export default function AdminApplications() {
                         <textarea
                           value={editingItem[col] || ''}
                           onChange={(e) => handleInputChange(col, e.target.value)}
-                          rows={3}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }}
+                          rows={2}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', resize: 'vertical', color: '#1B1B1B' }}
                         />
                       ) : (
                         <input
@@ -467,7 +437,7 @@ export default function AdminApplications() {
                           step={isNumber ? '0.01' : undefined}
                           value={editingItem[col] || ''}
                           onChange={(e) => handleInputChange(col, isNumber ? parseFloat(e.target.value) || '' : e.target.value)}
-                          style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #ccc', boxSizing: 'border-box', color: '#1B1B1B' }}
                         />
                       )}
                     </div>
@@ -475,7 +445,7 @@ export default function AdminApplications() {
                 })}
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
               <button
                 onClick={() => { setShowModal(false); setEditingItem(null); }}
                 style={{

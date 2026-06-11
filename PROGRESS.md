@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: April 9, 2026 (session 5)
+Last updated: June 11, 2026 (session 9)
 
 ---
 
@@ -371,6 +371,64 @@ Last updated: April 9, 2026 (session 5)
   - `twitter:card` → `summary_large_image`
   - All social share previews (WhatsApp, iMessage, Twitter, LinkedIn) now show branded card
 
+### Admin Panel — Mobile Optimization (sessions 7–9, FTTG-21)
+- [x] **View modal added to 6 tabs** (Services, Staff, Applications, Reviews, Contacts, Gallery)
+  - 👁️ View button in action cell opens read-only modal showing all fields with gold labels
+  - Auto-generated/system fields (`id`, `created_at`, timestamps) shown on grey background
+  - Edit shortcut button inside View modal opens Edit modal directly
+  - Edit (✏️) button removed from action cells entirely — edit is now accessed through View flow only
+- [x] **Action cells**: reduced to `👁️ | 🗑️` on all 6 generic tabs — no more inline Edit icon
+- [x] **View modal compact layout**: outer padding `20px 16px`, label `0.78rem`, value `0.85rem`, header/footer margin `12px`
+- [x] **Edit modal compact layout**: field gap `10px`, h3 margin `12px`, label margin `2px`, inputs `7px 10px`, textarea `rows=2`, buttons `8px 16px`
+- [x] **Body scroll lock**: `document.body.style.overflow = 'hidden'` when any modal or view modal is open — all 6 tabs + Appointments tab
+- [x] **Admin card horizontal scroll fixed**:
+  - `.quickActions` wrapper changed from `overflow-x: auto` → `overflow-x: hidden`
+  - Inline `minWidth: 500` on table overridden by `min-width: 0 !important` in `admin.css` at ≤768px
+- [x] **Global admin CSS compacted** (`styles/admin.css`):
+  - Mobile `td` padding: `8px 0` → `4px 0 !important`
+  - `td:before` label: `0.75rem`, uppercase, `margin-bottom: 2px`
+  - Action icons: flex row with `gap: 14px`, padding/min-height unset
+  - Mobile inputs: `padding: 8px 10px !important; min-height: unset !important` (kept `font-size: 16px` for iOS zoom prevention)
+- [x] **Appointments tab redesigned** (`sessions 7–9`):
+  - Removed redundant h2 heading and standalone Refresh button from toolbar
+  - Stats cards: single row of 4 (`repeat(4, 1fr)`), padding `8px 10px`, font sizes reduced
+  - Filter pills: stacked column layout, reduced padding and font size
+  - `ApptCard`: View (👁️) button added, Edit (✏️) button removed
+- [x] **Week view — mobile vertical stack**: `isMobile` state + resize listener switches WeekView from 7-col grid to vertical day stack on phones; empty days shown at 0.45 opacity with count badge; desktop unchanged
+- [x] **Month view — mobile dot indicators**: `isMobile` + resize listener; on mobile, grid uses `repeat(7, minmax(0, 1fr))` (no overflow), day headers shortened to single letters (S M T W T F S), cells 48px tall, appointments shown as 7px coloured dots (status-coded) instead of `whiteSpace: 'nowrap'` text chips that caused horizontal scroll; desktop view unchanged
+- [x] **`config/admin.json`**: `view_icon: "👁️"` added to actions for services, appointments, staff, applications, reviews, contacts; duplicate `staff` key removed
+- [x] **Customer-facing page horizontal scroll fixed**:
+  - `html` + `body` changed to `overflow-x: clip` (truly clips CSS transforms; `hidden` does not clip `translateX` animations due to viewport scroll container behaviour)
+  - About section element given `overflow-hidden` class to contain its `slideInLeft`/`slideInRight` animation overflow
+
+### Refresh Bug Fix — All Tabs (session 9)
+- [x] **Customers, Orders, Appointments tabs not re-fetching on Refresh**: all three had `useEffect(fn, [])` missing `refreshKey` in the dependency array — the AdminLayout toolbar Refresh button had no effect on them
+  - Fixed: `AdminCustomers.js`, `AdminOrders.js`, `AdminAppointments.js` — all now use `[refreshKey]` in their primary data-fetch `useEffect`
+  - Services, Staff, Applications, Reviews, Contacts, Gallery were already correct
+
+### Project Setup & Tooling (session 8)
+- [x] **CLAUDE.md created** — full project context file for AI-assisted development (tech stack, structure, key patterns, env vars, run instructions, commit format)
+- [x] **Linear GitHub integration confirmed** — webhook set up on `myysignaturemyystyle` repo; `Fixes FTTG-XX` / `Ref FTTG-XX` commit messages now link and close Linear issues automatically
+
+### Staff — Egwono Update (session 8, FTTG-6)
+- [x] Stylist name updated from placeholder "Jane" → **Egwono** (CEO & Senior Stylist) directly in Neon DB via Node script
+- [x] Simple bio written: "Egwono is the founder and lead stylist at Myy Signature Myy Style…"
+- [x] `dbquries/setup_all.sql` seed updated — `staff_003` entry changed from "Char" to "Egwono" with matching title and bio
+- [ ] Real bio to be updated when Egwono sends it (update via admin Staff tab or direct DB update)
+
+### Social Media & Business Info (session 8, FTTG-10)
+- [x] **Business email** updated in `app.json` → `myysignaturemyystyle@gmail.com`
+- [x] **Social links** added to `app.json → business.social`:
+  - `instagram`: `https://www.instagram.com/myysignaturemyystyle` (already existed)
+  - `instagram_braids`: `https://www.instagram.com/myybraidz` (new)
+  - `tiktok`: `https://www.tiktok.com/@okpako84` (new)
+- [x] **Hours** updated in `app.json → content.footer.sections.hours`:
+  - Monday: Closed · Tue–Sat: 9:00 AM–5:00 PM · Sunday: 11:00 AM–7:00 PM
+- [x] **Footer Follow Us card** (mobile) — now shows all 3 handles with platform icons; card header uses Instagram + TikTok icons instead of generic share icon
+- [x] **Footer Follow Us** (desktop) — Instagram, @myybraidz Instagram, and TikTok icon links added
+- [x] **Connect With Us section** — `@myybraidz` and `@okpako84` (TikTok, black icon) rows added alongside existing Instagram and email/phone links
+- [x] `SiTiktok` imported from `react-icons/si`
+
 ---
 
 ## 🔄 In Progress / Needs Attention
@@ -387,7 +445,8 @@ Last updated: April 9, 2026 (session 5)
 - [x] Replace placeholder logo files — SVG logo system created (`logo-main.svg`, `logo-icon.svg`, `favicon.svg`); `logo_trans.png` no longer used
 - [x] `landing.png` hero background image replaced and migrated to Cloudinary
 - [ ] Add real portfolio/gallery images to `public/assets/images/portfolio/` (currently 7 placeholder IG posts)
-- [ ] Fill in `app.json` → `business.social.facebook` (currently empty string)
+- [ ] Fill in `app.json` → `business.social.facebook` (currently empty string — no Facebook page yet)
+- [x] Social media handles added: `@myysignaturemyystyle`, `@myybraidz` (Instagram), `@okpako84` (TikTok)
 - [x] Hair Cut category expanded: **Adult Haircut**, **Kids Haircut**, **Military Haircut**, **Fade** added to `data/services.json` (44 services total)
   - `cut_003` renamed from "Haircut" → "Adult Haircut"
   - `cut_004` Kids Haircut ($25–$40, 45 min)

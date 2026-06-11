@@ -20,7 +20,8 @@ export default async function handler(req, res) {
         booking_slug,
         specialties,
         availability,
-        display_order
+        display_order,
+        metadata
        FROM staff
        WHERE status = 'active'
        ORDER BY display_order ASC, id ASC`

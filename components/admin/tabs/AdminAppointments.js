@@ -52,7 +52,7 @@ function isSameDay(dateStr, date) {
 }
 
 // ── Card used in List and Week views ──────────────────────────────────────────
-function ApptCard({ appt, onEdit, onDelete, compact = false }) {
+function ApptCard({ appt, onEdit, onDelete, onView, compact = false }) {
   const s = STATUS_STYLES[appt.status] || STATUS_STYLES.pending;
   return (
     <div style={{
@@ -106,8 +106,8 @@ function ApptCard({ appt, onEdit, onDelete, compact = false }) {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto', flexShrink: 0 }}>
-        <button onClick={() => onEdit(appt)} title="Edit"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>✏️</button>
+        <button onClick={() => onView && onView(appt)} title="View"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>👁️</button>
         <button onClick={() => onDelete(appt)} title="Delete"
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '2px 4px' }}>🗑️</button>
       </div>
@@ -117,6 +117,13 @@ function ApptCard({ appt, onEdit, onDelete, compact = false }) {
 
 // ── Month calendar view ───────────────────────────────────────────────────────
 function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayClick }) {
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -142,14 +149,14 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
       </div>
 
       {/* Day headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px' }}>
-        {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: '0.72rem', fontWeight: 700, color: '#999', padding: '4px 0' }}>{d}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '4px', marginBottom: '4px' }}>
+        {(isMobile ? ['S','M','T','W','T','F','S'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']).map((d, i) => (
+          <div key={i} style={{ textAlign: 'center', fontSize: '0.72rem', fontWeight: 700, color: '#999', padding: '4px 0' }}>{d}</div>
         ))}
       </div>
 
       {/* Day cells */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '4px' }}>
         {cells.map((day, i) => {
           if (!day) return <div key={`e${i}`} />;
           const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -159,42 +166,47 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
           return (
             <div key={day} onClick={() => appts.length > 0 && onDayClick(dateKey, appts)}
               style={{
-                minHeight: '70px',
+                minHeight: isMobile ? '48px' : '70px',
                 background: isToday ? '#FEF9EC' : 'white',
                 border: isToday ? '2px solid #D4AF37' : '1px solid #eee',
                 borderRadius: '8px',
-                padding: '6px',
+                padding: isMobile ? '4px' : '6px',
                 cursor: appts.length > 0 ? 'pointer' : 'default',
                 transition: 'box-shadow 0.15s',
+                overflow: 'hidden',
               }}
               onMouseEnter={e => appts.length > 0 && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)')}
               onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
             >
-              <div style={{ fontWeight: isToday ? 800 : 500, fontSize: '0.85rem', color: isToday ? '#D4AF37' : '#1B1B1B', marginBottom: '4px' }}>{day}</div>
+              <div style={{ fontWeight: isToday ? 800 : 500, fontSize: isMobile ? '0.75rem' : '0.85rem', color: isToday ? '#D4AF37' : '#1B1B1B', marginBottom: '3px' }}>{day}</div>
               {appts.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  {appts.slice(0, 2).map(a => {
-                    const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
-                    return (
-                      <div key={a.id} style={{
-                        background: s.bg,
-                        color: s.color,
-                        borderRadius: '4px',
-                        padding: '1px 5px',
-                        fontSize: '0.65rem',
-                        fontWeight: 600,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        {formatTime(a.appointment_time)} {a.appointment_id || `#${a.id}`}
-                      </div>
-                    );
-                  })}
-                  {appts.length > 2 && (
-                    <div style={{ fontSize: '0.65rem', color: '#888', paddingLeft: '5px' }}>+{appts.length - 2} more</div>
-                  )}
-                </div>
+                isMobile ? (
+                  /* Mobile: coloured dots */
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px' }}>
+                    {appts.slice(0, 3).map(a => {
+                      const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
+                      return <div key={a.id} style={{ width: '7px', height: '7px', borderRadius: '50%', background: s.color, flexShrink: 0 }} />;
+                    })}
+                    {appts.length > 3 && <div style={{ fontSize: '0.55rem', color: '#888', lineHeight: '7px' }}>+{appts.length - 3}</div>}
+                  </div>
+                ) : (
+                  /* Desktop: text chips */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    {appts.slice(0, 2).map(a => {
+                      const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
+                      return (
+                        <div key={a.id} style={{
+                          background: s.bg, color: s.color, borderRadius: '4px',
+                          padding: '1px 5px', fontSize: '0.65rem', fontWeight: 600,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {formatTime(a.appointment_time)} {a.appointment_id || `#${a.id}`}
+                        </div>
+                      );
+                    })}
+                    {appts.length > 2 && <div style={{ fontSize: '0.65rem', color: '#888', paddingLeft: '5px' }}>+{appts.length - 2} more</div>}
+                  </div>
+                )
               )}
             </div>
           );
@@ -205,8 +217,15 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
 }
 
 // ── Week view ─────────────────────────────────────────────────────────────────
-function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, onDelete }) {
-  // Get Monday of current week
+function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, onDelete, onView }) {
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   const getWeekStart = (date) => {
     const d = new Date(date);
     const day = d.getDay();
@@ -229,53 +248,82 @@ function WeekView({ appointmentsByDate, calendarDate, setCalendarDate, onEdit, o
 
   const weekLabel = `${days[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${days[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
 
+  const dayCards = days.map((day, i) => {
+    const dateKey = day.toISOString().split('T')[0];
+    const appts = (appointmentsByDate[dateKey] || []).sort((a, b) =>
+      (a.appointment_time || '').localeCompare(b.appointment_time || '')
+    );
+    const isToday = isSameDay(day.toISOString(), today);
+    return { day, dateKey, appts, isToday, i };
+  });
+
   return (
     <div>
       {/* Week nav */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
         <button onClick={prevWeek} style={navBtnStyle}>‹</button>
         <span style={{ fontWeight: 700, fontSize: '1rem', color: '#1B1B1B' }}>{weekLabel}</span>
         <button onClick={nextWeek} style={navBtnStyle}>›</button>
       </div>
 
-      <div className="weekViewOuter">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', minWidth: '560px' }}>
-        {days.map((day, i) => {
-          const dateKey = day.toISOString().split('T')[0];
-          const appts = (appointmentsByDate[dateKey] || []).sort((a, b) =>
-            (a.appointment_time || '').localeCompare(b.appointment_time || '')
-          );
-          const isToday = isSameDay(day.toISOString(), today);
-
-          return (
+      {isMobile ? (
+        /* ── Mobile: vertical stack, skip empty days ── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {dayCards.map(({ day, appts, isToday, i }) => (
             <div key={i} style={{
               background: isToday ? '#FEF9EC' : '#fafafa',
               border: isToday ? '2px solid #D4AF37' : '1px solid #eee',
               borderRadius: '10px',
-              padding: '10px 8px',
-              minHeight: '140px',
+              padding: '10px 12px',
+              opacity: appts.length === 0 ? 0.45 : 1,
             }}>
-              <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999', textTransform: 'uppercase' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: appts.length ? '8px' : 0 }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: isToday ? '#D4AF37' : '#999', textTransform: 'uppercase', minWidth: '28px' }}>
                   {day.toLocaleDateString('en-US', { weekday: 'short' })}
-                </div>
-                <div style={{
-                  fontSize: '1.2rem', fontWeight: 800,
-                  color: isToday ? '#D4AF37' : '#1B1B1B',
-                  lineHeight: 1.2,
-                }}>{day.getDate()}</div>
+                </span>
+                <span style={{ fontSize: '1rem', fontWeight: 800, color: isToday ? '#D4AF37' : '#1B1B1B' }}>
+                  {day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+                {appts.length > 0 && (
+                  <span style={{ marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 700, color: '#D4AF37', background: '#FEF9EC', border: '1px solid #D4AF37', borderRadius: '999px', padding: '1px 8px' }}>
+                    {appts.length} appt{appts.length > 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
-
-              {appts.length === 0 ? (
-                <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#ccc', marginTop: '16px' }}>—</div>
-              ) : (
-                appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} compact />)
-              )}
+              {appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} onView={onView} compact />)}
             </div>
-          );
-        })}
-      </div>
-      </div>
+          ))}
+        </div>
+      ) : (
+        /* ── Desktop: 7-column grid ── */
+        <div className="weekViewOuter">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', minWidth: '560px' }}>
+            {dayCards.map(({ day, appts, isToday, i }) => (
+              <div key={i} style={{
+                background: isToday ? '#FEF9EC' : '#fafafa',
+                border: isToday ? '2px solid #D4AF37' : '1px solid #eee',
+                borderRadius: '10px',
+                padding: '10px 8px',
+                minHeight: '140px',
+              }}>
+                <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999', textTransform: 'uppercase' }}>
+                    {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                  </div>
+                  <div style={{ fontSize: '1.2rem', fontWeight: 800, color: isToday ? '#D4AF37' : '#1B1B1B', lineHeight: 1.2 }}>
+                    {day.getDate()}
+                  </div>
+                </div>
+                {appts.length === 0 ? (
+                  <div style={{ textAlign: 'center', fontSize: '0.7rem', color: '#ccc', marginTop: '16px' }}>—</div>
+                ) : (
+                  appts.map(a => <ApptCard key={a.id} appt={a} onEdit={onEdit} onDelete={onDelete} onView={onView} compact />)
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -293,7 +341,7 @@ const navBtnStyle = {
 };
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function AdminAppointments() {
+export default function AdminAppointments({ refreshKey = 0 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -301,6 +349,7 @@ export default function AdminAppointments() {
   const [config, setConfig] = useState(staticConfig.admin?.appointments || {});
   const [editingItem, setEditingItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [viewingItem, setViewingItem] = useState(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -311,7 +360,13 @@ export default function AdminAppointments() {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [drillDay, setDrillDay] = useState(null); // { dateKey, appts } for month drill-down
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [refreshKey]);
+
+  useEffect(() => {
+    const anyOpen = showModal || !!viewingItem;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal, viewingItem]);
 
   const fetchData = async () => {
     try {
@@ -428,29 +483,18 @@ export default function AdminAppointments() {
   return (
     <div className="dashboardContainer">
 
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '12px', flexWrap: 'wrap' }}>
-        <h2 style={{ fontSize: '1.8rem', margin: 0, color: '#1B1B1B' }}>Appointments</h2>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {/* View toggle */}
-          <div style={{ display: 'flex', background: '#f5f5f5', borderRadius: '8px', padding: '3px', border: '1px solid #ddd' }}>
-            {[['list','☰ List'],['week','⬜ Week'],['month','📅 Month']].map(([v, label]) => (
-              <button key={v} onClick={() => { setView(v); setDrillDay(null); }}
-                style={{
-                  padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer',
-                  fontWeight: 600, fontSize: '0.85rem',
-                  background: view === v ? '#D4AF37' : 'transparent',
-                  color: view === v ? '#1B1B1B' : '#666',
-                  transition: 'all 0.15s',
-                }}>{label}</button>
-            ))}
-          </div>
-
-          <button onClick={fetchData} disabled={loading}
-            style={{ padding: '8px 18px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 700, opacity: loading ? 0.6 : 1 }}>
-            {loading ? '⏳ Loading...' : '🔄 Refresh'}
-          </button>
-        </div>
+      {/* View toggle */}
+      <div style={{ display: 'flex', background: '#f5f5f5', borderRadius: '8px', padding: '3px', border: '1px solid #ddd', marginBottom: '12px', alignSelf: 'flex-start' }}>
+        {[['list','☰ List'],['week','⬜ Week'],['month','📅 Month']].map(([v, label]) => (
+          <button key={v} onClick={() => { setView(v); setDrillDay(null); }}
+            style={{
+              padding: '6px 14px', borderRadius: '6px', border: 'none', cursor: 'pointer',
+              fontWeight: 600, fontSize: '0.85rem',
+              background: view === v ? '#D4AF37' : 'transparent',
+              color: view === v ? '#1B1B1B' : '#666',
+              transition: 'all 0.15s',
+            }}>{label}</button>
+        ))}
       </div>
 
       {/* Stats bar */}
@@ -461,41 +505,38 @@ export default function AdminAppointments() {
           { label: 'Upcoming', value: stats.upcoming, accent: '#10B981' },
           { label: 'Total', value: stats.total, accent: '#6B7280' },
         ].map(({ label, value, accent }) => (
-          <div key={label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '10px', padding: '14px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: accent, lineHeight: 1.2, marginTop: '4px' }}>{value}</div>
+          <div key={label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '8px', padding: '8px 10px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#999', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: accent, lineHeight: 1.2, marginTop: '2px' }}>{value}</div>
           </div>
         ))}
       </div>
 
       {/* Filters (list view only) */}
       {view === 'list' && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
           {/* Period filter */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
             {[['today','Today'],['week','This Week'],['month','This Month'],['upcoming','Upcoming'],['all','All']].map(([v, label]) => (
               <button key={v} onClick={() => setFilterPeriod(v)}
                 style={{
-                  padding: '5px 14px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
-                  fontSize: '0.82rem', fontWeight: 600, transition: 'all 0.15s',
+                  padding: '4px 11px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
+                  fontSize: '0.78rem', fontWeight: 600, transition: 'all 0.15s',
                   background: filterPeriod === v ? '#1B1B1B' : 'white',
                   color: filterPeriod === v ? 'white' : '#555',
                   borderColor: filterPeriod === v ? '#1B1B1B' : '#ddd',
                 }}>{label}</button>
             ))}
           </div>
-
-          <div style={{ width: '1px', background: '#ddd', height: '24px', margin: '0 4px' }} />
-
           {/* Status filter */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
             {[['all','All'], ...Object.entries(STATUS_STYLES).map(([k, v]) => [k, v.label])].map(([v, label]) => {
               const s = STATUS_STYLES[v];
               return (
                 <button key={v} onClick={() => setFilterStatus(v)}
                   style={{
-                    padding: '5px 14px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
-                    fontSize: '0.82rem', fontWeight: 600, transition: 'all 0.15s',
+                    padding: '4px 11px', borderRadius: '999px', border: '1px solid', cursor: 'pointer',
+                    fontSize: '0.78rem', fontWeight: 600, transition: 'all 0.15s',
                     background: filterStatus === v ? (s?.bg || '#1B1B1B') : 'white',
                     color: filterStatus === v ? (s?.color || 'white') : '#555',
                     borderColor: filterStatus === v ? (s?.color || '#1B1B1B') : '#ddd',
@@ -572,7 +613,7 @@ export default function AdminAppointments() {
                       {appts.length} appt{appts.length !== 1 ? 's' : ''}
                     </span>
                   </div>
-                  {appts.map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} />)}
+                  {appts.map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} onView={setViewingItem} />)}
                 </div>
               ));
             })()
@@ -588,6 +629,7 @@ export default function AdminAppointments() {
           setCalendarDate={setCalendarDate}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onView={setViewingItem}
         />
       )}
 
@@ -616,7 +658,55 @@ export default function AdminAppointments() {
           </div>
           {drillDay.appts
             .sort((a, b) => (a.appointment_time || '').localeCompare(b.appointment_time || ''))
-            .map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} />)}
+            .map(a => <ApptCard key={a.id} appt={a} onEdit={handleEdit} onDelete={handleDelete} onView={setViewingItem} />)}
+        </div>
+      )}
+
+      {/* ── VIEW MODAL ── */}
+      {viewingItem && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
+          onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}
+        >
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ Appointment</h3>
+                <StatusBadge status={viewingItem.status} />
+              </div>
+              <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {Object.keys(viewingItem).map(col => {
+                let val = viewingItem[col];
+                if (val == null) val = '—';
+                else if (col.includes('date')) val = formatDate(val);
+                else if (col.includes('time') && !col.includes('created')) val = formatTime(val);
+                else val = String(val);
+                const isAuto = AUTO_GENERATED_FIELDS.includes(col.toLowerCase());
+                return (
+                  <div key={col} style={{ display: 'flex', gap: '12px', padding: '6px 10px', background: isAuto ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                    <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.78rem', flexShrink: 0, textTransform: 'capitalize' }}>{col.replace(/_/g, ' ')}</span>
+                    <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.85rem' }}>{val}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+              <button
+                onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
+                style={{ padding: '10px 20px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                ✏️ Edit
+              </button>
+              <button
+                onClick={() => setViewingItem(null)}
+                style={{ padding: '10px 20px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -624,8 +714,8 @@ export default function AdminAppointments() {
       {showModal && editingItem && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
           onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div style={{ background: 'white', borderRadius: '12px', padding: '28px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ margin: 0, color: '#1B1B1B' }}>✏️ Edit Appointment</h3>
               <div style={{ background: '#f5f5f5', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', color: '#666', fontFamily: 'monospace' }}>
                 {editingItem.appointment_id || `#${editingItem.id}`}
@@ -633,12 +723,12 @@ export default function AdminAppointments() {
             </div>
 
             {/* Read-only meta */}
-            <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '10px 14px', marginBottom: '18px', fontSize: '0.82rem', color: '#666', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '8px 12px', marginBottom: '12px', fontSize: '0.8rem', color: '#666', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <span><strong>ID:</strong> {editingItem.id}</span>
               <span><strong>Created:</strong> {editingItem.created_at ? new Date(editingItem.created_at).toLocaleDateString() : '—'}</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {allColumns
                 .filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()))
                 .map(col => {
@@ -651,41 +741,41 @@ export default function AdminAppointments() {
 
                   return (
                     <div key={col}>
-                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '4px', fontSize: '0.85rem', color: '#1B1B1B', textTransform: 'capitalize' }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: '2px', fontSize: '0.8rem', color: '#1B1B1B', textTransform: 'capitalize' }}>
                         {col.replace(/_/g, ' ')}
                       </label>
                       {isSelect ? (
                         <select value={editingItem[col] || ''} onChange={e => setEditingItem({ ...editingItem, [col]: e.target.value })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
                           {['pending','confirmed','completed','cancelled','no_show'].map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       ) : isBoolean ? (
                         <select value={editingItem[col] ? 'true' : 'false'} onChange={e => setEditingItem({ ...editingItem, [col]: e.target.value === 'true' })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem' }}>
                           <option value="true">Yes</option>
                           <option value="false">No</option>
                         </select>
                       ) : isTextArea ? (
                         <textarea value={editingItem[col] || ''} rows={2} onChange={e => setEditingItem({ ...editingItem, [col]: e.target.value })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', resize: 'vertical', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', resize: 'vertical', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
                       ) : (
                         <input type={isDate ? 'date' : isTime ? 'time' : isNumber ? 'number' : 'text'}
                           value={isDate ? toDateKey(editingItem[col]) : (editingItem[col] || '')}
                           onChange={e => setEditingItem({ ...editingItem, [col]: isNumber ? parseFloat(e.target.value) || '' : e.target.value })}
-                          style={{ width: '100%', padding: '9px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+                          style={{ width: '100%', padding: '7px 10px', border: '1px solid #ddd', borderRadius: '6px', color: '#1B1B1B', fontSize: '0.9rem', boxSizing: 'border-box' }} />
                       )}
                     </div>
                   );
                 })}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '22px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
               <button onClick={() => { setShowModal(false); setEditingItem(null); }}
-                style={{ padding: '9px 20px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
+                style={{ padding: '8px 16px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                style={{ padding: '9px 20px', background: saving ? '#ccc' : '#D4AF37', border: 'none', borderRadius: '6px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#1B1B1B' }}>
+                style={{ padding: '8px 16px', background: saving ? '#ccc' : '#D4AF37', border: 'none', borderRadius: '6px', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: 700, color: '#1B1B1B' }}>
                 {saving ? 'Saving…' : '💾 Save'}
               </button>
             </div>

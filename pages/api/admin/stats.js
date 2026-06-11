@@ -1,16 +1,16 @@
 import { verifyAdminRequest } from '../../../lib/jwtMiddleware';
 import { pool } from '../../../lib/dbQueries';
 
+// key = tab ID used for navigation; table = actual DB table name
 const STAT_TABLES = [
-  { key: 'services', label: 'Services', icon: '✂️' },
-  { key: 'appointments', label: 'Appointments', icon: '📅' },
-  { key: 'customers', label: 'Customers', icon: '🧑‍💼' },
-  { key: 'staff', label: 'Staff', icon: '👨‍💼' },
-  { key: 'reviews', label: 'Reviews', icon: '⭐' },
-  { key: 'orders', label: 'Orders', icon: '📦' },
-  { key: 'career_applications', label: 'Applications', icon: '📝' },
-  { key: 'gallery', label: 'Gallery', icon: '🖼️' },
-  { key: 'contact_submissions', label: 'Contacts', icon: '📧' },
+  { key: 'services',     table: 'services',           label: 'Services',     icon: '✂️' },
+  { key: 'appointments', table: 'appointments',        label: 'Appointments', icon: '📅' },
+  { key: 'customers',    table: 'customers',           label: 'Customers',    icon: '🧑‍💼' },
+  { key: 'staff',        table: 'staff',               label: 'Staff',        icon: '👨‍💼' },
+  { key: 'reviews',      table: 'reviews',             label: 'Reviews',      icon: '⭐' },
+  { key: 'applications', table: 'career_applications', label: 'Applications', icon: '📝' },
+  { key: 'gallery',      table: 'gallery',             label: 'Gallery',      icon: '🖼️' },
+  { key: 'contacts',     table: 'contact_submissions', label: 'Contacts',     icon: '📧' },
 ];
 
 export default async function handler(req, res) {
@@ -25,9 +25,9 @@ export default async function handler(req, res) {
 
   try {
     const stats = await Promise.all(
-      STAT_TABLES.map(async ({ key, label, icon }) => {
+      STAT_TABLES.map(async ({ key, table, label, icon }) => {
         try {
-          const result = await pool.query(`SELECT COUNT(*) as count FROM ${key}`);
+          const result = await pool.query(`SELECT COUNT(*) as count FROM ${table}`);
           return { key, label, icon, count: parseInt(result.rows[0].count, 10) };
         } catch {
           return { key, label, icon, count: null };

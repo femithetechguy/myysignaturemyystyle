@@ -64,11 +64,13 @@
     "timezone": "America/Chicago",
     "contact": {
       "phone": "209-362-8295",
-      "email": "egwonookpako559@gmail.com",
+      "email": "myysignaturemyystyle@gmail.com",
       "website": "https://www.myysignaturemyystyle.com"
     },
     "social": {
       "instagram": "https://www.instagram.com/myysignaturemyystyle",
+      "instagram_braids": "https://www.instagram.com/myybraidz",
+      "tiktok": "https://www.tiktok.com/@okpako84",
       "facebook": ""
     }
   },
@@ -1165,13 +1167,12 @@
         },
         "hours": {
           "title": "Hours",
-          "mon_fri": "Mon-Fri: 9:00 AM - 6:00 PM",
-          "saturday": "Saturday: 10:00 AM - 4:00 PM",
-          "sunday": "Sunday: Closed"
+          "monday": "Monday: Closed",
+          "tue_sat": "Tue–Sat: 9:00 AM – 5:00 PM",
+          "sunday": "Sunday: 11:00 AM – 7:00 PM"
         },
         "follow": {
-          "title": "Follow Us",
-          "placeholder": "Coming Soon on Social Media"
+          "title": "Follow Us"
         }
       }
     },

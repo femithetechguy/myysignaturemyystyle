@@ -76,6 +76,7 @@ export default function AdminLayout() {
   const [sidebarClosed, setSidebarClosed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [config, setConfig] = useState(staticConfig);
+  const [refreshKey, setRefreshKey] = useState(0);
   
   // Load fresh config on mount to pick up any JSON file changes
   useEffect(() => {
@@ -129,7 +130,9 @@ export default function AdminLayout() {
       {/* Sidebar Navigation */}
       <aside className={`sidebar ${sidebarClosed ? 'closed' : ''}`}>
         <div className="sidebarHeader">
-          <h2 className="logo">{config.app.name}</h2>
+          <a href="/admin" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <h2 className="logo">{config.app.name}</h2>
+          </a>
           <button
             className="hamburgerBtn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -211,15 +214,29 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <div className={`mainContent ${sidebarClosed ? 'sidebar-closed' : ''}`}>
-        {/* Header */}
-        <div className="header">
-          <h1>{config.app.name} - {config.admin.header.admin_suffix}</h1>
-        </div>
-
         {/* Tab Description */}
         {activeTabConfig && (
-          <div className="info">
-            <p><strong>{activeTabConfig.label}</strong> - {activeTabConfig.description}</p>
+          <div className="info" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+            <p style={{ margin: 0 }}><strong>{activeTabConfig.label}</strong> - {activeTabConfig.description}</p>
+            {activeTabConfig.showRefresh && (
+              <button
+                onClick={() => setRefreshKey(k => k + 1)}
+                title="Refresh"
+                style={{
+                  flexShrink: 0,
+                  padding: '5px 10px',
+                  background: 'transparent',
+                  border: '1px solid rgba(212,175,55,0.4)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  lineHeight: 1,
+                  color: '#D4AF37'
+                }}
+              >
+                🔄
+              </button>
+            )}
           </div>
         )}
 
@@ -228,7 +245,7 @@ export default function AdminLayout() {
           {ComponentToRender && activeTab === 'dashboard' ? (
             <ComponentToRender onNavigate={handleTabChange} />
           ) : ComponentToRender ? (
-            <ComponentToRender />
+            <ComponentToRender refreshKey={refreshKey} />
           ) : null}
         </div>
       </div>
