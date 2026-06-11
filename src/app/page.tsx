@@ -1187,20 +1187,33 @@ export default function Home() {
               </h2>
 
               <div className="flex flex-col gap-3 sm:gap-5">
-                {/* Instagram */}
-                <a
-                  href={business.social.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 sm:gap-4 group"
-                >
+                {/* Instagram — main */}
+                <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 group">
                   <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200">
                     <FiInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">
-                    @myysignaturemyystyle
-                  </span>
+                  <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">@myysignaturemyystyle</span>
                 </a>
+
+                {/* Instagram — braids */}
+                {business.social.instagram_braids && (
+                  <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 group">
+                    <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <FiInstagram className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">@myybraidz</span>
+                  </a>
+                )}
+
+                {/* TikTok */}
+                {business.social.tiktok && (
+                  <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 sm:gap-4 group">
+                    <div className="flex-shrink-0 flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-xl bg-[#010101] shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      <SiTiktok className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <span className="text-sm sm:text-lg font-bold text-secondary group-hover:text-accent transition-colors duration-200 truncate">@okpako84</span>
+                  </a>
+                )}
 
                 {/* Email */}
                 <a
