@@ -44,6 +44,7 @@ export default function Home() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([])
   const [workingHours, setWorkingHours] = useState<string | null>(null)
   const [slotsLoading, setSlotsLoading] = useState(false)
+  const [stylistWeeklySchedule, setStylistWeeklySchedule] = useState<Record<number, string> | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedCategory, setSelectedCategory] = useState('Hair Cut')
@@ -469,6 +470,15 @@ export default function Home() {
     friday: '09:00-18:00',
     saturday: '10:00-16:00',
   }
+
+  // Fetch weekly availability from DB when stylist changes — used to grey out calendar days
+  useEffect(() => {
+    if (!selectedBookingStylist?.id) { setStylistWeeklySchedule(null); return }
+    fetch(`/api/available-slots?weekly=true&staff_id=${selectedBookingStylist.id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setStylistWeeklySchedule(d?.schedule ?? null))
+      .catch(() => setStylistWeeklySchedule(null))
+  }, [selectedBookingStylist?.id])
 
   // Fetch booked slots + working hours whenever date or stylist changes
   useEffect(() => {
@@ -1743,18 +1753,27 @@ export default function Home() {
                         const isTodayDate = isToday(dayObj.date)
                         const isPast = isPastDate(dayObj.date)
                         const isSelected = selectedDate && dayObj.date.toDateString() === selectedDate.toDateString()
+                        const dow = dayObj.date.getDay()
+                        const isClosedDay = isCurrentMonth && (
+                          stylistWeeklySchedule
+                            ? stylistWeeklySchedule[dow] === 'closed'
+                            : BUSINESS_HOURS[DAY_NAMES[dow]] === 'closed'
+                        )
+                        const isDisabled = isPast || isClosedDay
                         return (
                           <button
                             key={idx}
-                            onClick={() => { if (!isPast) { setSelectedDate(new Date(dayObj.date)); setSelectedTime(null) } }}
-                            disabled={isPast}
+                            onClick={() => { if (!isDisabled) { setSelectedDate(new Date(dayObj.date)); setSelectedTime(null) } }}
+                            disabled={isDisabled}
+                            title={isClosedDay ? (selectedBookingStylist ? `${selectedBookingStylist.name} is not available` : 'Salon closed') : undefined}
                             className={`
                               aspect-square rounded-lg font-semibold text-sm transition-all duration-200
                               ${!isCurrentMonth ? 'text-primary/30 bg-transparent cursor-default' : ''}
-                              ${isTodayDate ? 'bg-accent text-primary ring-2 ring-accent ring-offset-1' : ''}
-                              ${isSelected && !isTodayDate ? 'bg-primary text-white ring-2 ring-primary ring-offset-1' : ''}
-                              ${isCurrentMonth && !isTodayDate && !isSelected && !isPast ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer hover:shadow-md' : ''}
-                              ${isPast && isCurrentMonth ? 'text-primary/40 bg-secondary/10 cursor-not-allowed' : ''}
+                              ${isClosedDay && isCurrentMonth ? 'text-primary/30 bg-secondary/5 cursor-not-allowed line-through' : ''}
+                              ${isTodayDate && !isClosedDay ? 'bg-accent text-primary ring-2 ring-accent ring-offset-1' : ''}
+                              ${isSelected && !isTodayDate && !isClosedDay ? 'bg-primary text-white ring-2 ring-primary ring-offset-1' : ''}
+                              ${isCurrentMonth && !isTodayDate && !isSelected && !isDisabled ? 'bg-secondary/20 hover:bg-secondary/40 text-primary cursor-pointer hover:shadow-md' : ''}
+                              ${isPast && isCurrentMonth && !isClosedDay ? 'text-primary/40 bg-secondary/10 cursor-not-allowed' : ''}
                             `}
                           >
                             {dayObj.date.getDate()}
