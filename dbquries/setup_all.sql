@@ -601,7 +601,7 @@ INSERT INTO services (service_id, name, description, duration, price_min, price_
 ('addon_002', 'Scalp Stimulator', 'Invigorating scalp massage and stimulating serum application', 30, 25.00, 45.00, 'Add On', '["add_on_scalp_stimulator_1_evcbvb"]', 44, 'active')
 ON CONFLICT (service_id) DO NOTHING;
 
--- ── Staff (Jairo, Andrea, Char) ───────────────────────────────────────────────
+-- ── Staff (Jairo, Andrea, Egwono) ────────────────────────────────────────────
 INSERT INTO staff (staff_id, name, title, email, phone, bio, photo, instagram_handle, booking_slug, specialties, is_bookable, status, display_order)
 VALUES (
     'staff_001', 'Jairo', 'Color Specialist',
@@ -634,11 +634,11 @@ ON CONFLICT (staff_id) DO UPDATE SET
 
 INSERT INTO staff (staff_id, name, title, email, phone, bio, photo, instagram_handle, booking_slug, specialties, is_bookable, status, display_order)
 VALUES (
-    'staff_003', 'Char', 'Licensed Stylist',
-    'char@myysignaturemyystyle.com', '(770) 744-3095',
-    'Originally from New York, Char brings a Trinidadian flare and spunky vibe to the salon! Char has been a licensed stylist for 15 years and specializes in blowouts, silk press, color, pixie cuts, and haircutting. Char loves sneakers, nature documentaries, trying new foods and hiking in her spare time.',
-    '', 'chardryce', 'char',
-    '["Blowouts", "Silk Press", "Color", "Pixie Cuts", "Haircutting"]'::jsonb,
+    'staff_003', 'Egwono', 'CEO & Senior Stylist',
+    'egwono@myysignaturemyystyle.com', '(770) 744-3095',
+    'Egwono is the founder and lead stylist at Myy Signature Myy Style. With a deep passion for hair and a commitment to making every client feel their best, she brings creativity, skill, and warmth to every appointment.',
+    '', '', 'egwono',
+    '["Natural Hair", "Protective Styles", "Color", "Silk Press", "Braids"]'::jsonb,
     true, 'active', 3
 )
 ON CONFLICT (staff_id) DO UPDATE SET
