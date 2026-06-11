@@ -317,20 +317,20 @@ export default function AdminContacts({ refreshKey = 0 }) {
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
           onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}
         >
-          <div style={{ background: 'white', borderRadius: '12px', padding: '30px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ View Record</h3>
               <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {allColumns.map(col => (
-                <div key={col} style={{ display: 'flex', gap: '12px', padding: '10px 12px', background: AUTO_GENERATED_FIELDS.includes(col.toLowerCase()) ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
-                  <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.85rem', flexShrink: 0 }}>{formatColumnName(col)}</span>
-                  <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.9rem' }}>{viewingItem[col] != null ? String(viewingItem[col]) : '—'}</span>
+                <div key={col} style={{ display: 'flex', gap: '12px', padding: '6px 10px', background: AUTO_GENERATED_FIELDS.includes(col.toLowerCase()) ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                  <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.78rem', flexShrink: 0 }}>{formatColumnName(col)}</span>
+                  <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.85rem' }}>{viewingItem[col] != null ? String(viewingItem[col]) : '—'}</span>
                 </div>
               ))}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
               <button
                 onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
                 style={{ padding: '10px 20px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -368,19 +368,19 @@ export default function AdminContacts({ refreshKey = 0 }) {
           <div style={{
             background: 'white',
             borderRadius: '12px',
-            padding: '30px',
+            padding: '20px 16px',
             width: '90%',
             maxWidth: '600px',
             maxHeight: '90vh',
             overflowY: 'auto',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
           }}>
-            <h3 style={{ margin: '0 0 20px 0', color: '#1B1B1B' }}>✏️ Edit Item</h3>
+            <h3 style={{ margin: '0 0 12px 0', color: '#1B1B1B' }}>✏️ Edit Item</h3>
             
             {/* Show auto-generated fields as read-only */}
             {allColumns.filter(col => AUTO_GENERATED_FIELDS.includes(col.toLowerCase())).length > 0 && (
               <div style={{ 
-                marginBottom: '20px', 
+                marginBottom: '12px', 
                 padding: '12px', 
                 background: '#f9f9f9', 
                 borderRadius: '6px',
@@ -395,7 +395,7 @@ export default function AdminContacts({ refreshKey = 0 }) {
               </div>
             )}
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {visibleColumns
                 .filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()))
                 .map(col => {
@@ -439,7 +439,7 @@ export default function AdminContacts({ refreshKey = 0 }) {
                 })}
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '25px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
               <button
                 onClick={() => { setShowModal(false); setEditingItem(null); }}
                 style={{

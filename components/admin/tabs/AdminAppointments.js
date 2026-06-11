@@ -628,15 +628,15 @@ export default function AdminAppointments({ refreshKey = 0 }) {
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
           onClick={(e) => e.target === e.currentTarget && setViewingItem(null)}
         >
-          <div style={{ background: 'white', borderRadius: '12px', padding: '30px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <h3 style={{ margin: 0, color: '#1B1B1B' }}>👁️ Appointment</h3>
                 <StatusBadge status={viewingItem.status} />
               </div>
               <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
               {Object.keys(viewingItem).map(col => {
                 let val = viewingItem[col];
                 if (val == null) val = '—';
@@ -645,14 +645,14 @@ export default function AdminAppointments({ refreshKey = 0 }) {
                 else val = String(val);
                 const isAuto = AUTO_GENERATED_FIELDS.includes(col.toLowerCase());
                 return (
-                  <div key={col} style={{ display: 'flex', gap: '12px', padding: '9px 12px', background: isAuto ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
-                    <span style={{ minWidth: '140px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.82rem', flexShrink: 0, textTransform: 'capitalize' }}>{col.replace(/_/g, ' ')}</span>
-                    <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.88rem' }}>{val}</span>
+                  <div key={col} style={{ display: 'flex', gap: '12px', padding: '6px 10px', background: isAuto ? '#f9f9f9' : '#fff', borderRadius: '6px', border: '1px solid #eee' }}>
+                    <span style={{ minWidth: '130px', fontWeight: 'bold', color: '#D4AF37', fontSize: '0.78rem', flexShrink: 0, textTransform: 'capitalize' }}>{col.replace(/_/g, ' ')}</span>
+                    <span style={{ color: '#333', wordBreak: 'break-word', fontSize: '0.85rem' }}>{val}</span>
                   </div>
                 );
               })}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
               <button
                 onClick={() => { setViewingItem(null); handleEdit(viewingItem); }}
                 style={{ padding: '10px 20px', background: '#D4AF37', color: '#1B1B1B', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -674,8 +674,8 @@ export default function AdminAppointments({ refreshKey = 0 }) {
       {showModal && editingItem && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}
           onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div style={{ background: 'white', borderRadius: '12px', padding: '28px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ background: 'white', borderRadius: '12px', padding: '20px 16px', width: '90%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ margin: 0, color: '#1B1B1B' }}>✏️ Edit Appointment</h3>
               <div style={{ background: '#f5f5f5', padding: '4px 10px', borderRadius: '6px', fontSize: '0.8rem', color: '#666', fontFamily: 'monospace' }}>
                 {editingItem.appointment_id || `#${editingItem.id}`}
@@ -683,12 +683,12 @@ export default function AdminAppointments({ refreshKey = 0 }) {
             </div>
 
             {/* Read-only meta */}
-            <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '10px 14px', marginBottom: '18px', fontSize: '0.82rem', color: '#666', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ background: '#f9f9f9', borderRadius: '8px', padding: '8px 12px', marginBottom: '12px', fontSize: '0.8rem', color: '#666', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <span><strong>ID:</strong> {editingItem.id}</span>
               <span><strong>Created:</strong> {editingItem.created_at ? new Date(editingItem.created_at).toLocaleDateString() : '—'}</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {allColumns
                 .filter(col => !AUTO_GENERATED_FIELDS.includes(col.toLowerCase()))
                 .map(col => {
@@ -729,7 +729,7 @@ export default function AdminAppointments({ refreshKey = 0 }) {
                 })}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '22px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '14px' }}>
               <button onClick={() => { setShowModal(false); setEditingItem(null); }}
                 style={{ padding: '9px 20px', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
                 Cancel
