@@ -129,7 +129,9 @@ export default function AdminLayout() {
       {/* Sidebar Navigation */}
       <aside className={`sidebar ${sidebarClosed ? 'closed' : ''}`}>
         <div className="sidebarHeader">
-          <h2 className="logo">{config.app.name}</h2>
+          <a href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <h2 className="logo">{config.app.name}</h2>
+          </a>
           <button
             className="hamburgerBtn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
