@@ -258,8 +258,8 @@ export default function AdminContacts({ refreshKey = 0 }) {
       )}
 
       {!loading && data.length > 0 && (
-        <div className="quickActions">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="quickActions" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
             <thead>
               <tr style={{ background: '#f5f5f5' }}>
                 {columns.map(col => (

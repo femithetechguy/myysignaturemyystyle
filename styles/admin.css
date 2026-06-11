@@ -1408,9 +1408,8 @@ body [style*="position: fixed"] h4 {
     text-overflow: ellipsis;
   }
 
-  /* Prevent horizontal overflow in main content */
   .mainContent {
-    overflow-x: hidden;
+    overflow-x: auto;
   }
 }
 
