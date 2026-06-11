@@ -204,7 +204,7 @@
     "customers": {
       "title": "Manage Customers",
       "description": "View and manage customer accounts",
-      "actions": { "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
+      "actions": { "view_icon": "👁️", "edit_icon": "✏️", "delete_icon": "🗑️", "separator": "|" },
       "messages": {
         "loading": "Loading customers...",
         "empty": "No customers found",
