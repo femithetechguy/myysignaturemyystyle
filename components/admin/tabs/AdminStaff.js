@@ -189,9 +189,12 @@ export default function AdminStaff({ refreshKey = 0 }) {
       }
     });
     setEditingItem(normalized);
-    setEditingAvailability(null); // will load below
 
-    // Fetch this staff member's availability from staff_availability table
+    // Pre-initialize from JSON column so save always has something to write
+    const jsonAvail = item.availability && typeof item.availability === 'object' ? item.availability : {};
+    setEditingAvailability(jsonAvail);
+
+    // Fetch authoritative schedule from staff_availability table and override
     const token = localStorage.getItem('adminToken');
     try {
       const res = await fetch(`/api/admin/staff-availability?staff_id=${item.id}`, {
@@ -199,7 +202,9 @@ export default function AdminStaff({ refreshKey = 0 }) {
       });
       if (res.ok) {
         const data = await res.json();
-        setEditingAvailability(data.schedule || {});
+        if (data.schedule && Object.keys(data.schedule).length > 0) {
+          setEditingAvailability(data.schedule);
+        }
       }
     } catch (_) {}
 
