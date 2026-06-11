@@ -1116,25 +1116,24 @@ export default function Home() {
                     <p className="text-xs text-primary/70">{content.footer.sections.hours.sunday}</p>
                   </div>
                   <div className="p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-3 gap-1">
-                      <FiInstagram className="w-4 h-4 text-white" />
-                      <SiTiktok className="w-3 h-3 text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-3">
+                      <FiInstagram className="w-5 h-5 text-white" />
                     </div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-2">{content.footer.sections.follow.title}</p>
-                    <div className="flex flex-col gap-1">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-3">{content.footer.sections.follow.title}</p>
+                    <div className="flex items-center gap-3">
                       {business.social.instagram && (
-                        <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-bold text-accent hover:text-accent/80 transition-colors duration-200 truncate">
-                          <FiInstagram className="w-3 h-3 flex-shrink-0" />@myysignaturemyystyle
+                        <a href={business.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram @myysignaturemyystyle" className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                          <FiInstagram className="w-4 h-4 text-white" />
                         </a>
                       )}
                       {business.social.instagram_braids && (
-                        <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-bold text-accent hover:text-accent/80 transition-colors duration-200 truncate">
-                          <FiInstagram className="w-3 h-3 flex-shrink-0" />@myybraidz
+                        <a href={business.social.instagram_braids} target="_blank" rel="noopener noreferrer" aria-label="Instagram @myybraidz" className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                          <FiInstagram className="w-4 h-4 text-white" />
                         </a>
                       )}
                       {business.social.tiktok && (
-                        <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] font-bold text-accent hover:text-accent/80 transition-colors duration-200 truncate">
-                          <SiTiktok className="w-3 h-3 flex-shrink-0" />@okpako84
+                        <a href={business.social.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok @okpako84" className="w-9 h-9 rounded-xl bg-[#010101] flex items-center justify-center hover:scale-110 transition-transform duration-200">
+                          <SiTiktok className="w-4 h-4 text-white" />
                         </a>
                       )}
                     </div>
