@@ -7,7 +7,6 @@ const STAT_TABLES = [
   { key: 'customers', label: 'Customers', icon: '🧑‍💼' },
   { key: 'staff', label: 'Staff', icon: '👨‍💼' },
   { key: 'reviews', label: 'Reviews', icon: '⭐' },
-  { key: 'orders', label: 'Orders', icon: '📦' },
   { key: 'career_applications', label: 'Applications', icon: '📝' },
   { key: 'gallery', label: 'Gallery', icon: '🖼️' },
   { key: 'contact_submissions', label: 'Contacts', icon: '📧' },

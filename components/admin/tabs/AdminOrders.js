@@ -44,7 +44,7 @@ export default function AdminOrders() {
 
   useEffect(() => {
     fetchWithFreshConfig();
-  }, []);
+  }, [refreshKey]);
 
   const fetchWithFreshConfig = async () => {
     try {

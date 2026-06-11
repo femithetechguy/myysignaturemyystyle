@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: June 10, 2026 (session 8)
+Last updated: June 11, 2026 (session 9)
 
 ---
 
@@ -370,6 +370,41 @@ Last updated: June 10, 2026 (session 8)
   - `og:image` → `/opengraph-image` (1200×630)
   - `twitter:card` → `summary_large_image`
   - All social share previews (WhatsApp, iMessage, Twitter, LinkedIn) now show branded card
+
+### Admin Panel — Mobile Optimization (sessions 7–9, FTTG-21)
+- [x] **View modal added to 6 tabs** (Services, Staff, Applications, Reviews, Contacts, Gallery)
+  - 👁️ View button in action cell opens read-only modal showing all fields with gold labels
+  - Auto-generated/system fields (`id`, `created_at`, timestamps) shown on grey background
+  - Edit shortcut button inside View modal opens Edit modal directly
+  - Edit (✏️) button removed from action cells entirely — edit is now accessed through View flow only
+- [x] **Action cells**: reduced to `👁️ | 🗑️` on all 6 generic tabs — no more inline Edit icon
+- [x] **View modal compact layout**: outer padding `20px 16px`, label `0.78rem`, value `0.85rem`, header/footer margin `12px`
+- [x] **Edit modal compact layout**: field gap `10px`, h3 margin `12px`, label margin `2px`, inputs `7px 10px`, textarea `rows=2`, buttons `8px 16px`
+- [x] **Body scroll lock**: `document.body.style.overflow = 'hidden'` when any modal or view modal is open — all 6 tabs + Appointments tab
+- [x] **Admin card horizontal scroll fixed**:
+  - `.quickActions` wrapper changed from `overflow-x: auto` → `overflow-x: hidden`
+  - Inline `minWidth: 500` on table overridden by `min-width: 0 !important` in `admin.css` at ≤768px
+- [x] **Global admin CSS compacted** (`styles/admin.css`):
+  - Mobile `td` padding: `8px 0` → `4px 0 !important`
+  - `td:before` label: `0.75rem`, uppercase, `margin-bottom: 2px`
+  - Action icons: flex row with `gap: 14px`, padding/min-height unset
+  - Mobile inputs: `padding: 8px 10px !important; min-height: unset !important` (kept `font-size: 16px` for iOS zoom prevention)
+- [x] **Appointments tab redesigned** (`sessions 7–9`):
+  - Removed redundant h2 heading and standalone Refresh button from toolbar
+  - Stats cards: single row of 4 (`repeat(4, 1fr)`), padding `8px 10px`, font sizes reduced
+  - Filter pills: stacked column layout, reduced padding and font size
+  - `ApptCard`: View (👁️) button added, Edit (✏️) button removed
+- [x] **Week view — mobile vertical stack**: `isMobile` state + resize listener switches WeekView from 7-col grid to vertical day stack on phones; empty days shown at 0.45 opacity with count badge; desktop unchanged
+- [x] **Month view — mobile dot indicators**: `isMobile` + resize listener; on mobile, grid uses `repeat(7, minmax(0, 1fr))` (no overflow), day headers shortened to single letters (S M T W T F S), cells 48px tall, appointments shown as 7px coloured dots (status-coded) instead of `whiteSpace: 'nowrap'` text chips that caused horizontal scroll; desktop view unchanged
+- [x] **`config/admin.json`**: `view_icon: "👁️"` added to actions for services, appointments, staff, applications, reviews, contacts; duplicate `staff` key removed
+- [x] **Customer-facing page horizontal scroll fixed**:
+  - `html` + `body` changed to `overflow-x: clip` (truly clips CSS transforms; `hidden` does not clip `translateX` animations due to viewport scroll container behaviour)
+  - About section element given `overflow-hidden` class to contain its `slideInLeft`/`slideInRight` animation overflow
+
+### Refresh Bug Fix — All Tabs (session 9)
+- [x] **Customers, Orders, Appointments tabs not re-fetching on Refresh**: all three had `useEffect(fn, [])` missing `refreshKey` in the dependency array — the AdminLayout toolbar Refresh button had no effect on them
+  - Fixed: `AdminCustomers.js`, `AdminOrders.js`, `AdminAppointments.js` — all now use `[refreshKey]` in their primary data-fetch `useEffect`
+  - Services, Staff, Applications, Reviews, Contacts, Gallery were already correct
 
 ### Project Setup & Tooling (session 8)
 - [x] **CLAUDE.md created** — full project context file for AI-assisted development (tech stack, structure, key patterns, env vars, run instructions, commit format)

@@ -117,6 +117,13 @@ function ApptCard({ appt, onEdit, onDelete, onView, compact = false }) {
 
 // ── Month calendar view ───────────────────────────────────────────────────────
 function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayClick }) {
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -142,14 +149,14 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
       </div>
 
       {/* Day headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '4px' }}>
-        {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => (
-          <div key={d} style={{ textAlign: 'center', fontSize: '0.72rem', fontWeight: 700, color: '#999', padding: '4px 0' }}>{d}</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '4px', marginBottom: '4px' }}>
+        {(isMobile ? ['S','M','T','W','T','F','S'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']).map((d, i) => (
+          <div key={i} style={{ textAlign: 'center', fontSize: '0.72rem', fontWeight: 700, color: '#999', padding: '4px 0' }}>{d}</div>
         ))}
       </div>
 
       {/* Day cells */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '4px' }}>
         {cells.map((day, i) => {
           if (!day) return <div key={`e${i}`} />;
           const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -159,42 +166,47 @@ function MonthView({ appointmentsByDate, calendarDate, setCalendarDate, onDayCli
           return (
             <div key={day} onClick={() => appts.length > 0 && onDayClick(dateKey, appts)}
               style={{
-                minHeight: '70px',
+                minHeight: isMobile ? '48px' : '70px',
                 background: isToday ? '#FEF9EC' : 'white',
                 border: isToday ? '2px solid #D4AF37' : '1px solid #eee',
                 borderRadius: '8px',
-                padding: '6px',
+                padding: isMobile ? '4px' : '6px',
                 cursor: appts.length > 0 ? 'pointer' : 'default',
                 transition: 'box-shadow 0.15s',
+                overflow: 'hidden',
               }}
               onMouseEnter={e => appts.length > 0 && (e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)')}
               onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
             >
-              <div style={{ fontWeight: isToday ? 800 : 500, fontSize: '0.85rem', color: isToday ? '#D4AF37' : '#1B1B1B', marginBottom: '4px' }}>{day}</div>
+              <div style={{ fontWeight: isToday ? 800 : 500, fontSize: isMobile ? '0.75rem' : '0.85rem', color: isToday ? '#D4AF37' : '#1B1B1B', marginBottom: '3px' }}>{day}</div>
               {appts.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  {appts.slice(0, 2).map(a => {
-                    const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
-                    return (
-                      <div key={a.id} style={{
-                        background: s.bg,
-                        color: s.color,
-                        borderRadius: '4px',
-                        padding: '1px 5px',
-                        fontSize: '0.65rem',
-                        fontWeight: 600,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        {formatTime(a.appointment_time)} {a.appointment_id || `#${a.id}`}
-                      </div>
-                    );
-                  })}
-                  {appts.length > 2 && (
-                    <div style={{ fontSize: '0.65rem', color: '#888', paddingLeft: '5px' }}>+{appts.length - 2} more</div>
-                  )}
-                </div>
+                isMobile ? (
+                  /* Mobile: coloured dots */
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px' }}>
+                    {appts.slice(0, 3).map(a => {
+                      const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
+                      return <div key={a.id} style={{ width: '7px', height: '7px', borderRadius: '50%', background: s.color, flexShrink: 0 }} />;
+                    })}
+                    {appts.length > 3 && <div style={{ fontSize: '0.55rem', color: '#888', lineHeight: '7px' }}>+{appts.length - 3}</div>}
+                  </div>
+                ) : (
+                  /* Desktop: text chips */
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    {appts.slice(0, 2).map(a => {
+                      const s = STATUS_STYLES[a.status] || STATUS_STYLES.pending;
+                      return (
+                        <div key={a.id} style={{
+                          background: s.bg, color: s.color, borderRadius: '4px',
+                          padding: '1px 5px', fontSize: '0.65rem', fontWeight: 600,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                        }}>
+                          {formatTime(a.appointment_time)} {a.appointment_id || `#${a.id}`}
+                        </div>
+                      );
+                    })}
+                    {appts.length > 2 && <div style={{ fontSize: '0.65rem', color: '#888', paddingLeft: '5px' }}>+{appts.length - 2} more</div>}
+                  </div>
+                )
               )}
             </div>
           );
@@ -348,7 +360,7 @@ export default function AdminAppointments({ refreshKey = 0 }) {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [drillDay, setDrillDay] = useState(null); // { dateKey, appts } for month drill-down
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [refreshKey]);
 
   useEffect(() => {
     const anyOpen = showModal || !!viewingItem;

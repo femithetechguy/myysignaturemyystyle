@@ -44,7 +44,7 @@ export default function AdminCustomers({ refreshKey = 0 }) {
 
   useEffect(() => {
     fetchWithFreshConfig();
-  }, []);
+  }, [refreshKey]);
 
   const fetchWithFreshConfig = async () => {
     try {
