@@ -53,20 +53,6 @@
         "description": "Overview and statistics"
       },
       {
-        "id": "customers",
-        "label": "Customers",
-        "icon": "🧑‍💼",
-        "component": "AdminCustomers",
-        "table": "customers",
-        "editable": true,
-        "showRefresh": true,
-        "refreshBtn": "🔄 Refresh",
-        "loadingBtn": "🔄 Loading...",
-        "sort": true,
-        "description": "Manage customer accounts"
-      },
-
-      {
         "id": "services",
         "label": "Services",
         "icon": "✂️",
@@ -132,19 +118,6 @@
         "description": "Manage customer reviews"
       },
       {
-        "id": "gallery",
-        "label": "Gallery",
-        "icon": "🖼️",
-        "component": "AdminGallery",
-        "table": "gallery",
-        "editable": true,
-        "showRefresh": true,
-        "refreshBtn": "🔄 Refresh",
-        "loadingBtn": "🔄 Loading...",
-        "sort": true,
-        "description": "Manage gallery images"
-      },
-      {
         "id": "contacts",
         "label": "Contacts",
         "icon": "📧",
@@ -185,22 +158,15 @@
       }
     ],
     "dashboard": {
-      "welcome_title": "Welcome to Dashboard",
-      "welcome_text": "Manage your application from this admin panel",
+      "welcome_title": "Welcome Back",
+      "welcome_text": "Here's what's happening at Myy Signature Myy Style",
       "stats": [
-        { "icon": "✂️", "title": "Services", "description": "Manage services" },
         { "icon": "📅", "title": "Appointments", "description": "Customer bookings" },
-        { "icon": "👨‍💼", "title": "Staff", "description": "Team members" },
+        { "icon": "✂️", "title": "Services", "description": "Manage services" },
+        { "icon": "👩‍💼", "title": "Staff", "description": "Team members" },
         { "icon": "📝", "title": "Applications", "description": "Career applications" },
         { "icon": "⭐", "title": "Reviews", "description": "Customer reviews" },
-        { "icon": "🧑‍💼", "title": "Customers", "description": "Customer accounts" }
-      ],
-      "quick_tips_title": "💡 Quick Tips:",
-      "quick_tips": [
-        { "icon": "📝", "title": "Add Admin Tabs", "description": "Edit config/admin.json to add new tabs" },
-        { "icon": "🎨", "title": "Create Components", "description": "Add components in components/admin/tabs/" },
-        { "icon": "🗄️", "title": "Database Tables", "description": "Configure table names in database.tables" },
-        { "icon": "🔐", "title": "Authentication", "description": "JWT tokens secure all admin routes" }
+        { "icon": "📧", "title": "Contacts", "description": "Client messages" }
       ]
     },
     "staff": {

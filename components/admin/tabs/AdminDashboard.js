@@ -90,26 +90,7 @@ export default function AdminDashboard({ onNavigate }) {
               }}>
                 {tab.description}
               </p>
-              {tab.table && (
-                <p style={{
-                  margin: '10px 0 0 0',
-                  fontSize: '0.8rem',
-                  color: '#999',
-                  textAlign: 'center'
-                }}>
-                  📁 Table: {tab.table}
-                </p>
-              )}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="quickActions" style={{ marginTop: '30px' }}>
-        <h3>{adminConfig.quick_tips_title}</h3>
-        <div className="info">
-          {adminConfig.quick_tips.map((tip, idx) => (
-            <p key={idx}><strong>{tip.icon} {tip.title}:</strong> {tip.description}</p>
           ))}
         </div>
       </div>
