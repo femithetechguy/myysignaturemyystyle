@@ -299,14 +299,14 @@ export default function AdminCustomers() {
               <button
                 onClick={() => setShowColumnSelector(!showColumnSelector)}
                 style={{
-                  padding: '10px 16px',
+                  padding: '7px 12px',
                   background: '#f5f5f5',
                   color: '#1B1B1B',
                   border: '1px solid #ddd',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontWeight: 'bold',
-                  fontSize: '0.95rem',
+                  fontSize: '0.85rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',

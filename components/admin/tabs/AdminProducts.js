@@ -544,7 +544,7 @@ export default function AdminProducts() {
             <button
               onClick={() => setShowColumnSelector(!showColumnSelector)}
               style={{
-                padding: '10px 16px',
+                padding: '7px 12px',
                 background: button.secondaryBg,
                 color: text.primary,
                 border: `1px solid ${button.secondaryBorder}`,

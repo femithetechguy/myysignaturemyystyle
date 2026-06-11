@@ -232,14 +232,14 @@ export default function AdminGallery() {
               <button
                 onClick={() => setShowColumnSelector(!showColumnSelector)}
                 style={{
-                  padding: '10px 16px',
+                  padding: '7px 12px',
                   background: '#f5f5f5',
                   color: '#1B1B1B',
                   border: '1px solid #ddd',
                   borderRadius: '6px',
                   cursor: 'pointer',
                   fontWeight: 'bold',
-                  fontSize: '0.95rem',
+                  fontSize: '0.85rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px'
@@ -281,14 +281,14 @@ export default function AdminGallery() {
               onClick={fetchData}
               disabled={loading}
               style={{
-                padding: '10px 20px',
+                padding: '7px 12px',
                 background: '#D4AF37',
                 color: '#1B1B1B',
                 border: 'none',
                 borderRadius: '6px',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 fontWeight: 'bold',
-                fontSize: '0.95rem',
+                fontSize: '0.85rem',
                 opacity: loading ? 0.6 : 1,
                 whiteSpace: 'nowrap'
               }}
