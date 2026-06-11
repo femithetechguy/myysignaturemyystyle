@@ -236,9 +236,7 @@ export default function AdminGallery({ refreshKey = 0 }) {
               onSelectMin={selectMinColumns}
               formatColumnName={formatColumnName}
             />
-          )}
-            </div>
-          )}
+        )}
         </div>
       </div>
       

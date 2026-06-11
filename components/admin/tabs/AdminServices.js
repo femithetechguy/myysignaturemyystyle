@@ -237,9 +237,7 @@ export default function AdminServices({ refreshKey = 0 }) {
               onSelectMin={selectMinColumns}
               formatColumnName={formatColumnName}
             />
-          )}
-            </div>
-          )}
+        )}
         </div>
       </div>
       

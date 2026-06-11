@@ -304,8 +304,7 @@ export default function AdminCustomers({ refreshKey = 0 }) {
               formatColumnName={formatColumnName}
             />
           )}
-            </div>
-          )}
+        </div>
           {showRefresh && (
           <button
             onClick={fetchWithFreshConfig}

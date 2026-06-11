@@ -236,9 +236,7 @@ export default function AdminReviews({ refreshKey = 0 }) {
               onSelectMin={selectMinColumns}
               formatColumnName={formatColumnName}
             />
-          )}
-            </div>
-          )}
+        )}
         </div>
       </div>
       

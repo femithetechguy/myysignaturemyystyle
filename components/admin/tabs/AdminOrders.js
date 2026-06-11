@@ -339,8 +339,7 @@ export default function AdminOrders() {
               formatColumnName={formatColumnName}
             />
           )}
-            </div>
-          )}
+        </div>
           {showRefresh && (
           <button
             onClick={fetchWithFreshConfig}
