@@ -815,6 +815,11 @@ export default function Home() {
                       <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylists[0].instagram_handle}
                     </a>
                   )}
+                  {stylists[0].metadata?.instagram_braids && (
+                    <a href={`https://instagram.com/${stylists[0].metadata.instagram_braids}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent transition-colors">
+                      <FiInstagram className="w-4 h-4 flex-shrink-0" />@{stylists[0].metadata.instagram_braids}
+                    </a>
+                  )}
                 </div>
                 {stylists[0].booking_slug && (
                   <button onClick={() => handleStylistBookClick(stylists[0])} className="w-full py-2.5 rounded-xl bg-accent text-primary text-sm font-bold hover:bg-accent/80 hover:scale-[1.02] active:scale-95 transition-all duration-200">
