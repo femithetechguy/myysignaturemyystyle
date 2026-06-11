@@ -1244,7 +1244,7 @@ body [style*="position: fixed"] h4 {
 
   .quickActions {
     padding: 12px;
-    overflow-x: auto;
+    overflow-x: hidden;
   }
 
   .quickActions h3 {
@@ -1256,6 +1256,7 @@ body [style*="position: fixed"] h4 {
   table {
     font-size: 0.85rem;
     width: 100%;
+    min-width: 0 !important;
   }
 
   thead {
