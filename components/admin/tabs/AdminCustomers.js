@@ -421,7 +421,7 @@ export default function AdminCustomers({ refreshKey = 0 }) {
             justifyContent: 'center',
             zIndex: 1000
           }}
-          onClick={(e) => e.target === e.currentTarget && setShowColumnSelector(false)}
+          onClick={(e) => e.target === e.currentTarget && setShowModal(false)}
         >
           <div style={{
             background: 'white',
