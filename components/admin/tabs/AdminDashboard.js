@@ -18,11 +18,6 @@ export default function AdminDashboard({ onNavigate }) {
 
   return (
     <div className="dashboard">
-      <div className="welcome">
-        <h2>{adminConfig.welcome_title}</h2>
-        <p>{adminConfig.welcome_text}</p>
-      </div>
-
       <div className="stats">
         {statsLoading ? (
           <p style={{ color: '#666', padding: '20px', gridColumn: '1 / -1' }}>Loading stats...</p>
