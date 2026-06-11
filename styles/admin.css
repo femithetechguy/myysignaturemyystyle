@@ -1136,7 +1136,7 @@ body [style*="position: fixed"] h4 {
   }
 
   .navItem {
-    padding: 9px 15px;
+    padding: 11px 15px;
     gap: 12px;
     font-size: 0.9rem;
     white-space: nowrap;
@@ -1172,7 +1172,7 @@ body [style*="position: fixed"] h4 {
   .logoutBtn {
     width: auto;
     margin: 0;
-    padding: 9px 15px;
+    padding: 11px 15px;
     font-size: 0.9rem;
     flex-shrink: 0;
     display: none;
