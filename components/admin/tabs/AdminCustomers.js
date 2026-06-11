@@ -193,10 +193,6 @@ export default function AdminCustomers({ refreshKey = 0 }) {
                     <button onClick={() => setViewingItem(item)} style={{ cursor: 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0 }} title="View">
                       {actions.view_icon || '👁️'}
                     </button>
-                    <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
-                    <button onClick={() => handleDelete(item)} disabled={deleting} style={{ cursor: deleting ? 'not-allowed' : 'pointer', background: 'none', border: 'none', fontSize: '1.1rem', padding: 0, opacity: deleting ? 0.6 : 1 }} title="Delete">
-                      {actions.delete_icon || '🗑️'}
-                    </button>
                   </td>
                 </tr>
               ))}
