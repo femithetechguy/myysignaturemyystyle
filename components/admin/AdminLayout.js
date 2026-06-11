@@ -129,7 +129,7 @@ export default function AdminLayout() {
       {/* Sidebar Navigation */}
       <aside className={`sidebar ${sidebarClosed ? 'closed' : ''}`}>
         <div className="sidebarHeader">
-          <a href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <a href="/admin" style={{ textDecoration: 'none', color: 'inherit' }}>
             <h2 className="logo">{config.app.name}</h2>
           </a>
           <button
