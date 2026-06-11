@@ -305,36 +305,6 @@ export default function AdminCustomers({ refreshKey = 0 }) {
             />
           )}
         </div>
-          {showRefresh && (
-          <button
-            onClick={fetchWithFreshConfig}
-            disabled={loading}
-            className="refreshBtn"
-            style={{
-              padding: '10px 20px',
-              background: '#D4AF37',
-              color: '#1B1B1B',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold',
-              fontSize: '0.95rem',
-              transition: 'all 0.3s ease',
-              opacity: loading ? 0.6 : 1,
-              whiteSpace: 'nowrap',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxSizing: 'border-box'
-            }}
-            onMouseEnter={(e) => !loading && (e.target.style.background = '#C99A2D')}
-            onMouseLeave={(e) => !loading && (e.target.style.background = '#D4AF37')}
-            title="Refresh customer data"
-          >
-            {loading ? loadingBtn : refreshBtn}
-          </button>
-        )}
-        </div>
       </div>
       
       <div className="info" style={{ marginBottom: '30px', padding: '12px', background: '#f5f5f5', borderRadius: '6px' }}>
