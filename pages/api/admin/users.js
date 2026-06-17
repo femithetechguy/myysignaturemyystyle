@@ -106,7 +106,7 @@ async function handleGet(req, res, tableKey) {
           a.id, a.appointment_id, a.appointment_date, a.appointment_time, a.duration,
           a.status, a.notes, a.admin_notes, a.cancellation_reason,
           a.deposit_required, a.deposit_amount, a.deposit_paid,
-          a.total_amount, a.payment_status, a.created_at, a.updated_at,
+          a.total_amount, a.payment_status, a.confirmation_sent, a.created_at, a.updated_at,
           c.first_name || ' ' || COALESCE(c.last_name, '') AS customer_name,
           c.email  AS customer_email,
           c.phone  AS customer_phone,
