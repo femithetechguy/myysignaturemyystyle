@@ -677,7 +677,17 @@ export default function AdminAppointments({ refreshKey = 0 }) {
               <button onClick={() => setViewingItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer', color: '#666', padding: '0 4px', lineHeight: 1 }}>✕</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              {Object.keys(viewingItem).map(col => {
+              {[
+                'customer_name', 'customer_email', 'customer_phone',
+                'service_name', 'staff_name',
+                'appointment_date', 'appointment_time', 'duration',
+                'status', 'total_amount', 'payment_status',
+                'notes', 'admin_notes',
+                'deposit_required', 'deposit_amount', 'deposit_paid',
+                'cancellation_reason',
+                'id', 'appointment_id', 'created_at', 'updated_at',
+              ].map(col => {
+                if (!(col in viewingItem)) return null;
                 let val = viewingItem[col];
                 if (val == null) val = '—';
                 else if (col.includes('date')) val = formatDate(val);
