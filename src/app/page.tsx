@@ -14,7 +14,7 @@ export default function Home() {
   const gallery = getGallery()
   const careers = getCareers()
   // DB-backed data — fall back to app.json values until the fetch resolves
-  const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number; price_max: number; category: string; images: string[]; staff_ids: string[] }[]>([])
+  const [services, setServices] = useState<{ id: string; name: string; description: string; duration: number; price_min: number | null; price_max: number | null; category: string; images: string[]; staff_ids: string[] }[]>([])
   const [reviews, setReviews] = useState(content.reviews_section.reviews)
   const [stylists, setStylists] = useState<{ id: number; staff_id: string; name: string; title: string; phone: string; bio: string; photo: string; instagram_handle: string; booking_slug: string; specialties: string[]; availability: Record<string, string>; metadata?: Record<string, string> }[]>([])
   const [stylistsLoading, setStylistsLoading] = useState(true)
@@ -49,7 +49,7 @@ export default function Home() {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [selectedCategory, setSelectedCategory] = useState('Hair Cut')
   const [selectedBookingCategory, setSelectedBookingCategory] = useState('')
-  const [selectedBookingService, setSelectedBookingService] = useState<{ id: string; name: string; category: string; price_min: number; price_max: number; duration: number } | null>(null)
+  const [selectedBookingService, setSelectedBookingService] = useState<{ id: string; name: string; category: string; price_min: number | null; price_max: number | null; duration: number } | null>(null)
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [bookingName, setBookingName] = useState('')
   const [bookingContact, setBookingContact] = useState('')
@@ -737,7 +737,7 @@ export default function Home() {
                   <p className="mb-3 text-xs text-primary/55 leading-relaxed flex-1 sm:text-sm sm:mb-4">{service.description}</p>
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <span className="text-sm font-bold text-accent sm:text-xl">
-                      ${Number(service.price_min) % 1 === 0 ? Number(service.price_min) : Number(service.price_min).toFixed(2)} – ${Number(service.price_max) % 1 === 0 ? Number(service.price_max) : Number(service.price_max).toFixed(2)}
+                      {service.price_min === null ? 'Consultation' : service.price_min === service.price_max ? `Up to $${Number(service.price_min) % 1 === 0 ? Number(service.price_min) : Number(service.price_min).toFixed(2)}` : `$${Number(service.price_min) % 1 === 0 ? Number(service.price_min) : Number(service.price_min).toFixed(2)} – $${Number(service.price_max) % 1 === 0 ? Number(service.price_max) : Number(service.price_max!).toFixed(2)}`}
                     </span>
                     <span className="flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-primary/5 text-primary/50 sm:px-2.5 sm:py-1 sm:text-xs sm:gap-1">
                       <FiClock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
@@ -1145,8 +1145,8 @@ export default function Home() {
                     <p className="text-xs text-primary/70">{content.footer.sections.hours.sunday}</p>
                   </div>
                   <div className="p-4 sm:p-5 rounded-2xl bg-primary/[0.04] border border-primary/10">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mb-3">
-                      <FiInstagram className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3">
+                      <FiShare2 className="w-5 h-5 text-accent" />
                     </div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-3">{content.footer.sections.follow.title}</p>
                     <div className="flex items-center gap-3">
@@ -1840,7 +1840,7 @@ export default function Home() {
                               <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-sm truncate text-primary">{service.name}</p>
                                 <div className="flex items-center gap-3 mt-0.5">
-                                  <p className="text-xs font-bold text-accent">${service.price_min} – ${service.price_max}</p>
+                                  <p className="text-xs font-bold text-accent">{service.price_min === null ? 'Consultation' : service.price_min === service.price_max ? `Up to $${service.price_min}` : `$${service.price_min} – $${service.price_max}`}</p>
                                   <p className="text-[10px] text-primary/50">⏱ {service.duration} min</p>
                                 </div>
                               </div>
@@ -1973,7 +1973,7 @@ export default function Home() {
                               <div className="flex-1 min-w-0">
                                 <p className="font-semibold text-sm truncate text-primary">{service.name}</p>
                                 <div className="flex items-center gap-3 mt-0.5">
-                                  <p className="text-xs font-bold text-accent">${service.price_min} – ${service.price_max}</p>
+                                  <p className="text-xs font-bold text-accent">{service.price_min === null ? 'Consultation' : service.price_min === service.price_max ? `Up to $${service.price_min}` : `$${service.price_min} – $${service.price_max}`}</p>
                                   <p className="text-[10px] text-primary/50">⏱ {service.duration} min</p>
                                 </div>
                               </div>
@@ -1997,7 +1997,7 @@ export default function Home() {
                             <p className="text-sm font-bold text-primary">{selectedBookingService.name}</p>
                             <p className="text-xs text-primary/50">⏱ {selectedBookingService.duration} min</p>
                           </div>
-                          <p className="text-sm font-bold text-accent whitespace-nowrap">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
+                          <p className="text-sm font-bold text-accent whitespace-nowrap">{selectedBookingService.price_min === null ? 'Consultation' : selectedBookingService.price_min === selectedBookingService.price_max ? `Up to $${selectedBookingService.price_min}` : `$${selectedBookingService.price_min} – $${selectedBookingService.price_max}`}</p>
                         </div>
                       )}
                       {selectedDate && (
@@ -2250,7 +2250,7 @@ export default function Home() {
                   <p className="mb-1 text-xs font-semibold text-primary/60">SERVICE</p>
                   <p className="text-base font-bold text-primary">{selectedBookingService.name}</p>
                   <p className="text-xs text-primary/50 font-medium">{selectedBookingService.category}</p>
-                  <p className="mt-1 text-sm font-semibold text-accent">${selectedBookingService.price_min} – ${selectedBookingService.price_max}</p>
+                  <p className="mt-1 text-sm font-semibold text-accent">{selectedBookingService.price_min === null ? 'Consultation' : selectedBookingService.price_min === selectedBookingService.price_max ? `Up to $${selectedBookingService.price_min}` : `$${selectedBookingService.price_min} – $${selectedBookingService.price_max}`}</p>
                   <p className="text-xs text-primary/50 mt-0.5">⏱ {selectedBookingService.duration} min</p>
                 </div>
               </div>

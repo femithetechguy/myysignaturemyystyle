@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS services (
     description TEXT,
     duration INTEGER NOT NULL,
     category VARCHAR(100) NOT NULL,
-    price_min DECIMAL(10, 2) NOT NULL,
-    price_max DECIMAL(10, 2) NOT NULL,
+    price_min DECIMAL(10, 2),
+    price_max DECIMAL(10, 2),
     images JSONB DEFAULT '[]',
     staff_ids JSONB DEFAULT '[]', -- array of staff_id strings; empty = all staff
     status VARCHAR(20) DEFAULT 'active',
