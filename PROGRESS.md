@@ -401,6 +401,9 @@ Last updated: June 17, 2026 (session 11)
   - `html` + `body` changed to `overflow-x: clip` (truly clips CSS transforms; `hidden` does not clip `translateX` animations due to viewport scroll container behaviour)
   - About section element given `overflow-hidden` class to contain its `slideInLeft`/`slideInRight` animation overflow
 
+### Admin Mobile Responsiveness — Closed (session 11, FTTG-21)
+- [x] All items complete — story closed via commit `b652f36`
+
 ### Admin Panel — Desktop Layout Fixes (session 10, FTTG-25)
 - [x] **Stats grid**: 4 columns at ≥1200px (`repeat(4, 1fr)`) — 8 stat cards render as 2 clean rows on desktop
 - [x] **Table horizontal scroll**: `.mainContent` gets `min-width: 0` (prevents flex overflow); `.content` gets `overflow-x: auto` so tables scroll within their container instead of breaking layout
