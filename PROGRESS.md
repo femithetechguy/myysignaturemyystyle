@@ -1,5 +1,5 @@
 # Project Progress — Myy Signature Myy Style
-Last updated: June 11, 2026 (session 10)
+Last updated: June 17, 2026 (session 11)
 
 ---
 
@@ -451,6 +451,34 @@ Last updated: June 11, 2026 (session 10)
 - [x] Simple bio written: "Egwono is the founder and lead stylist at Myy Signature Myy Style…"
 - [x] `dbquries/setup_all.sql` seed updated — `staff_003` entry changed from "Char" to "Egwono" with matching title and bio
 - [ ] Real bio to be updated when Egwono sends it (update via admin Staff tab or direct DB update)
+
+### Service Pricing — Partial Update (session 11, FTTG-7)
+- [x] **17 services updated** with new prices via `dbquries/update_prices.sql` run against Neon DB
+- [x] **Consultation pricing** — Single Process Color, Double Process Color, Partial/Full Highlight set to `NULL` price in DB
+  - `price_min` / `price_max` columns made nullable in `setup_all.sql` schema
+  - Frontend shows **"Consultation"** wherever `price_min === null` (services page, booking modal, confirmation modal)
+- [x] **Flat-rate display** — when `price_min === price_max`, shows **"Up to $X"** instead of `$X - $X`
+- [ ] 27 services still using placeholder prices — pending client input (Treatments, Extensions, Locs, Natural Hair, Bridal, Add-Ons, Fade)
+
+### Follow Us Card Icon (session 11)
+- [x] Main card icon in the **Follow Us** section changed from Instagram gradient icon → neutral `FiShare2` (accent colour) — card contains 2 IG + 1 TikTok so a platform-specific icon was misleading
+
+### Admin Edit Modal — Horizontal Shift Fix (session 11, FTTG-26)
+- [x] Fixed layout jump when edit/view modal opens across all 7 admin tabs (Customers, Applications, Reviews, Appointments, Staff, Contacts, Services)
+  - Root cause: `overflow: hidden` on body removes scrollbar, page shifts left ~17px
+  - Fix: measure `window.innerWidth - document.documentElement.clientWidth` before locking, apply as `paddingRight` to compensate
+
+### Admin Appointments — Customer Info & FK Wiring (session 11, FTTG-27, FTTG-22, FTTG-29)
+- [x] **Booking API** now upserts customer first (`RETURNING id`) then links `customer_id`, `service_id`, `staff_id` FK columns on appointment insert
+- [x] **Admin appointments query** (`pages/api/admin/users.js`) updated — explicit JOIN to customers/services/staff; returns `customer_name`, `customer_email`, `customer_phone`, `service_name`, `staff_name`
+- [x] **Backfill script** (`dbquries/backfill_appointment_fks.sql`) run — linked FKs on all existing appointments using metadata JSON values (7 customers, 12 services, 3 staff linked)
+- [x] **View modal reordered** — Customer Name → Email → Phone → Service → Staff shown first, system fields (id, timestamps) at bottom
+- [x] FTTG-22 and FTTG-29 closed via empty commit referencing the fix
+
+### Email Confirmation Tracking (session 11, FTTG-28)
+- [x] `booking.ts` now sets `confirmation_sent = true` on the appointment row after both emails send successfully
+- [x] `confirmation_sent` added to the appointments SELECT query and view modal field order
+- [x] All existing `confirmed` appointments bulk-updated to `confirmation_sent = true` in DB
 
 ### Social Media & Business Info (session 8, FTTG-10)
 - [x] **Business email** updated in `app.json` → `myysignaturemyystyle@gmail.com`

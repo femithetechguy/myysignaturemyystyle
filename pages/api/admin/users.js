@@ -100,6 +100,25 @@ async function handleGet(req, res, tableKey) {
         FROM ${table} 
         ORDER BY created_at DESC
       `;
+    } else if (table === 'appointments') {
+      query = `
+        SELECT
+          a.id, a.appointment_id, a.appointment_date, a.appointment_time, a.duration,
+          a.status, a.notes, a.admin_notes, a.cancellation_reason,
+          a.deposit_required, a.deposit_amount, a.deposit_paid,
+          a.total_amount, a.payment_status, a.confirmation_sent, a.created_at, a.updated_at,
+          c.first_name || ' ' || COALESCE(c.last_name, '') AS customer_name,
+          c.email  AS customer_email,
+          c.phone  AS customer_phone,
+          sv.name  AS service_name,
+          st.name  AS staff_name
+        FROM appointments a
+        LEFT JOIN customers c  ON c.id = a.customer_id
+        LEFT JOIN services  sv ON sv.id = a.service_id
+        LEFT JOIN staff     st ON st.id = a.staff_id
+        ORDER BY a.appointment_date DESC, a.appointment_time DESC
+        LIMIT 200
+      `;
     } else if (table === 'products') {
       query = `
         SELECT 

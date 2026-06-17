@@ -31,8 +31,10 @@ export default function AdminApplications({ refreshKey = 0 }) {
 
   useEffect(() => {
     const anyOpen = showModal || !!viewingItem;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.paddingRight = anyOpen ? `${scrollbarWidth}px` : '';
     document.body.style.overflow = anyOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => { document.body.style.overflow = ''; document.body.style.paddingRight = ''; };
   }, [showModal, viewingItem]);
 
   const fetchData = async () => {

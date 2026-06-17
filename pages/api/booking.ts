@@ -80,13 +80,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const isoDate = appointment_date_iso ?? new Date().toISOString().split('T')[0]
     const pgTime  = parseTimeTo24(appointment_time ?? '')
 
+    // Upsert customer first so we can link the FK on the appointment
+    const nameParts = customer_name.trim().split(/\s+/)
+    const firstName = nameParts[0]
+    const lastName  = nameParts.slice(1).join(' ') || null
+    const customerId = `CUS${Date.now()}`
+    const customerResult = await pool.query(
+      `INSERT INTO customers (customer_id, first_name, last_name, email, phone)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (email) DO UPDATE SET
+         first_name = EXCLUDED.first_name,
+         last_name  = EXCLUDED.last_name,
+         phone      = COALESCE(EXCLUDED.phone, customers.phone),
+         updated_at = CURRENT_TIMESTAMP
+       RETURNING id`,
+      [customerId, firstName, lastName, customer_email, customer_phone ?? null]
+    )
+    const customerRowId = customerResult.rows[0]?.id ?? null
+
+    // Look up service and staff IDs to link FKs
+    const serviceResult = await pool.query(`SELECT id FROM services WHERE name = $1 LIMIT 1`, [service_name])
+    const serviceRowId = serviceResult.rows[0]?.id ?? null
+    const staffResult = await pool.query(`SELECT id FROM staff WHERE name = $1 LIMIT 1`, [stylist_name ?? ''])
+    const staffRowId = staffResult.rows[0]?.id ?? null
+
     await pool.query(
       `INSERT INTO appointments
-        (appointment_id, appointment_date, appointment_time, duration, total_amount, status, notes, metadata)
-       VALUES ($1, $2, $3, $4, $5, 'confirmed', $6, $7)
+        (appointment_id, customer_id, service_id, staff_id, appointment_date, appointment_time, duration, total_amount, status, notes, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'confirmed', $9, $10)
        ON CONFLICT (appointment_id) DO NOTHING`,
       [
         booking_reference,
+        customerRowId,
+        serviceRowId,
+        staffRowId,
         isoDate,
         pgTime,
         Number(service_duration) || 60,
@@ -103,22 +130,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           appointment_time,
         }),
       ]
-    )
-
-    // Upsert customer — insert on first booking, update on repeat (email is the unique key)
-    const nameParts = customer_name.trim().split(/\s+/)
-    const firstName = nameParts[0]
-    const lastName  = nameParts.slice(1).join(' ') || null
-    const customerId = `CUS${Date.now()}`
-    await pool.query(
-      `INSERT INTO customers (customer_id, first_name, last_name, email, phone)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (email) DO UPDATE SET
-         first_name = EXCLUDED.first_name,
-         last_name  = EXCLUDED.last_name,
-         phone      = COALESCE(EXCLUDED.phone, customers.phone),
-         updated_at = CURRENT_TIMESTAMP`,
-      [customerId, firstName, lastName, customer_email, customer_phone ?? null]
     )
   } catch (dbErr) {
     console.error('[/api/booking] DB insert failed (non-fatal):', dbErr)
@@ -139,6 +150,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         vars,
       }),
     ])
+
+    // Mark confirmation email as sent on the appointment record
+    await pool.query(
+      `UPDATE appointments SET confirmation_sent = true WHERE appointment_id = $1`,
+      [booking_reference]
+    )
 
     return res.status(200).json({ ok: true })
   } catch (err) {
