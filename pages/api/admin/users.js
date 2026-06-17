@@ -107,11 +107,11 @@ async function handleGet(req, res, tableKey) {
           a.status, a.notes, a.admin_notes, a.cancellation_reason,
           a.deposit_required, a.deposit_amount, a.deposit_paid,
           a.total_amount, a.payment_status, a.created_at, a.updated_at,
-          COALESCE(c.first_name || ' ' || COALESCE(c.last_name, ''), a.metadata->>'customer_name') AS customer_name,
-          COALESCE(c.email,  a.metadata->>'customer_email') AS customer_email,
-          COALESCE(c.phone,  a.metadata->>'customer_phone') AS customer_phone,
-          COALESCE(sv.name,  a.metadata->>'service_name')   AS service_name,
-          COALESCE(st.name,  a.metadata->>'stylist_name')   AS staff_name
+          c.first_name || ' ' || COALESCE(c.last_name, '') AS customer_name,
+          c.email  AS customer_email,
+          c.phone  AS customer_phone,
+          sv.name  AS service_name,
+          st.name  AS staff_name
         FROM appointments a
         LEFT JOIN customers c  ON c.id = a.customer_id
         LEFT JOIN services  sv ON sv.id = a.service_id
