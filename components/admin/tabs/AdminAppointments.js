@@ -681,7 +681,7 @@ export default function AdminAppointments({ refreshKey = 0 }) {
                 'customer_name', 'customer_email', 'customer_phone',
                 'service_name', 'staff_name',
                 'appointment_date', 'appointment_time', 'duration',
-                'status', 'total_amount', 'payment_status',
+                'status', 'total_amount', 'payment_status', 'confirmation_sent',
                 'notes', 'admin_notes',
                 'deposit_required', 'deposit_amount', 'deposit_paid',
                 'cancellation_reason',

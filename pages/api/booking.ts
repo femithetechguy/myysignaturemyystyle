@@ -151,6 +151,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }),
     ])
 
+    // Mark confirmation email as sent on the appointment record
+    await pool.query(
+      `UPDATE appointments SET confirmation_sent = true WHERE appointment_id = $1`,
+      [booking_reference]
+    )
+
     return res.status(200).json({ ok: true })
   } catch (err) {
     console.error('[/api/booking]', err)
